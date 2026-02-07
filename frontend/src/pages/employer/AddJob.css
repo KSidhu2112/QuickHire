@@ -1,0 +1,359 @@
+.add-job-page {
+    min-height: 100vh;
+    background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 50%, #dbeafe 100%);
+    padding: 2rem 1rem;
+}
+
+.add-job-container {
+    max-width: 900px;
+    margin: 0 auto;
+}
+
+.add-job-header {
+    text-align: center;
+    margin-bottom: 2rem;
+    animation: fadeInDown 0.6s ease;
+}
+
+.back-button {
+    background: white;
+    color: #2563eb;
+    border: 2px solid #2563eb;
+    padding: 0.7rem 1.5rem;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 0.95rem;
+    font-weight: 500;
+    margin-bottom: 1.5rem;
+    transition: all 0.3s ease;
+}
+
+.back-button:hover {
+    background: rgba(37, 99, 235, 0.05);
+    transform: translateX(-5px);
+}
+
+.add-job-header h1 {
+    font-size: 2.5rem;
+    color: #1e3a8a;
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+}
+
+.add-job-header p {
+    font-size: 1rem;
+    color: #475569;
+}
+
+/* Alerts */
+.error-alert,
+.success-alert {
+    padding: 1rem 1.5rem;
+    border-radius: 12px;
+    margin-bottom: 2rem;
+    text-align: center;
+    font-weight: 500;
+    animation: slideInDown 0.5s ease;
+}
+
+.error-alert {
+    background: rgba(254, 202, 202, 0.95);
+    color: #c53030;
+    box-shadow: 0 4px 12px rgba(197, 48, 48, 0.15);
+}
+
+.success-alert {
+    background: rgba(198, 246, 213, 0.95);
+    color: #22543d;
+    box-shadow: 0 4px 12px rgba(34, 84, 61, 0.15);
+}
+
+/* Job Type Selector */
+.job-type-selector {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+    animation: fadeInUp 0.8s ease;
+}
+
+.type-btn {
+    flex: 1;
+    background: rgba(255, 255, 255, 0.95);
+    border: 3px solid transparent;
+    border-radius: 16px;
+    padding: 1.5rem;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.type-btn:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+}
+
+.type-btn.active {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    border-color: #fff;
+}
+
+.type-icon {
+    font-size: 2rem;
+    filter: grayscale(1);
+}
+
+.type-btn.active .type-icon {
+    filter: grayscale(0);
+}
+
+.type-label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #1a202c;
+}
+
+.type-btn.active .type-label {
+    color: #fff;
+}
+
+/* Form */
+.add-job-form {
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    border-radius: 20px;
+    padding: 2.5rem;
+    box-shadow: 0 15px 50px rgba(0, 0, 0, 0.2);
+    animation: fadeInUp 1s ease;
+}
+
+.form-section {
+    margin-bottom: 2.5rem;
+}
+
+.form-section:last-of-type {
+    margin-bottom: 0;
+}
+
+.form-section h2 {
+    font-size: 1.5rem;
+    color: #1a202c;
+    margin-bottom: 1.5rem;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid #e2e8f0;
+    font-weight: 600;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 1.5rem;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.full-width {
+    grid-column: 1 / -1;
+}
+
+.form-group label {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2d3748;
+    margin-bottom: 0.5rem;
+}
+
+.form-group input,
+.form-group select,
+.form-group textarea {
+    padding: 0.9rem 1.2rem;
+    border: 2px solid #e2e8f0;
+    border-radius: 10px;
+    font-size: 0.95rem;
+    transition: all 0.3s ease;
+    background: #fff;
+}
+
+.form-group input:focus,
+.form-group select:focus,
+.form-group textarea:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+}
+
+.form-group textarea {
+    resize: vertical;
+    font-family: inherit;
+}
+
+.form-group input::placeholder,
+.form-group textarea::placeholder {
+    color: #a0aec0;
+}
+
+/* Checkbox Group */
+.checkbox-group {
+    justify-content: center;
+}
+
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    cursor: pointer;
+    padding: 1rem;
+    background: rgba(102, 126, 234, 0.05);
+    border-radius: 10px;
+    transition: all 0.3s ease;
+}
+
+.checkbox-label:hover {
+    background: rgba(102, 126, 234, 0.1);
+}
+
+.checkbox-label input[type='checkbox'] {
+    width: 20px;
+    height: 20px;
+    cursor: pointer;
+    accent-color: #667eea;
+}
+
+.checkbox-label span {
+    font-size: 0.95rem;
+    font-weight: 600;
+    color: #2d3748;
+}
+
+.checkbox-label.urgent {
+    background: rgba(255, 106, 136, 0.05);
+}
+
+.checkbox-label.urgent:hover {
+    background: rgba(255, 106, 136, 0.1);
+}
+
+.checkbox-label.urgent span {
+    color: #e53e3e;
+}
+
+/* Form Actions */
+.form-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 2.5rem;
+    padding-top: 2rem;
+    border-top: 2px solid #e2e8f0;
+}
+
+.cancel-btn,
+.submit-btn {
+    flex: 1;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 12px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.cancel-btn {
+    background: #e2e8f0;
+    color: #4a5568;
+}
+
+.cancel-btn:hover {
+    background: #cbd5e0;
+    transform: translateY(-2px);
+}
+
+.submit-btn {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    box-shadow: 0 4px 15px rgba(102, 126, 234, 0.3);
+}
+
+.submit-btn:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(102, 126, 234, 0.4);
+}
+
+.submit-btn:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+/* Animations */
+@keyframes fadeInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(30px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+@keyframes slideInDown {
+    from {
+        opacity: 0;
+        transform: translateY(-20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .add-job-page {
+        padding: 1.5rem 0.5rem;
+    }
+
+    .add-job-header h1 {
+        font-size: 2rem;
+    }
+
+    .job-type-selector {
+        flex-direction: column;
+    }
+
+    .type-btn {
+        flex-direction: row;
+        justify-content: center;
+    }
+
+    .add-job-form {
+        padding: 1.5rem;
+    }
+
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-actions {
+        flex-direction: column;
+    }
+}

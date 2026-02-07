@@ -1,0 +1,158 @@
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import './JobCard.css';
+
+const JobCard = ({ job, showApplyButton = true, onApply, onCardClick, userRole = 'jobseeker' }) => {
+    const navigate = useNavigate();
+
+    const formatSalary = (min, max, type) => {
+        if (max && max !== min) {
+            return `₹${min.toLocaleString()} - ₹${max.toLocaleString()} ${type}`;
+        }
+        return `₹${min.toLocaleString()} ${type}`;
+    };
+
+    const formatDate = (date) => {
+        return new Date(date).toLocaleDateString('en-IN', {
+            day: 'numeric',
+            month: 'short',
+            year: 'numeric',
+        });
+    };
+
+    const getJobTypeColor = (type) => {
+        switch (type) {
+            case 'FULL_TIME':
+                return 'blue';
+            case 'PART_TIME':
+                return 'green';
+            case 'DAILY':
+                return 'orange';
+            default:
+                return 'gray';
+        }
+    };
+
+    const getJobTypeLabel = (type) => {
+        switch (type) {
+            case 'FULL_TIME':
+                return 'Full Time';
+            case 'PART_TIME':
+                return 'Part Time';
+            case 'DAILY':
+                return 'Daily Job';
+            default:
+                return type;
+        }
+    };
+
+    const handleViewDetails = () => {
+        if (onCardClick) {
+            onCardClick(job);
+        } else {
+            navigate(`/jobs/${job._id}`);
+        }
+    };
+
+    const handleApply = (e) => {
+        e.stopPropagation();
+        if (onApply) {
+            onApply(job);
+        }
+    };
+
+    return (
+        <div className="job-card" onClick={handleViewDetails}>
+            <div className="job-card-header">
+                <div className="job-card-title-section">
+                    <h3 className="job-title">{job.title}</h3>
+                    <p className="job-company">{job.company}</p>
+                </div>
+                <span className={`job-type-badge ${getJobTypeColor(job.jobType)}`}>
+                    {getJobTypeLabel(job.jobType)}
+                </span>
+            </div>
+
+            <div className="job-card-info">
+                <div className="job-info-item">
+                    <i className="icon-location"></i>
+                    <span>{job.location?.city || 'Location not specified'}</span>
+                </div>
+
+                <div className="job-info-item">
+                    <i className="icon-money"></i>
+                    <span>{formatSalary(job.salaryMin, job.salaryMax, job.salaryType)}</span>
+                </div>
+
+                {job.jobType === 'DAILY' && job.workDate && (
+                    <div className="job-info-item">
+                        <i className="icon-calendar"></i>
+                        <span>{formatDate(job.workDate)}</span>
+                    </div>
+                )}
+
+                {job.jobType === 'DAILY' && (
+                    <div className="job-info-item">
+                        <i className="icon-clock"></i>
+                        <span>
+                            {job.startTime} - {job.endTime}
+                        </span>
+                    </div>
+                )}
+
+                <div className="job-info-item">
+                    <i className="icon-users"></i>
+                    <span>
+                        Hired: {job.workersHired || 0} / Vacancies: {Math.max(0, job.workersRequired - (job.workersHired || 0))}
+                    </span>
+                </div>
+            </div>
+
+            {job.skills && job.skills.length > 0 && (
+                <div className="job-skills">
+                    {job.skills.slice(0, 3).map((skill, index) => (
+                        <span key={index} className="skill-tag">
+                            {skill}
+                        </span>
+                    ))}
+                    {job.skills.length > 3 && (
+                        <span className="skill-tag more">+{job.skills.length - 3} more</span>
+                    )}
+                </div>
+            )}
+
+            <div className="job-card-footer">
+                <div className="job-meta">
+                    <span className="job-posted">
+                        Posted {new Date(job.createdAt).toLocaleDateString()}
+                    </span>
+                    {job.applicants > 0 && (
+                        <span className="job-applicants">{job.applicants} applicants</span>
+                    )}
+                </div>
+
+                {showApplyButton && userRole === 'jobseeker' && (
+                    <button
+                        className={`btn-apply ${job.hasApplied ? 'applied' : ''}`}
+                        onClick={job.hasApplied || (job.workersHired >= job.workersRequired) ? null : handleApply}
+                        disabled={job.hasApplied || (job.workersHired >= job.workersRequired)}
+                    >
+                        {job.hasApplied
+                            ? (job.autoApprove ? 'Joined' : 'Applied')
+                            : (job.workersHired >= job.workersRequired
+                                ? 'Full'
+                                : (job.vacancyType === 'BULK' ? 'Join Job' : 'Apply Now'))}
+                    </button>
+                )}
+
+                {userRole === 'employer' && (
+                    <button className="btn-view" onClick={handleViewDetails}>
+                        View Details
+                    </button>
+                )}
+            </div>
+        </div>
+    );
+};
+
+export default JobCard;

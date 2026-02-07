@@ -1,0 +1,29 @@
+/* App Component Styles */
+.App {
+  width: 100%;
+  min-height: 100vh;
+  position: relative;
+  padding-top: 90px;
+  /* Account for fixed navbar height */
+}
+
+/* Smooth Page Transitions */
+.page-transition-enter {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.page-transition-enter-active {
+  opacity: 1;
+  transform: translateY(0);
+  transition: opacity 300ms, transform 300ms;
+}
+
+.page-transition-exit {
+  opacity: 1;
+}
+
+.page-transition-exit-active {
+  opacity: 0;
+  transition: opacity 300ms;
+}
