@@ -444,18 +444,18 @@ exports.forgotPassword = async (req, res) => {
         const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
 
         // Delete existing OTPs
-        await OTP.deleteMany({ email, purpose: 'password_reset' });
+        await OTP.deleteMany({ email, purpose: 'password-reset' });
 
         // Save new OTP
         await OTP.create({
             email,
             otp,
-            purpose: 'password_reset',
+            purpose: 'password-reset',
             expiresAt
         });
 
         // Send Email
-        await sendOTPEmail(email, otp, 'password_reset');
+        await sendOTPEmail(email, otp, 'password-reset');
 
         res.status(200).json({
             success: true,

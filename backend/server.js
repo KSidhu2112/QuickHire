@@ -13,6 +13,9 @@ const applicationRoutes = require('./routes/applicationRoutes');
 const employerRoutes = require('./routes/employerRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
+const adminRoutes = require('./routes/adminRoutes'); // Import Admin Routes
+const walletRoutes = require('./routes/walletRoutes');
+const disputeRoutes = require('./routes/disputeRoutes');
 
 // Initialize Express app
 const app = express();
@@ -41,6 +44,9 @@ app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/employer', employerRoutes);
 app.use('/api/notifications', require('./routes/notificationRoutes'));
+app.use('/api/admin', adminRoutes); // Use Admin Routes
+app.use('/api/wallet', walletRoutes);
+app.use('/api/disputes', disputeRoutes);
 
 console.log('✅ Service: Loading Review Routes');
 app.use('/api/reviews', reviewRoutes);

@@ -1,8 +1,14 @@
 import React from 'react';
 import './Footer.css';
 import logo from '../assets/logo.png';
+import { useLocation } from 'react-router-dom';
 
 const Footer = () => {
+    const location = useLocation();
+    const isEmployerPage = location.pathname.startsWith('/employer');
+    const isEmployeePage = location.pathname.startsWith('/employee') || location.pathname === '/dashboard';
+    const isPublicPage = !isEmployerPage && !isEmployeePage;
+
     return (
         <footer className="footer">
             <div className="footer-container">
@@ -46,29 +52,33 @@ const Footer = () => {
                         </ul>
                     </div>
 
-                    {/* For Job Seekers */}
-                    <div className="footer-column">
-                        <h4>For Job Seekers</h4>
-                        <ul>
-                            <li><a href="#browse">Browse Jobs</a></li>
-                            <li><a href="#profile">Create Profile</a></li>
-                            <li><a href="#resume">Upload Resume</a></li>
-                            <li><a href="#alerts">Job Alerts</a></li>
-                            <li><a href="#career">Career Advice</a></li>
-                        </ul>
-                    </div>
+                    {/* For Job Seekers - Show on Public & Employee Pages */}
+                    {(isPublicPage || isEmployeePage) && (
+                        <div className="footer-column">
+                            <h4>For Job Seekers</h4>
+                            <ul>
+                                <li><a href="#browse">Browse Jobs</a></li>
+                                <li><a href="#profile">Create Profile</a></li>
+                                <li><a href="#resume">Upload Resume</a></li>
+                                <li><a href="#alerts">Job Alerts</a></li>
+                                <li><a href="#career">Career Advice</a></li>
+                            </ul>
+                        </div>
+                    )}
 
-                    {/* For Employers */}
-                    <div className="footer-column">
-                        <h4>For Employers</h4>
-                        <ul>
-                            <li><a href="#post">Post a Job</a></li>
-                            <li><a href="#candidates">Find Candidates</a></li>
-                            <li><a href="#pricing">Pricing</a></li>
-                            <li><a href="#solutions">Enterprise Solutions</a></li>
-                            <li><a href="#support">Support</a></li>
-                        </ul>
-                    </div>
+                    {/* For Employers - Show on Public & Employer Pages */}
+                    {(isPublicPage || isEmployerPage) && (
+                        <div className="footer-column">
+                            <h4>For Employers</h4>
+                            <ul>
+                                <li><a href="#post">Post a Job</a></li>
+                                <li><a href="#candidates">Find Candidates</a></li>
+                                <li><a href="#pricing">Pricing</a></li>
+                                <li><a href="#solutions">Enterprise Solutions</a></li>
+                                <li><a href="#support">Support</a></li>
+                            </ul>
+                        </div>
+                    )}
 
                     {/* Contact Info */}
                     <div className="footer-column">

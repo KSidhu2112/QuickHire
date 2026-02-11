@@ -1,9 +1,9 @@
-const mongoose = require('mongoose');
 const dotenv = require('dotenv');
-const { sendOTPEmail } = require('./utils/emailService');
-
-// Load environment variables
+// Load environment variables immediately
 dotenv.config();
+
+const mongoose = require('mongoose');
+const { sendOTPEmail } = require('./utils/emailService');
 
 console.log('🧪 Testing Send OTP Functionality\n');
 

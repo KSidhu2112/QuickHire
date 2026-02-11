@@ -9,6 +9,7 @@ const {
     getApplicationById,
     getUserApplicationStats,
     getHiredEmployees,
+    confirmWork,
 } = require('../controllers/applicationController');
 const { protect } = require('../middleware/authMiddleware');
 const { checkRole } = require('../middleware/roleMiddleware');
@@ -25,6 +26,7 @@ router.get('/employer/hired', protect, checkRole(['employer']), getHiredEmployee
 router.put('/:id/status', protect, checkRole(['employer']), updateApplicationStatus); // Update status
 
 // Shared routes (Job Seeker or Employer)
+router.post('/:id/confirm', protect, confirmWork); // Dual Confirmation
 router.get('/:id', protect, getApplicationById); // Get single application
 
 module.exports = router;

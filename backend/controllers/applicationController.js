@@ -1,6 +1,9 @@
 const Application = require('../models/Application');
 const Job = require('../models/Job');
 const Review = require('../models/Review');
+const User = require('../models/User');
+const Dispute = require('../models/Dispute');
+const Transaction = require('../models/Transaction');
 const {
     notifyNewApplication,
     notifyApplicationSubmitted,
@@ -581,3 +584,79 @@ exports.getUserApplicationStats = async (req, res) => {
 };
 
 
+
+// @desc    Confirm work completion (Dual Confirmation)
+// @route   POST /api/applications/:id/confirm
+// @access  Private (Employer & Job Seeker)
+exports.confirmWork = async (req, res) => {
+    try {
+        const applicationId = req.params.id;
+        const { status, rating, feedback, proof } = req.body; // status: FULL/PARTIAL/NO_SHOW etc.
+
+        const application = await Application.findById(applicationId).populate('job');
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Application not found' });
+        }
+
+        const isEmployer = application.employer.toString() === req.user._id.toString();
+        const isJobseeker = application.jobseeker.toString() === req.user._id.toString();
+
+        if (!isEmployer && !isJobseeker) {
+            return res.status(403).json({ success: false, message: 'Not authorized' });
+        }
+
+        // Update Confirmation Status
+        const timestamp = Date.now();
+        if (isEmployer) {
+            application.employerConfirmation = { confirmed: true, status, rating, feedback, proof, timestamp };
+        } else {
+            application.employeeConfirmation = { confirmed: true, status, rating, feedback, proof, timestamp };
+        }
+
+        // Check for Dual Confirmation & Resolution
+        if (application.employerConfirmation.confirmed && application.employeeConfirmation.confirmed) {
+            const empStatus = application.employerConfirmation.status; // FULL, PARTIAL, NO_SHOW
+            const seekerStatus = application.employeeConfirmation.status; // FULL_PAYMENT, PARTIAL_PAYMENT, NOT_PAID
+
+            // Case 1: Success - Both Agree on Full Completion
+            if (empStatus === 'FULL' && seekerStatus === 'FULL_PAYMENT') {
+                application.workStatus = 'COMPLETED';
+                application.paymentStatus = 'RELEASED';
+
+                // TODO: Trigger Wallet Transfer Here
+                // User.findById(application.employer).then(u => { u.walletBalance -= amount; u.save(); })
+                // User.findById(application.jobseeker).then(u => { u.walletBalance += amount; u.save(); })
+
+            }
+            // Case 2: Dispute - Conflict
+            else {
+                application.workStatus = 'DISPUTED';
+                application.paymentStatus = 'DISPUTED';
+
+                // Auto-create dispute
+                const dispute = await Dispute.create({
+                    job: application.job._id,
+                    application: application._id,
+                    raisedBy: req.user._id, // Whoever triggered the final confirmation
+                    against: isEmployer ? application.jobseeker : application.employer,
+                    reason: 'OTHER',
+                    description: `Auto-generated dispute. Employer: ${empStatus}, Employee: ${seekerStatus}`,
+                    status: 'OPEN'
+                });
+                application.dispute = dispute._id;
+            }
+        }
+
+        await application.save();
+
+        res.status(200).json({
+            success: true,
+            message: 'Confirmation submitted',
+            application
+        });
+
+    } catch (error) {
+        console.error('Confirm Work Error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};

@@ -58,6 +58,41 @@ const applicationSchema = new mongoose.Schema(
     }
 );
 
+// New fields for Job Execution & Payment
+applicationSchema.add({
+    paymentStatus: {
+        type: String,
+        enum: ['PENDING', 'HELD_IN_ESCROW', 'RELEASED', 'REFUNDED', 'DISPUTED'],
+        default: 'PENDING',
+    },
+    workStatus: {
+        type: String,
+        enum: ['PENDING', 'IN_PROGRESS', 'COMPLETED', 'DISPUTED', 'CANCELLED'],
+        default: 'PENDING',
+    },
+    // Dual Confirmation
+    employerConfirmation: {
+        confirmed: { type: Boolean, default: false },
+        status: { type: String, enum: ['FULL', 'PARTIAL', 'NO_SHOW'] },
+        rating: { type: Number, min: 1, max: 5 },
+        feedback: String,
+        proof: String, // URL
+        timestamp: Date,
+    },
+    employeeConfirmation: {
+        confirmed: { type: Boolean, default: false },
+        status: { type: String, enum: ['FULL_PAYMENT', 'PARTIAL_PAYMENT', 'NOT_PAID'] },
+        rating: { type: Number, min: 1, max: 5 },
+        feedback: String,
+        proof: String, // URL
+        timestamp: Date,
+    },
+    dispute: {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Dispute',
+    },
+});
+
 // Compound unique index: one application per job per jobseeker
 applicationSchema.index({ job: 1, jobseeker: 1 }, { unique: true });
 
@@ -65,6 +100,8 @@ applicationSchema.index({ job: 1, jobseeker: 1 }, { unique: true });
 applicationSchema.index({ jobseeker: 1, createdAt: -1 });
 applicationSchema.index({ employer: 1, status: 1 });
 applicationSchema.index({ job: 1, status: 1 });
+applicationSchema.index({ paymentStatus: 1 });
+applicationSchema.index({ workStatus: 1 });
 
 // Pre-save middleware to set reviewedAt when status changes
 applicationSchema.pre('save', async function () {

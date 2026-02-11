@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ['jobseeker', 'employer'],
+            enum: ['jobseeker', 'employer', 'admin'],
             default: 'jobseeker',
         },
         status: {
@@ -57,6 +57,36 @@ const userSchema = new mongoose.Schema(
         createdAt: {
             type: Date,
             default: Date.now,
+        },
+        // Wallet & Reputation
+        walletBalance: {
+            type: Number,
+            default: 0,
+        },
+        trustScore: {
+            type: Number,
+            default: 100, // Start with a neutral/good score
+            min: 0,
+            max: 100,
+        },
+        badges: {
+            type: [String],
+            enum: ['VERIFIED', 'MODERATE', 'RISKY', 'TOP_RATED'],
+            default: [],
+        },
+        stats: {
+            jobsCompleted: { type: Number, default: 0 },
+            totalEarnings: { type: Number, default: 0 }, // For employees
+            totalSpent: { type: Number, default: 0 }, // For employers
+            disputesCount: { type: Number, default: 0 },
+            latePayments: { type: Number, default: 0 },
+            avgRating: { type: Number, default: 0 },
+            ratingCount: { type: Number, default: 0 },
+        },
+        blacklisted: {
+            isBlacklisted: { type: Boolean, default: false },
+            reason: String,
+            bannedAt: Date,
         },
     },
     {
