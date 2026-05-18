@@ -1,5 +1,9 @@
+const mongoose = require('mongoose');
 const Job = require('../models/Job');
 const Application = require('../models/Application');
+const User = require('../models/User');
+const Payment = require('../models/Payment');
+const fs = require('fs');
 const { notifyJobPosted, notifyJobseekers } = require('../services/notificationService');
 
 // @desc    Get all jobs with filters
@@ -60,8 +64,6 @@ exports.getJobs = async (req, res) => {
             query.salaryMax = { $lte: parseInt(salaryMax) };
         }
 
-
-
         if (experience && experience !== 'ANY') {
             query.experience = experience.toUpperCase();
         }
@@ -75,19 +77,12 @@ exports.getJobs = async (req, res) => {
             const keyword = req.query.keyword;
             const keywordRegex = { $regex: keyword, $options: 'i' };
 
-            // If other filters exist, we need to use $and to ensure everything matches
-            // If status is the only filter so far (default), we can just add $or
-
             const searchConditions = [
                 { title: keywordRegex },
                 { company: keywordRegex },
                 { description: keywordRegex },
                 { category: keywordRegex }
             ];
-
-            // If we have other queries besides status, strict filtering applies
-            // But we want to intersect the keyword search with existing filters
-            // We can add an $and clause where one element is the $or of search conditions
 
             if (!query.$and) {
                 query.$and = [];
@@ -97,10 +92,9 @@ exports.getJobs = async (req, res) => {
         }
 
         // Execute query with pagination
-        // Execute query with pagination
         const skip = (page - 1) * limit;
         const jobs = await Job.find(query)
-            .populate('employer', 'name email company')
+            .populate('employer', 'name email phone company stats trustScore')
             .sort(sort)
             .limit(parseInt(limit))
             .skip(skip);
@@ -149,8 +143,18 @@ exports.getJobs = async (req, res) => {
 // @access  Public
 exports.getJobById = async (req, res) => {
     try {
-        const job = await Job.findById(req.params.id)
-            .populate('employer', 'name email phone company profile');
+        const { id } = req.params;
+
+        // Validate ID format
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({
+                success: false,
+                message: 'Invalid Job ID format',
+            });
+        }
+
+        const job = await Job.findById(id)
+            .populate('employer', 'name email phone company profile stats trustScore');
 
         if (!job) {
             return res.status(404).json({
@@ -159,8 +163,12 @@ exports.getJobById = async (req, res) => {
             });
         }
 
-        // Increment view count
-        await job.incrementViews();
+        // Increment view count (non-blocking, don't fail request if it fails)
+        try {
+            await job.incrementViews();
+        } catch (viewError) {
+            console.error('Error incrementing views:', viewError.message);
+        }
 
         res.status(200).json({
             success: true,
@@ -181,13 +189,42 @@ exports.getJobById = async (req, res) => {
 // @access  Private (Employer only)
 exports.createJob = async (req, res) => {
     try {
-        console.log('📝 Create Job Request Body:', JSON.stringify(req.body, null, 2));
-        console.log('👤 User:', req.user.email, '- Role:', req.user.role);
+        // Check for payment
+        const payment = await Payment.findOne({
+            userId: req.user._id,
+            action: 'post_job',
+            paymentStatus: 'completed',
+            used: false
+        }).sort({ timestamp: -1 });
+
+        if (!payment) {
+            return res.status(402).json({
+                success: false,
+                message: 'Payment required to post a job'
+            });
+        }
 
         const jobData = {
             ...req.body,
             employer: req.user._id,
         };
+
+        // 1. Move nested location.coordinates to root if they exist
+        if (jobData.location && jobData.location.coordinates) {
+            if (!jobData.coordinates) {
+                jobData.coordinates = jobData.location.coordinates;
+            }
+            delete jobData.location.coordinates;
+        }
+
+        // 2. Sanitize coordinates
+        if (jobData.coordinates) {
+            const { type, coordinates } = jobData.coordinates;
+            if (type !== 'Point' || !Array.isArray(coordinates) || coordinates.length !== 2 || 
+                isNaN(parseFloat(coordinates[0])) || isNaN(parseFloat(coordinates[1]))) {
+                delete jobData.coordinates;
+            }
+        }
 
         // Validate daily job fields
         if (jobData.jobType === 'DAILY') {
@@ -199,18 +236,19 @@ exports.createJob = async (req, res) => {
             }
         }
 
-        console.log('✅ Creating job with data:', JSON.stringify(jobData, null, 2));
         const job = await Job.create(jobData);
-        console.log('✅ Job created successfully:', job._id);
 
-        // Send notification to employer
+        // Mark payment as used
+        payment.used = true;
+        payment.jobId = job._id;
+        await payment.save();
+
+        // Update Employer Stats
+        await User.findByIdAndUpdate(req.user._id, { $inc: { 'stats.totalJobsPosted': 1 } });
+
+        // Broadcast to jobseekers
         try {
-            // await notifyJobPosted(req.user._id, job._id, job.title);
-            // console.log('✅ Job posted notification sent to employer');
-
-            // Broadcast to jobseekers
             await notifyJobseekers(job._id, job.title, job.company, job.category);
-            console.log('✅ Job alert broadcasted to jobseekers');
         } catch (notifError) {
             console.error('Notification Error (non-fatal):', notifError);
         }
@@ -222,13 +260,10 @@ exports.createJob = async (req, res) => {
         });
     } catch (error) {
         console.error('❌ Create Job Error:', error);
-        console.error('Error Name:', error.name);
-        console.error('Error Message:', error.message);
+        fs.appendFileSync('error_debug.log', `[${new Date().toISOString()}] ❌ Create Job Error: ${error.stack}\n`);
 
-        // Handle validation errors
         if (error.name === 'ValidationError') {
             const errors = Object.values(error.errors).map(err => err.message);
-            console.error('Validation Errors:', errors);
             return res.status(400).json({
                 success: false,
                 message: 'Validation failed',
@@ -249,7 +284,11 @@ exports.createJob = async (req, res) => {
 // @access  Private (Employer - own jobs only)
 exports.updateJob = async (req, res) => {
     try {
-        const job = await Job.findById(req.params.id);
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid Job ID format' });
+        }
+        const job = await Job.findById(id);
 
         if (!job) {
             return res.status(404).json({
@@ -258,7 +297,6 @@ exports.updateJob = async (req, res) => {
             });
         }
 
-        // Check ownership
         if (job.employer.toString() !== req.user._id.toString()) {
             return res.status(403).json({
                 success: false,
@@ -266,38 +304,26 @@ exports.updateJob = async (req, res) => {
             });
         }
 
-        // Update fields
         const allowedUpdates = [
-            'title',
-            'description',
-            'company',
-            'salaryMin',
-            'salaryMax',
-            'salaryType',
-            'location',
-            'workDate',
-            'startTime',
-            'endTime',
-            'workersRequired',
-            'skills',
-            'experience',
-            'education',
-            'status',
-            'deadline',
-            'isUrgent',
-            'category',
-            'foodProvided',
-            'shift',
-            'daysPerWeek',
-            'workingHours',
-            'joiningDate',
-            'vacancyType',
-            'autoApprove',
+            'title', 'description', 'company', 'salaryMin', 'salaryMax', 'salaryType',
+            'location', 'workDate', 'startTime', 'endTime', 'workersRequired', 'skills',
+            'experience', 'education', 'status', 'deadline', 'isUrgent', 'category',
+            'foodProvided', 'shift', 'daysPerWeek', 'workingHours', 'joiningDate',
+            'vacancyType', 'autoApprove', 'showContactInfo', 'contactPhone',
+            'accommodation', 'immediateJoining', 'coordinates'
         ];
 
         allowedUpdates.forEach(field => {
             if (req.body[field] !== undefined) {
-                job[field] = req.body[field];
+                if (field === 'coordinates' && req.body.coordinates) {
+                    const { type, coordinates } = req.body.coordinates;
+                    if (type === 'Point' && Array.isArray(coordinates) && coordinates.length === 2 && 
+                        !isNaN(parseFloat(coordinates[0])) && !isNaN(parseFloat(coordinates[1]))) {
+                        job.coordinates = req.body.coordinates;
+                    }
+                } else {
+                    job[field] = req.body[field];
+                }
             }
         });
 
@@ -323,7 +349,11 @@ exports.updateJob = async (req, res) => {
 // @access  Private (Employer - own jobs only)
 exports.deleteJob = async (req, res) => {
     try {
-        const job = await Job.findById(req.params.id);
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid Job ID format' });
+        }
+        const job = await Job.findById(id);
 
         if (!job) {
             return res.status(404).json({
@@ -332,7 +362,6 @@ exports.deleteJob = async (req, res) => {
             });
         }
 
-        // Check ownership
         if (job.employer.toString() !== req.user._id.toString()) {
             return res.status(403).json({
                 success: false,
@@ -340,15 +369,12 @@ exports.deleteJob = async (req, res) => {
             });
         }
 
-        // Delete all applications for this job
         await Application.deleteMany({ job: job._id });
-
-        // Delete the job
         await job.deleteOne();
 
         res.status(200).json({
             success: true,
-            message: 'Job and related applications deleted successfully',
+            message: 'Job deleted successfully',
         });
     } catch (error) {
         console.error('Delete Job Error:', error);
@@ -366,16 +392,10 @@ exports.deleteJob = async (req, res) => {
 exports.getMyJobs = async (req, res) => {
     try {
         const { status, jobType, page = 1, limit = 10 } = req.query;
-
         const query = { employer: req.user._id };
 
-        if (status) {
-            query.status = status.toUpperCase();
-        }
-
-        if (jobType) {
-            query.jobType = jobType.toUpperCase();
-        }
+        if (status) query.status = status.toUpperCase();
+        if (jobType) query.jobType = jobType.toUpperCase();
 
         const skip = (page - 1) * limit;
         const jobs = await Job.find(query)
@@ -408,7 +428,11 @@ exports.getMyJobs = async (req, res) => {
 // @access  Private (Employer - own jobs only)
 exports.getJobStats = async (req, res) => {
     try {
-        const job = await Job.findById(req.params.id);
+        const { id } = req.params;
+        if (!mongoose.Types.ObjectId.isValid(id)) {
+            return res.status(400).json({ success: false, message: 'Invalid Job ID format' });
+        }
+        const job = await Job.findById(id);
 
         if (!job) {
             return res.status(404).json({
@@ -417,47 +441,89 @@ exports.getJobStats = async (req, res) => {
             });
         }
 
-        // Check ownership
         if (job.employer.toString() !== req.user._id.toString()) {
             return res.status(403).json({
                 success: false,
-                message: 'Not authorized to view this job',
+                message: 'Not authorized',
             });
         }
 
-        // Get application statistics
-        const totalApplications = await Application.countDocuments({ job: job._id });
-        const acceptedApplications = await Application.countDocuments({
-            job: job._id,
-            status: 'ACCEPTED',
-        });
-        const rejectedApplications = await Application.countDocuments({
-            job: job._id,
-            status: 'REJECTED',
-        });
-        const pendingApplications = await Application.countDocuments({
-            job: job._id,
-            status: { $in: ['APPLIED', 'UNDER_REVIEW'] },
-        });
+        const stats = {
+            views: job.views,
+            totalApplications: await Application.countDocuments({ job: job._id }),
+            acceptedApplications: await Application.countDocuments({ job: job._id, status: 'ACCEPTED' }),
+            rejectedApplications: await Application.countDocuments({ job: job._id, status: 'REJECTED' }),
+            pendingApplications: await Application.countDocuments({ job: job._id, status: { $in: ['APPLIED', 'UNDER_REVIEW'] } }),
+            workersRequired: job.workersRequired,
+            workersHired: job.workersHired,
+        };
 
         res.status(200).json({
             success: true,
-            stats: {
-                views: job.views,
-                totalApplications,
-                acceptedApplications,
-                rejectedApplications,
-                pendingApplications,
-                workersRequired: job.workersRequired,
-                workersHired: job.workersHired,
-            },
+            stats,
         });
     } catch (error) {
         console.error('Get Job Stats Error:', error);
         res.status(500).json({
             success: false,
-            message: 'Failed to fetch job statistics',
+            message: 'Failed to fetch stats',
             error: error.message,
         });
+    }
+};
+
+// Haversine helper
+function haversineKm(lat1, lng1, lat2, lng2) {
+    const R = 6371;
+    const toRad = (deg) => (deg * Math.PI) / 180;
+    const dLat = toRad(lat2 - lat1);
+    const dLng = toRad(lng2 - lng1);
+    const a = Math.sin(dLat / 2) ** 2 + Math.cos(toRad(lat1)) * Math.cos(toRad(lat2)) * Math.sin(dLng / 2) ** 2;
+    const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+    return R * c;
+}
+
+// @desc    Get nearby jobs
+// @route   GET /api/jobs/nearby
+exports.getNearbyJobs = async (req, res) => {
+    try {
+        const { lat, lng, distance = 10 } = req.query;
+        if (!lat || !lng) return res.status(400).json({ success: false, message: 'Lat and Lng required' });
+
+        const userLat = parseFloat(lat);
+        const userLng = parseFloat(lng);
+        const maxDistMetres = parseFloat(distance) * 1000;
+
+        const geoJobs = await Job.aggregate([
+            {
+                $geoNear: {
+                    near: { type: 'Point', coordinates: [userLng, userLat] },
+                    distanceField: 'distanceMetres',
+                    maxDistance: maxDistMetres,
+                    spherical: true,
+                    query: { status: 'ACTIVE' },
+                },
+            },
+            { $sort: { distanceMetres: 1 } },
+        ]);
+
+        const populatedJobs = await Job.populate(geoJobs, {
+            path: 'employer',
+            select: 'name email phone company stats trustScore',
+        });
+
+        const results = populatedJobs.map((job) => ({
+            ...job,
+            distanceKm: parseFloat((job.distanceMetres / 1000).toFixed(2)),
+        }));
+
+        res.status(200).json({
+            success: true,
+            count: results.length,
+            jobs: results,
+        });
+    } catch (error) {
+        console.error('Nearby error:', error);
+        res.status(500).json({ success: false, message: 'Nearby jobs failed', error: error.message });
     }
 };

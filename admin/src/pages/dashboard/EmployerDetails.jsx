@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import { useParams, useNavigate } from 'react-router-dom';
+import './DetailPages.css';
+import { FaArrowLeft, FaEnvelope, FaBuilding, FaMapMarkerAlt, FaCalendarAlt, FaBriefcase, FaUsers, FaCheckCircle } from 'react-icons/fa';
 
 const EmployerDetails = () => {
     const { id } = useParams();
@@ -37,115 +39,172 @@ const EmployerDetails = () => {
         }
     }, [id]);
 
-    if (loading) return <div className="container dashboard-container">Loading...</div>;
-    if (error) return <div className="container dashboard-container">Error: {error}</div>;
-    if (!details) return <div className="container dashboard-container">No details found.</div>;
+    if (loading) return <div className="details-page-container"><div className="loading-spinner">Loading...</div></div>;
+    if (error) return <div className="details-page-container"><div className="error-message">Error: {error}</div></div>;
+    if (!details) return <div className="details-page-container"><div className="empty-state">No details found.</div></div>;
 
     const { employer, jobs, hiredEmployees } = details;
 
     return (
-        <div className="container dashboard-container">
-            <header className="dashboard-header" style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
-                <button onClick={() => navigate('/dashboard/employers')} className="btn btn-outline">
-                    &larr; Back
+        <div className="details-page-container">
+            <header className="details-header">
+                <button onClick={() => navigate('/dashboard/employers')} className="back-btn">
+                    <FaArrowLeft /> Back
                 </button>
-                <h2>{employer.profile?.company || employer.name}</h2>
             </header>
 
-            <div className="employer-info" style={{ marginBottom: '2rem' }}>
-                <p style={{ color: 'var(--text-secondary)' }}><strong>Email:</strong> {employer.email}</p>
-                <p style={{ color: 'var(--text-secondary)' }}><strong>Industry:</strong> {employer.profile?.businessType || 'N/A'}</p>
-                <p style={{ color: 'var(--text-secondary)' }}><strong>Location:</strong> {employer.profile?.location || 'N/A'}</p>
-                <p style={{ color: 'var(--text-secondary)' }}><strong>Joined:</strong> {new Date(employer.createdAt).toLocaleDateString()}</p>
+            <div className="profile-header-card">
+                <div className="profile-main-info">
+                    <div className="large-avatar" style={{ background: 'linear-gradient(135deg, #10b981, #34d399)' }}>
+                        {employer.profile?.company ? employer.profile.company.charAt(0).toUpperCase() : employer.name.charAt(0).toUpperCase()}
+                    </div>
+                    <div className="info-content">
+                        <h1>{employer.profile?.company || employer.name}</h1>
+                        <div className="info-grid">
+                            <div className="info-item"><FaEnvelope /> {employer.email}</div>
+                            <div className="info-item"><FaBuilding /> {employer.profile?.businessType || 'N/A'}</div>
+                            <div className="info-item"><FaMapMarkerAlt /> {employer.profile?.location || 'N/A'}</div>
+                            <div className="info-item"><FaCalendarAlt /> Joined {new Date(employer.createdAt).toLocaleDateString()}</div>
+                        </div>
+                    </div>
+                </div>
+                <div className="stats-container">
+                    <div className="stat-box">
+                        <span>Jobs Posted</span>
+                        <strong>{jobs.length}</strong>
+                    </div>
+                    <div className="stat-box">
+                        <span>Hired</span>
+                        <strong>{hiredEmployees.length}</strong>
+                    </div>
+                </div>
             </div>
 
-            <div style={{ marginTop: '2rem', display: 'grid', gridTemplateColumns: '1fr 1fr', gap: '2rem' }}>
-                {/* Left Column: Jobs */}
-                <div>
-                    <h3 style={{ borderBottom: '2px solid var(--primary-color)', paddingBottom: '0.5rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
-                        Posted Jobs ({jobs.length})
-                    </h3>
-
-                    {jobs.length === 0 ? (
-                        <p style={{ color: 'var(--text-secondary)' }}>No jobs posted yet.</p>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '600px', overflowY: 'auto', paddingRight: '0.5rem' }}>
-                            {jobs.map(job => (
-                                <div key={job._id} style={{
-                                    border: '1px solid var(--border-color)',
-                                    borderRadius: '8px',
-                                    padding: '1rem',
-                                    backgroundColor: 'var(--background-color)'
-                                }}>
-                                    <div style={{ display: 'flex', justifyContent: 'space-between', marginBottom: '0.5rem' }}>
-                                        <h4 style={{ margin: 0, fontSize: '1.1rem' }}>{job.title}</h4>
-                                        <span style={{
-                                            fontSize: '0.8rem',
-                                            padding: '0.2rem 0.5rem',
-                                            borderRadius: '4px',
-                                            backgroundColor: job.status === 'ACTIVE' ? '#dcfce7' : '#fee2e2',
-                                            color: job.status === 'ACTIVE' ? '#166534' : '#991b1b',
-                                            fontWeight: '600'
-                                        }}>
+            <div className="details-grid">
+                {/* Posted Jobs Section */}
+                <section className="section-card">
+                    <h3><FaBriefcase /> Posted Jobs</h3>
+                    <div className="scroll-list">
+                        {jobs.length === 0 ? (
+                            <p className="empty-text">No jobs posted yet.</p>
+                        ) : (
+                            jobs.map(job => (
+                                <div key={job._id} className="list-item">
+                                    <div className="item-header">
+                                        <h4>{job.title}</h4>
+                                        <span className={`status-pill ${job.status === 'ACTIVE' ? 'success' : 'failed'}`}>
                                             {job.status}
                                         </span>
                                     </div>
-                                    <div style={{ fontSize: '0.9rem', color: 'var(--text-secondary)', display: 'flex', justifyContent: 'space-between' }}>
+                                    <div className="item-meta">
                                         <span>Type: {job.jobType.replace('_', ' ')}</span>
-                                        <span>Apps: {job.applicants}</span>
-                                    </div>
-                                    <div style={{ fontSize: '0.85rem', color: 'var(--text-secondary)', marginTop: '0.5rem' }}>
-                                        Posted: {new Date(job.createdAt).toLocaleDateString()}
+                                        <span>Applicants: {job.applicants}</span>
+                                        <span>Date: {new Date(job.createdAt).toLocaleDateString()}</span>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                            ))
+                        )}
+                    </div>
+                </section>
 
-                {/* Right Column: Hired Employees */}
-                <div>
-                    <h3 style={{ borderBottom: '2px solid var(--success-color)', paddingBottom: '0.5rem', marginBottom: '1.5rem', color: 'var(--text-primary)' }}>
-                        Hired Employees ({hiredEmployees.length})
-                    </h3>
-
-                    {hiredEmployees.length === 0 ? (
-                        <p style={{ color: 'var(--text-secondary)' }}>No employees hired yet.</p>
-                    ) : (
-                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem', maxHeight: '600px', overflowY: 'auto', paddingRight: '0.5rem' }}>
-                            {hiredEmployees.map((emp, index) => (
-                                <div key={emp._id || index} style={{
-                                    border: '1px solid var(--border-color)',
-                                    borderRadius: '8px',
-                                    padding: '1rem',
-                                    display: 'flex',
-                                    gap: '1rem',
-                                    alignItems: 'center',
-                                    backgroundColor: 'var(--background-color)'
-                                }}>
-                                    <div style={{
-                                        width: '40px', height: '40px', borderRadius: '50%',
-                                        backgroundColor: 'var(--primary-color)', color: 'white',
-                                        display: 'flex', alignItems: 'center', justifyContent: 'center',
-                                        fontWeight: 'bold', fontSize: '1rem', flexShrink: 0
-                                    }}>
-                                        {emp.name ? emp.name.charAt(0).toUpperCase() : '?'}
-                                    </div>
-                                    <div style={{ flex: 1, overflow: 'hidden' }}>
-                                        <h4 style={{ margin: '0 0 0.25rem 0', fontSize: '1rem', whiteSpace: 'nowrap', overflow: 'hidden', textOverflow: 'ellipsis' }}>{emp.name || 'Unknown User'}</h4>
-                                        <p style={{ margin: 0, fontSize: '0.85rem', color: 'var(--text-secondary)', marginBottom: '0.25rem' }}>{emp.email}</p>
-                                        <div style={{ fontSize: '0.8rem', backgroundColor: '#f3f4f6', padding: '0.25rem 0.5rem', borderRadius: '4px', display: 'inline-block', color: '#1f2937' }}>
-                                            Hired for: <strong>{emp.hiredForJob}</strong>
+                {/* Hired Employees Section */}
+                <section className="section-card">
+                    <h3><FaUsers /> Hired Employees</h3>
+                    <div className="scroll-list">
+                        {hiredEmployees.length === 0 ? (
+                            <p className="empty-text">No employees hired yet.</p>
+                        ) : (
+                            hiredEmployees.map((emp, index) => (
+                                <div key={emp._id || index} className="list-item hired-item">
+                                    <div className="item-header">
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                                            <div style={{
+                                                width: '40px', height: '40px', borderRadius: '12px',
+                                                backgroundColor: 'var(--primary-color)', color: 'white',
+                                                display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                                fontWeight: 'bold', fontSize: '1.2rem'
+                                            }}>
+                                                {emp.name ? emp.name.charAt(0).toUpperCase() : '?'}
+                                            </div>
+                                            <div>
+                                                <h4 style={{ margin: 0 }}>{emp.name || 'Unknown User'}</h4>
+                                                <span style={{ fontSize: '0.85rem', color: 'var(--text-secondary)' }}>{emp.email}</span>
+                                            </div>
                                         </div>
-                                        <p style={{ margin: '0.25rem 0 0 0', fontSize: '0.75rem', color: 'var(--text-secondary)' }}>
-                                            Hired on: {new Date(emp.hiredDate).toLocaleDateString()}
-                                        </p>
+                                    </div>
+                                    <div className="item-meta">
+                                        <span><strong>Job:</strong> {emp.hiredForJob}</span>
+                                        <span><strong>Date:</strong> {new Date(emp.hiredDate).toLocaleDateString()}</span>
+                                    </div>
+
+                                    <div className="dual-status-grid" style={{ 
+                                        marginTop: '1rem', 
+                                        padding: '0.75rem', 
+                                        backgroundColor: 'rgba(0,0,0,0.02)', 
+                                        borderRadius: '10px',
+                                        fontSize: '0.8rem',
+                                        display: 'grid',
+                                        gridTemplateColumns: '1fr 1fr',
+                                        gap: '0.5rem'
+                                    }}>
+                                        <div className="status-col">
+                                            <strong style={{ display: 'block', marginBottom: '0.3rem', color: 'var(--text-secondary)' }}>Employer Side</strong>
+                                            <div style={{ color: emp.employerRated ? '#10b981' : '#ef4444' }}>
+                                                {emp.employerRated ? '✓ Rated' : '✗ Not Rated'}
+                                            </div>
+                                            <div style={{ color: emp.employerWorkConfirmed ? '#10b981' : '#ef4444' }}>
+                                                {emp.employerWorkConfirmed ? '✓ Work Done' : '✗ Work Pending'}
+                                            </div>
+                                            <div style={{ color: emp.employerPaidStatus ? '#10b981' : '#ef4444' }}>
+                                                {emp.employerPaidStatus ? '✓ Payment Sent' : '✗ Payment Pending'}
+                                            </div>
+                                        </div>
+                                        <div className="status-col">
+                                            <strong style={{ display: 'block', marginBottom: '0.3rem', color: 'var(--text-secondary)' }}>Employee Side</strong>
+                                            <div style={{ color: emp.employeeRated ? '#10b981' : '#ef4444' }}>
+                                                {emp.employeeRated ? '✓ Rated' : '✗ Not Rated'}
+                                            </div>
+                                            <div style={{ color: emp.employeeWorkConfirmed ? '#10b981' : '#ef4444' }}>
+                                                {emp.employeeWorkConfirmed ? '✓ Work Done' : '✗ Work Pending'}
+                                            </div>
+                                            <div style={{ color: emp.employeePaidStatus ? '#10b981' : '#ef4444' }}>
+                                                {emp.employeePaidStatus ? '✓ Payment Received' : '✗ Not Received'}
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    {/* Dual Confirmation Status Badges */}
+                                    <div className="dual-status-badges" style={{ marginTop: '1rem', display: 'flex', gap: '0.5rem', flexWrap: 'wrap' }}>
+                                        {emp.employerRated && emp.employeeRated ? (
+                                            <span className="badge badge-success" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid #10b981', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                                <FaCheckCircle /> Mutual Rating Done
+                                            </span>
+                                        ) : null}
+                                        {emp.employerWorkConfirmed && emp.employeeWorkConfirmed ? (
+                                            <span className="badge badge-success" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid #10b981', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                                <FaCheckCircle /> Work Verified
+                                            </span>
+                                        ) : null}
+                                        {emp.employerPaidStatus && emp.employeePaidStatus ? (
+                                            <span className="badge badge-success" style={{ background: 'rgba(16, 185, 129, 0.1)', color: '#10b981', border: '1px solid #10b981', display: 'flex', alignItems: 'center', gap: '0.3rem' }}>
+                                                <FaCheckCircle /> Payment Verified
+                                            </span>
+                                        ) : null}
+                                    </div>
+
+                                    <div style={{ marginTop: '1rem' }}>
+                                        <button 
+                                            className="btn btn-sm btn-outline" 
+                                            onClick={() => navigate(`/dashboard/employees/${emp._id}`)}
+                                        >
+                                            View Employee Profile
+                                        </button>
                                     </div>
                                 </div>
-                            ))}
-                        </div>
-                    )}
-                </div>
+                            ))
+                        )}
+                    </div>
+                </section>
             </div>
         </div>
     );

@@ -2,9 +2,16 @@ const express = require('express');
 const mongoose = require('mongoose');
 const cors = require('cors');
 const dotenv = require('dotenv');
+const path = require('path');
+const cron = require('node-cron');
+const fs = require('fs');
 
 // Load environment variables
 dotenv.config();
+
+// Initialize Express app
+const app = express();
+const PORT = process.env.PORT || 5000;
 
 // Import routes
 const authRoutes = require('./routes/authRoutes');
@@ -13,17 +20,23 @@ const applicationRoutes = require('./routes/applicationRoutes');
 const employerRoutes = require('./routes/employerRoutes');
 const notificationRoutes = require('./routes/notificationRoutes');
 const reviewRoutes = require('./routes/reviewRoutes');
-const adminRoutes = require('./routes/adminRoutes'); // Import Admin Routes
-const walletRoutes = require('./routes/walletRoutes');
+const adminRoutes = require('./routes/adminRoutes');
 const disputeRoutes = require('./routes/disputeRoutes');
-
-// Initialize Express app
-const app = express();
+const verificationRoutes = require('./routes/verificationRoutes');
+const ratingRoutes = require('./routes/ratingRoutes');
+const uploadRoutes = require('./routes/uploadRoutes');
+const paymentRoutes = require('./routes/paymentRoutes');
 
 // Middleware
-// CORS Configuration
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000', 'http://localhost:5174', 'http://localhost:5175', 'http://localhost:5176'],
+    origin: [
+        'http://localhost:5173',
+        'http://localhost:3000',
+        'http://localhost:5000',
+        'http://localhost:5174',
+        'http://localhost:5175',
+        'http://localhost:5176'
+    ],
     credentials: true,
     optionsSuccessStatus: 200,
 };
@@ -34,100 +47,95 @@ app.use(express.urlencoded({ extended: true }));
 
 // Request logging middleware
 app.use((req, res, next) => {
-    console.log(`[${new Date().toISOString()}] ${req.method} ${req.path}`);
+    console.log(`[${new Date().toISOString()}] ${req.method} ${req.originalUrl}`);
     next();
 });
 
-// Routes
+// Static files
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
+
+// Register Routes
 app.use('/api/auth', authRoutes);
+app.use('/api/payments', paymentRoutes);
 app.use('/api/jobs', jobRoutes);
 app.use('/api/applications', applicationRoutes);
 app.use('/api/employer', employerRoutes);
-app.use('/api/notifications', require('./routes/notificationRoutes'));
-app.use('/api/admin', adminRoutes); // Use Admin Routes
-app.use('/api/wallet', walletRoutes);
-app.use('/api/disputes', disputeRoutes);
-
-console.log('✅ Service: Loading Review Routes');
+app.use('/api/notifications', notificationRoutes);
+app.use('/api/admin', adminRoutes);
 app.use('/api/reviews', reviewRoutes);
+app.use('/api/disputes', disputeRoutes);
+app.use('/api/verification', verificationRoutes);
+app.use('/api/upload', uploadRoutes);
+app.use('/api/rating', ratingRoutes);
+
+// Services
+const { runPenaltyCheck } = require('./services/penaltyService');
+const { autoPublishReviews } = require('./services/reviewService');
 
 // Health check route
 app.get('/api/health', (req, res) => {
     res.json({
         status: 'OK',
-        message: 'QuickHire Backend is running!',
-        timestamp: new Date().toISOString(),
-        environment: process.env.NODE_ENV || 'development'
+        version: 3,
+        message: 'QuickHire Backend with Payment System Ready!',
+        timestamp: new Date().toISOString()
     });
 });
 
-// 404 Handler - Must be after all routes
+// Debug Route (Public)
+app.get('/api/payments/ping', (req, res) => {
+    res.json({ success: true, message: 'Payment controller reached!' });
+});
+
+// 404 Handler
 app.use((req, res) => {
+    console.log(`🚫 404 Error: ${req.method} ${req.originalUrl}`);
     res.status(404).json({
         success: false,
         message: `Route ${req.originalUrl} not found`,
     });
 });
 
-// Global Error Handler
+// Error handling
 app.use((err, req, res, next) => {
     console.error('❌ Error:', err.stack);
+    fs.appendFileSync('global_error.log', `[${new Date().toISOString()}] ❌ Global Error: ${err.stack}\n`);
     res.status(err.status || 500).json({
         success: false,
         message: err.message || 'Internal Server Error',
-        error: process.env.NODE_ENV === 'development' ? err.stack : undefined,
     });
 });
 
-// Start Server FIRST (before MongoDB connection)
-const PORT = process.env.PORT || 5000;
-const server = app.listen(PORT, () => {
-    console.log(`🚀 Server running on port ${PORT}`);
-    console.log(`🌐 API: http://localhost:${PORT}/api`);
-    console.log(`📍 Health Check: http://localhost:${PORT}/api/health`);
-});
-
-// MongoDB Connection (non-blocking - server continues if this fails)
-mongoose
-    .connect(process.env.MONGODB_URI)
-    .then(() => {
-        console.log('✅ MongoDB Connected Successfully!');
-        console.log(`📊 Database: ${mongoose.connection.name}`);
-        console.log(`🔗 MongoDB Status: CONNECTED\n`);
-    })
-    .catch((error) => {
-        console.error('⚠️  MongoDB Connection Error:', error.message);
-        console.error('⚠️  SERVER IS RUNNING but database features won\'t work');
-        console.error('⚠️  Fix: Whitelist your IP in MongoDB Atlas');
-        console.error('⚠️  URL: https://cloud.mongodb.com/v2#/security/network/accessList\n');
-        // Don't exit - let server continue running
-    });
-
-// Handle MongoDB connection after initial connection
-mongoose.connection.on('error', (err) => {
-    console.error('❌ MongoDB runtime error:', err.message);
-});
-
-mongoose.connection.on('disconnected', () => {
-    console.warn('⚠️  MongoDB disconnected');
-});
-
-mongoose.connection.on('reconnected', () => {
-    console.log('✅ MongoDB reconnected');
-});
-
-// Graceful shutdown
-process.on('SIGINT', async () => {
-    console.log('\n🛑 Shutting down server...');
+// MongoDB Connection & Server Start
+const startServer = async () => {
     try {
-        await mongoose.connection.close();
-        console.log('✅ MongoDB connection closed');
-        server.close(() => {
-            console.log('✅ Server shut down gracefully');
-            process.exit(0);
+        await mongoose.connect(process.env.MONGODB_URI, {
+            serverSelectionTimeoutMS: 5000,
+            socketTimeoutMS: 45000,
+        });
+        console.log('✅ MongoDB Connected');
+
+        const server = app.listen(PORT, () => {
+            console.log('\n=========================================');
+            console.log(`🚀 Server running on port ${PORT}`);
+            console.log('✅ VERSION 2.1: Payment system active');
+            console.log('=========================================\n');
+        });
+
+        // Cron Jobs
+        cron.schedule('0 * * * *', () => runPenaltyCheck().catch(err => console.error(err)));
+        cron.schedule('5 * * * *', () => autoPublishReviews().catch(err => console.error(err)));
+
+        // Graceful shutdown
+        process.on('SIGINT', async () => {
+            await mongoose.connection.close();
+            server.close(() => process.exit(0));
         });
     } catch (error) {
-        console.error('❌ Error during shutdown:', error.message);
-        process.exit(1);
+        console.error('⚠️ MongoDB Connection Error:', error.message);
+        console.log('🔄 Retrying in 5 seconds...');
+        setTimeout(startServer, 5000);
     }
-});
+};
+
+startServer();

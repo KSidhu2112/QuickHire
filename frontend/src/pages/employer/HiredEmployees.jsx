@@ -1,7 +1,18 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+import { toast } from 'react-toastify';
 import './HiredEmployees.css';
+
+const renderStars = (rating) => {
+    const val = typeof rating === 'number' ? Math.round(rating) : 0;
+    if (val === 5) return '⭐⭐⭐⭐⭐';
+    if (val === 4) return '⭐⭐⭐⭐☆';
+    if (val === 3) return '⭐⭐⭐☆☆';
+    if (val === 2) return '⭐⭐☆☆☆';
+    if (val === 1) return '⭐☆☆☆☆';
+    return '☆☆☆☆☆';
+};
 
 const HiredEmployees = () => {
     const navigate = useNavigate();
@@ -56,13 +67,13 @@ const HiredEmployees = () => {
             });
 
             if (response.data.success) {
-                alert('Review submitted successfully!');
+                toast.success('Review submitted successfully!');
                 closeRatingModal();
                 fetchHiredEmployees(); // Refresh list to show new review
             }
         } catch (err) {
             console.error('Error submitting review:', err);
-            alert(err.response?.data?.message || 'Failed to submit review');
+            toast.error(err.response?.data?.message || 'Failed to submit review');
         } finally {
             setSubmitting(false);
         }
@@ -95,12 +106,48 @@ const HiredEmployees = () => {
         }
     };
 
+    const handleConfirmWork = async (app) => {
+        try {
+            const token = localStorage.getItem('quickhire_token');
+            const response = await axios.post(`http://localhost:5000/api/verification/${app._id}/employer-confirm`, {
+                status: 'FULL',
+                feedback: 'Work completed successfully',
+                rating: 5
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                toast.success('Work verified successfully!');
+                fetchHiredEmployees();
+            }
+        } catch (err) {
+            console.error('Error confirming work:', err);
+            toast.error(err.response?.data?.message || 'Failed to verify work');
+        }
+    };
+
+    const handleMarkAsPaid = async (app) => {
+        try {
+            const token = localStorage.getItem('quickhire_token');
+            const response = await axios.post(`http://localhost:5000/api/applications/${app._id}/mark-paid`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                toast.success('Application marked as paid successfully!');
+                fetchHiredEmployees();
+            }
+        } catch (err) {
+            console.error('Error marking paid:', err);
+            toast.error(err.response?.data?.message || 'Failed to mark as paid');
+        }
+    };
+
     if (loading) {
         return (
             <div className="hired-employees-page">
                 <div className="hired-container">
                     <div className="loading-spinner"></div>
-                    <p style={{ textAlign: 'center', color: '#fff' }}>Loading hired employees...</p>
+                    <p style={{ textAlign: 'center', color: '#666' }}>Loading hired employees...</p>
                 </div>
             </div>
         );
@@ -114,7 +161,7 @@ const HiredEmployees = () => {
                         ← Back to Dashboard
                     </button>
                     <h1>Hired Employees</h1>
-                    <p>Manage your workforce and track employee performance</p>
+                    <p>Manage your workforce, track verification, and complete payments</p>
                 </div>
 
                 {error && <div className="error-message">{error}</div>}
@@ -129,68 +176,102 @@ const HiredEmployees = () => {
                         </button>
                     </div>
                 ) : (
-                    <div className="employees-grid">
-                        {employees.map((app) => (
-                            <div key={app._id} className="employee-card">
-                                <div className="employee-header">
-                                    <div className="avatar-placeholder">
-                                        {app.jobseeker?.name ? app.jobseeker.name.charAt(0).toUpperCase() : 'U'}
-                                    </div>
-                                    <div className="employee-info">
-                                        <h3>{app.jobseeker?.name || 'Unknown User'}</h3>
-                                        <span className="job-role">{app.job?.title || 'Unknown Role'}</span>
-                                    </div>
-                                </div>
-
-                                <div className="employee-details">
-                                    <div className="detail-row">
-                                        <span className="icon">📧</span>
-                                        <a href={`mailto:${app.jobseeker?.email}`}>{app.jobseeker?.email || 'N/A'}</a>
-                                    </div>
-                                    <div className="detail-row">
-                                        <span className="icon">📞</span>
-                                        <a href={`tel:${app.jobseeker?.phone}`}>{app.jobseeker?.phone || 'N/A'}</a>
-                                    </div>
-                                    <div className="detail-row">
-                                        <span className="icon">📅</span>
-                                        <span>Joined: {new Date(app.reviewedAt).toLocaleDateString()}</span>
-                                    </div>
-                                    <div className="detail-row">
-                                        <span className="icon">💼</span>
-                                        <span>{app.job?.jobType ? app.job.jobType.replace('_', ' ') : 'N/A'}</span>
-                                    </div>
-                                    {app.review && (
-                                        <div className="detail-row review-status">
-                                            <span className="icon">⭐</span>
-                                            <span style={{ color: '#f39c12', fontWeight: 'bold' }}>{app.review.rating} / 5</span>
+                    <div className="employees-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))', gap: '30px' }}>
+                        {employees.map((app) => {
+                            const bothRated = (app.ratingPublished || (app.employerRated && app.employeeRated)) && app.review && app.receivedReview;
+                            return (
+                                <div key={app._id} className="hired-card">
+                                    <div className="hired-card-header">
+                                        <div>
+                                            <h3 className="hired-card-title">{app.job?.title || 'Unknown Role'}</h3>
                                         </div>
-                                    )}
-                                </div>
+                                        <span className="hired-badge">HIRED</span>
+                                    </div>
 
-                                <div className="employee-actions">
-                                    <button className="action-btn message-btn" onClick={() => window.location.href = `mailto:${app.jobseeker?.email}`}>
-                                        Email
-                                    </button>
-                                    {app.review ? (
-                                        <button
-                                            className="action-btn view-review-btn"
-                                            onClick={() => openViewReviewModal(app, app.review)}
-                                            style={{ backgroundColor: '#2ecc71', color: 'white', border: 'none' }}
-                                        >
-                                            View Review
+                                    <div className="hired-card-subtitle">
+                                        <span>Employee: <strong>{app.jobseeker?.name || 'Unknown User'}</strong></span>
+                                        <span>Date: <strong>{app.reviewedAt ? new Date(app.reviewedAt).toLocaleDateString() : new Date(app.updatedAt).toLocaleDateString()}</strong></span>
+                                    </div>
+
+                                    <div className="hired-status-container">
+                                        <div className="status-column">
+                                            <span className="status-column-title">Employer Side</span>
+                                            <span className={`status-item ${app.employerRated ? 'success' : 'danger'}`}>
+                                                {app.employerRated ? '✓' : '✗'} Rated
+                                            </span>
+                                            <span className={`status-item ${app.employerConfirmation?.confirmed ? 'success' : 'danger'}`}>
+                                                {app.employerConfirmation?.confirmed ? '✓' : '✗'} Work Done
+                                            </span>
+                                            <span className={`status-item ${app.isPaid ? 'success' : 'danger'}`}>
+                                                {app.isPaid ? '✓ Paid' : '✗ Payment Pending'}
+                                            </span>
+                                        </div>
+                                        <div className="status-column">
+                                            <span className="status-column-title">Employee Side</span>
+                                            <span className={`status-item ${app.employeeRated ? 'success' : 'danger'}`}>
+                                                {app.employeeRated ? '✓' : '✗'} Rated
+                                            </span>
+                                            <span className={`status-item ${app.employeeConfirmation?.confirmed ? 'success' : 'danger'}`}>
+                                                {app.employeeConfirmation?.confirmed ? '✓' : '✗'} Work Done
+                                            </span>
+                                            <span className={`status-item ${app.paymentReceived ? 'success' : 'danger'}`}>
+                                                {app.paymentReceived ? '✓ Received' : '✗ Not Received'}
+                                            </span>
+                                        </div>
+                                    </div>
+
+                                    <div className="hired-card-actions">
+                                        {bothRated ? (
+                                            <>
+                                                <span className="hired-btn hired-btn-success" style={{ cursor: 'default' }}>
+                                                    <span className="icon">✓</span> Mutual Rating Complete
+                                                </span>
+                                                <div className="ratings-stack" style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginTop: '6px' }}>
+                                                    <button className="hired-rating-display" onClick={() => openViewReviewModal(app, app.review)} style={{ width: 'fit-content' }}>
+                                                        📝 Your Rating → {app.jobseeker?.name}: {renderStars(app.review.stars)}
+                                                    </button>
+                                                    <button className="hired-rating-display received" style={{ width: 'fit-content' }} onClick={() => openViewReviewModal(app, app.receivedReview)}>
+                                                        📩 {app.jobseeker?.name}'s Rating → You: {renderStars(app.receivedReview.stars)}
+                                                    </button>
+                                                </div>
+                                            </>
+                                        ) : app.employerRated ? (
+                                            <span className="hired-btn hired-btn-orange" style={{ opacity: 0.7, cursor: 'default' }}>
+                                                <span className="icon">⏳</span> Waiting for Employee Rating
+                                            </span>
+                                        ) : (
+                                            <button className="hired-btn hired-btn-orange" onClick={() => openRatingModal(app)}>
+                                                <span className="icon">⭐</span> Rate Employee
+                                            </button>
+                                        )}
+
+                                        {app.workStatus === 'COMPLETED' || (app.employerConfirmation?.confirmed && app.employeeConfirmation?.confirmed) ? (
+                                            <span className="hired-btn hired-btn-success">
+                                                <span className="icon">✓</span> Work Verified
+                                            </span>
+                                        ) : app.employerConfirmation?.confirmed ? (
+                                            <span className="hired-btn hired-btn-success" style={{ opacity: 0.7, cursor: 'default' }}>
+                                                <span className="icon">⏳</span> Waiting for Employee Confirm
+                                            </span>
+                                        ) : (
+                                            <button className="hired-btn hired-btn-success filled" onClick={() => handleConfirmWork(app)}>
+                                                <span className="icon">✓</span> Confirm Work Done
+                                            </button>
+                                        )}
+
+                                        {!app.isPaid && (
+                                            <button className="hired-btn hired-btn-purple" onClick={() => handleMarkAsPaid(app)}>
+                                                <span className="icon">💰</span> Mark as Paid
+                                            </button>
+                                        )}
+
+                                        <button className="hired-btn hired-btn-purple" onClick={() => window.location.href = `mailto:${app.jobseeker?.email}`}>
+                                            <span className="icon">👤</span> Employee Profile
                                         </button>
-                                    ) : (
-                                        <button
-                                            className="action-btn rate-btn"
-                                            onClick={() => openRatingModal(app)}
-                                            style={{ backgroundColor: '#f39c12', color: 'white', border: 'none' }}
-                                        >
-                                            Rate
-                                        </button>
-                                    )}
+                                    </div>
                                 </div>
-                            </div>
-                        ))}
+                            );
+                        })}
                     </div>
                 )}
             </div>
@@ -235,31 +316,35 @@ const HiredEmployees = () => {
             )}
 
             {/* View Review Modal */}
-            {showViewReviewModal && selectedEmployee && selectedReview && (
-                <div className="modal-overlay" onClick={closeViewReviewModal}>
-                    <div className="rating-modal" onClick={(e) => e.stopPropagation()}>
-                        <button className="close-modal" onClick={closeViewReviewModal}>✕</button>
-                        <h2>Review for {selectedEmployee.jobseeker?.name}</h2>
-                        <p className="job-title-modal">Job: {selectedEmployee.job?.title}</p>
+            {showViewReviewModal && selectedEmployee && selectedReview && (() => {
+                const currentUser = JSON.parse(localStorage.getItem('quickhire_user') || '{}');
+                const isOwnReview = selectedReview.reviewer === currentUser._id;
+                return (
+                    <div className="modal-overlay" onClick={closeViewReviewModal}>
+                        <div className="rating-modal" onClick={(e) => e.stopPropagation()}>
+                            <button className="close-modal" onClick={closeViewReviewModal}>✕</button>
+                            <h2>{isOwnReview ? `Your Review for ${selectedEmployee.jobseeker?.name}` : `Review from ${selectedEmployee.jobseeker?.name}`}</h2>
+                            <p className="job-title-modal">Job: {selectedEmployee.job?.title}</p>
 
-                        <div className="rating-stars readonly">
-                            {[1, 2, 3, 4, 5].map((star) => (
-                                <span
-                                    key={star}
-                                    className={`star ${star <= selectedReview.rating ? 'filled' : ''}`}
-                                >
-                                    ★
-                                </span>
-                            ))}
-                        </div>
+                            <div className="rating-stars readonly">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <span
+                                        key={star}
+                                        className={`star ${star <= selectedReview.stars ? 'filled' : ''}`}
+                                    >
+                                        ★
+                                    </span>
+                                ))}
+                            </div>
 
-                        <div className="review-content">
-                            <p>{selectedReview.comment}</p>
-                            <span className="review-date">Submitted on: {new Date(selectedReview.createdAt).toLocaleDateString()}</span>
+                            <div className="review-content">
+                                <p>{selectedReview.feedback}</p>
+                                <span className="review-date">Submitted on: {new Date(selectedReview.createdAt).toLocaleDateString()}</span>
+                            </div>
                         </div>
                     </div>
-                </div>
-            )}
+                );
+            })()}
         </div>
     );
 };

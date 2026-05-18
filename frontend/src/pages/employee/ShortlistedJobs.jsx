@@ -1,9 +1,20 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
 import { applicationAPI, authAPI } from '../../services/api';
-import JobCard from '../../components/JobCard';
 import { toast } from 'react-toastify';
+import '../employer/HiredEmployees.css';
 import './EmployeeDashboard.css'; // Reusing dashboard styles
+
+const renderStars = (rating) => {
+    const val = typeof rating === 'number' ? Math.round(rating) : 0;
+    if (val === 5) return '⭐⭐⭐⭐⭐';
+    if (val === 4) return '⭐⭐⭐⭐☆';
+    if (val === 3) return '⭐⭐⭐☆☆';
+    if (val === 2) return '⭐⭐☆☆☆';
+    if (val === 1) return '⭐☆☆☆☆';
+    return '☆☆☆☆☆';
+};
 
 const ShortlistedJobs = () => {
     const navigate = useNavigate();
@@ -11,6 +22,15 @@ const ShortlistedJobs = () => {
     const [loading, setLoading] = useState(true);
     const [selectedJob, setSelectedJob] = useState(null);
     const [showJobModal, setShowJobModal] = useState(false);
+
+    // Rating states
+    const [showRatingModal, setShowRatingModal] = useState(false);
+    const [showViewReviewModal, setShowViewReviewModal] = useState(false);
+    const [selectedApp, setSelectedApp] = useState(null);
+    const [selectedReview, setSelectedReview] = useState(null);
+    const [rating, setRating] = useState(0);
+    const [reviewComment, setReviewComment] = useState('');
+    const [submitting, setSubmitting] = useState(false);
 
     useEffect(() => {
         // Check if user is logged in and is a jobseeker
@@ -42,7 +62,7 @@ const ShortlistedJobs = () => {
     const fetchShortlistedJobs = async () => {
         setLoading(true);
         try {
-            // Fetch applications with status 'ACCEPTED' (which implies Shortlisted based on backend logic)
+            // Fetch applications with status 'ACCEPTED'
             const response = await applicationAPI.getUserApplications({ status: 'ACCEPTED' });
             setApplications(response.applications || []);
         } catch (error) {
@@ -67,6 +87,94 @@ const ShortlistedJobs = () => {
         }
     };
 
+    const handleConfirmWork = async (app) => {
+        try {
+            const token = localStorage.getItem('quickhire_token');
+            const response = await axios.post(`http://localhost:5000/api/verification/${app._id}/employee-confirm`, {
+                status: 'FULL_PAYMENT',
+                feedback: 'Work completed successfully',
+                rating: 5
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                toast.success('Work confirmed done successfully!');
+                fetchShortlistedJobs();
+            }
+        } catch (err) {
+            console.error('Error confirming work:', err);
+            toast.error(err.response?.data?.message || 'Failed to confirm work');
+        }
+    };
+
+    const handleConfirmPaymentReceived = async (app) => {
+        try {
+            const token = localStorage.getItem('quickhire_token');
+            const response = await axios.post(`http://localhost:5000/api/applications/${app._id}/confirm-payment`, {}, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                toast.success('Payment confirmed received successfully!');
+                fetchShortlistedJobs();
+            }
+        } catch (err) {
+            console.error('Error confirming payment:', err);
+            toast.error(err.response?.data?.message || 'Failed to confirm payment');
+        }
+    };
+
+    const openRatingModal = (app) => {
+        setSelectedApp(app);
+        setRating(0);
+        setReviewComment('');
+        setShowRatingModal(true);
+    };
+
+    const closeRatingModal = () => {
+        setShowRatingModal(false);
+        setSelectedApp(null);
+    };
+
+    const openViewReviewModal = (app, review) => {
+        setSelectedApp(app);
+        setSelectedReview(review);
+        setShowViewReviewModal(true);
+    };
+
+    const closeViewReviewModal = () => {
+        setShowViewReviewModal(false);
+        setSelectedApp(null);
+        setSelectedReview(null);
+    };
+
+    const handleSubmitReview = async () => {
+        if (rating === 0) return;
+
+        setSubmitting(true);
+        try {
+            const token = localStorage.getItem('quickhire_token');
+            const response = await axios.post('http://localhost:5000/api/reviews', {
+                revieweeId: selectedApp.employer._id,
+                jobId: selectedApp.job._id,
+                rating,
+                comment: reviewComment
+            }, {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+
+            if (response.data.success) {
+                toast.success('Review submitted successfully!');
+                closeRatingModal();
+                fetchShortlistedJobs(); // Refresh list to show new review
+            }
+        } catch (err) {
+            console.error('Error submitting review:', err);
+            toast.error(err.response?.data?.message || 'Failed to submit review');
+        } finally {
+            setSubmitting(false);
+        }
+    };
+
     const handleJobClick = (job) => {
         setSelectedJob(job);
         setShowJobModal(true);
@@ -79,7 +187,6 @@ const ShortlistedJobs = () => {
 
     const getGoogleMapsUrl = (location) => {
         if (!location) return '';
-        // Handle if location is a string or object (based on previous fixes)
         if (typeof location === 'string') return `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(location)}`;
 
         const addressParts = [
@@ -123,20 +230,205 @@ const ShortlistedJobs = () => {
                             </button>
                         </div>
                     ) : (
-                        <div className="jobs-grid">
-                            {applications.map((app) => (
-                                <JobCard
-                                    key={app._id}
-                                    job={app.job}
-                                    userRole="jobseeker"
-                                    showApplyButton={false} // Hide apply button as they already applied
-                                    onCardClick={handleJobClick}
-                                />
-                            ))}
+                        <div className="jobs-grid" style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(450px, 1fr))', gap: '30px' }}>
+                            {applications.map((app) => {
+                                const bothRated = (app.ratingPublished || (app.employerRated && app.employeeRated)) && app.review && app.receivedReview;
+                                return (
+                                    <div key={app._id} className="hired-card">
+                                        <div className="hired-card-header">
+                                            <div>
+                                                <h3 className="hired-card-title">{app.job?.title || 'Unknown Role'}</h3>
+                                            </div>
+                                            <span className="hired-badge">HIRED</span>
+                                        </div>
+
+                                        <div className="hired-card-subtitle">
+                                            <span>Employer: <strong>{app.employer?.name || 'Unknown Employer'}</strong></span>
+                                            <span>Date: <strong>{app.reviewedAt ? new Date(app.reviewedAt).toLocaleDateString() : new Date(app.updatedAt).toLocaleDateString()}</strong></span>
+                                        </div>
+
+                                        <div className="hired-card-contact" style={{
+                                            display: 'flex',
+                                            gap: '20px',
+                                            flexWrap: 'wrap',
+                                            padding: '8px 16px',
+                                            margin: '0 0 4px 0',
+                                            background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+                                            borderRadius: '8px',
+                                            fontSize: '13.5px',
+                                            color: '#334155'
+                                        }}>
+                                            {app.employer?.email && (
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                    <span style={{ fontSize: '15px' }}>📧</span>
+                                                    <a href={`mailto:${app.employer.email}`} style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500 }}>
+                                                        {app.employer.email}
+                                                    </a>
+                                                </span>
+                                            )}
+                                            {app.employer?.phone && (
+                                                <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                    <span style={{ fontSize: '15px' }}>📞</span>
+                                                    <a href={`tel:${app.employer.phone}`} style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500 }}>
+                                                        {app.employer.phone}
+                                                    </a>
+                                                </span>
+                                            )}
+                                        </div>
+
+                                        <div className="hired-status-container">
+                                            <div className="status-column">
+                                                <span className="status-column-title">Employer Side</span>
+                                                <span className={`status-item ${app.employerRated ? 'success' : 'danger'}`}>
+                                                    {app.employerRated ? '✓' : '✗'} Rated
+                                                </span>
+                                                <span className={`status-item ${app.employerConfirmation?.confirmed ? 'success' : 'danger'}`}>
+                                                    {app.employerConfirmation?.confirmed ? '✓' : '✗'} Work Done
+                                                </span>
+                                                <span className={`status-item ${app.isPaid ? 'success' : 'danger'}`}>
+                                                    {app.isPaid ? '✓ Paid' : '✗ Payment Pending'}
+                                                </span>
+                                            </div>
+                                            <div className="status-column">
+                                                <span className="status-column-title">Employee Side</span>
+                                                <span className={`status-item ${app.employeeRated ? 'success' : 'danger'}`}>
+                                                    {app.employeeRated ? '✓' : '✗'} Rated
+                                                </span>
+                                                <span className={`status-item ${app.employeeConfirmation?.confirmed ? 'success' : 'danger'}`}>
+                                                    {app.employeeConfirmation?.confirmed ? '✓' : '✗'} Work Done
+                                                </span>
+                                                <span className={`status-item ${app.paymentReceived ? 'success' : 'danger'}`}>
+                                                    {app.paymentReceived ? '✓ Received' : '✗ Not Received'}
+                                                </span>
+                                            </div>
+                                        </div>
+
+                                        <div className="hired-card-actions">
+                                            {bothRated ? (
+                                                <>
+                                                    <span className="hired-btn hired-btn-success" style={{ cursor: 'default' }}>
+                                                        <span className="icon">✓</span> Mutual Rating Complete
+                                                    </span>
+                                                    <div className="ratings-stack" style={{ display: 'flex', flexDirection: 'column', gap: '10px', width: '100%', marginTop: '6px' }}>
+                                                        <button className="hired-rating-display" onClick={() => openViewReviewModal(app, app.review)} style={{ width: 'fit-content' }}>
+                                                            📝 Your Rating → {app.employer?.name}: {renderStars(app.review.stars)}
+                                                        </button>
+                                                        <button className="hired-rating-display received" style={{ width: 'fit-content' }} onClick={() => openViewReviewModal(app, app.receivedReview)}>
+                                                            📩 {app.employer?.name}'s Rating → You: {renderStars(app.receivedReview.stars)}
+                                                        </button>
+                                                    </div>
+                                                </>
+                                            ) : app.employeeRated ? (
+                                                <span className="hired-btn hired-btn-orange" style={{ opacity: 0.7, cursor: 'default' }}>
+                                                    <span className="icon">⏳</span> Waiting for Employer Rating
+                                                </span>
+                                            ) : (
+                                                <button className="hired-btn hired-btn-orange" onClick={() => openRatingModal(app)}>
+                                                    <span className="icon">⭐</span> Rate Employer
+                                                </button>
+                                            )}
+
+                                            {app.workStatus === 'COMPLETED' || (app.employerConfirmation?.confirmed && app.employeeConfirmation?.confirmed) ? (
+                                                <span className="hired-btn hired-btn-success">
+                                                    <span className="icon">✓</span> Work Verified
+                                                </span>
+                                            ) : app.employeeConfirmation?.confirmed ? (
+                                                <span className="hired-btn hired-btn-success" style={{ opacity: 0.7, cursor: 'default' }}>
+                                                    <span className="icon">⏳</span> Waiting for Employer Confirm
+                                                </span>
+                                            ) : (
+                                                <button className="hired-btn hired-btn-success filled" onClick={() => handleConfirmWork(app)}>
+                                                    <span className="icon">✓</span> Confirm Work Done
+                                                </button>
+                                            )}
+
+                                            {!app.paymentReceived && (
+                                                <button className="hired-btn hired-btn-purple" onClick={() => handleConfirmPaymentReceived(app)}>
+                                                    <span className="icon">💰</span> Mark Payment Received
+                                                </button>
+                                            )}
+
+                                            <button className="hired-btn hired-btn-purple" onClick={() => handleJobClick(app.job)}>
+                                                <span className="icon">💼</span> Job Details
+                                            </button>
+                                        </div>
+                                    </div>
+                                );
+                            })}
                         </div>
                     )}
                 </main>
             </div>
+
+            {/* Rating Modal */}
+            {showRatingModal && selectedApp && (
+                <div className="modal-overlay" onClick={closeRatingModal}>
+                    <div className="rating-modal" onClick={(e) => e.stopPropagation()}>
+                        <button className="close-modal" onClick={closeRatingModal}>✕</button>
+                        <h2>Rate {selectedApp.employer?.name}</h2>
+                        <p className="job-title-modal">for {selectedApp.job?.title}</p>
+
+                        <div className="rating-stars">
+                            {[1, 2, 3, 4, 5].map((star) => (
+                                <span
+                                    key={star}
+                                    className={`star ${star <= rating ? 'filled' : ''}`}
+                                    onClick={() => setRating(star)}
+                                >
+                                    ★
+                                </span>
+                            ))}
+                        </div>
+
+                        <textarea
+                            placeholder="Share your experience working with this employer..."
+                            value={reviewComment}
+                            onChange={(e) => setReviewComment(e.target.value)}
+                            rows="4"
+                            className="review-textarea"
+                        ></textarea>
+
+                        <button
+                            className="submit-review-btn"
+                            onClick={handleSubmitReview}
+                            disabled={rating === 0 || submitting}
+                        >
+                            {submitting ? 'Submitting...' : 'Submit Review'}
+                        </button>
+                    </div>
+                </div>
+            )}
+
+            {/* View Review Modal */}
+            {showViewReviewModal && selectedApp && selectedReview && (() => {
+                const currentUser = JSON.parse(localStorage.getItem('quickhire_user') || '{}');
+                const isOwnReview = selectedReview.reviewer === currentUser._id;
+                return (
+                    <div className="modal-overlay" onClick={closeViewReviewModal}>
+                        <div className="rating-modal" onClick={(e) => e.stopPropagation()}>
+                            <button className="close-modal" onClick={closeViewReviewModal}>✕</button>
+                            <h2>{isOwnReview ? `Your Review for ${selectedApp.employer?.name}` : `Review from ${selectedApp.employer?.name}`}</h2>
+                            <p className="job-title-modal">Job: {selectedApp.job?.title}</p>
+
+                            <div className="rating-stars readonly">
+                                {[1, 2, 3, 4, 5].map((star) => (
+                                    <span
+                                        key={star}
+                                        className={`star ${star <= selectedReview.stars ? 'filled' : ''}`}
+                                    >
+                                        ★
+                                    </span>
+                                ))}
+                            </div>
+
+                            <div className="review-content">
+                                <p>{selectedReview.feedback}</p>
+                                <span className="review-date">Submitted on: {new Date(selectedReview.createdAt).toLocaleDateString()}</span>
+                            </div>
+                        </div>
+                    </div>
+                );
+            })()}
 
             {/* Job Details Modal - Reusing from EmployeeDashboard */}
             {showJobModal && selectedJob && (
@@ -231,8 +523,6 @@ const ShortlistedJobs = () => {
                             <button
                                 className="btn-primary"
                                 onClick={() => {
-                                    // Maybe navigate to chat or show contact info?
-                                    // For now just close or maybe show "Contact Employer"
                                     closeJobModal();
                                 }}
                             >

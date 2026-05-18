@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { toast } from 'react-toastify';
 import './Auth.css';
 
 const Login = ({ onClose, onSwitchToSignup }) => {
+    const navigate = useNavigate();
     const [formData, setFormData] = useState({
         email: '',
         password: '',
@@ -35,12 +37,17 @@ const Login = ({ onClose, onSwitchToSignup }) => {
 
             // Redirect based on role
             setTimeout(() => {
-                if (response.user.role === 'jobseeker') {
-                    window.location.href = '/dashboard';
-                } else if (response.user.role === 'employer') {
-                    window.location.href = '/employer/dashboard';
+                if (onClose) {
+                    // If used as modal, just reload or navigate
+                    window.location.reload();
                 } else {
-                    window.location.href = '/';
+                    if (response.user.role === 'jobseeker') {
+                        navigate('/dashboard');
+                    } else if (response.user.role === 'employer') {
+                        navigate('/employer/dashboard');
+                    } else {
+                        navigate('/');
+                    }
                 }
             }, 1500);
         } catch (error) {
@@ -99,7 +106,7 @@ const Login = ({ onClose, onSwitchToSignup }) => {
 
                     <p className="auth-switch">
                         Don't have an account?{' '}
-                        <span onClick={onSwitchToSignup}>Sign Up</span>
+                        <span onClick={onSwitchToSignup || (() => navigate('/signup'))}>Sign Up</span>
                     </p>
                 </form>
             </div>

@@ -10,6 +10,8 @@ const {
     getUserApplicationStats,
     getHiredEmployees,
     confirmWork,
+    markAsPaid,
+    confirmPaymentReceived,
 } = require('../controllers/applicationController');
 const { protect } = require('../middleware/authMiddleware');
 const { checkRole } = require('../middleware/roleMiddleware');
@@ -19,11 +21,13 @@ router.get('/', protect, checkRole(['jobseeker']), getUserApplications); // Get 
 router.get('/stats', protect, checkRole(['jobseeker']), getUserApplicationStats); // Get user's stats
 router.post('/:jobId', protect, checkRole(['jobseeker']), applyForJob); // Apply for job
 router.delete('/:id', protect, checkRole(['jobseeker']), withdrawApplication); // Withdraw application
+router.post('/:id/confirm-payment', protect, checkRole(['jobseeker']), confirmPaymentReceived); // Confirm payment received
 
 // Employer routes
 router.get('/job/:jobId', protect, checkRole(['employer']), getJobApplications); // Get job applications
 router.get('/employer/hired', protect, checkRole(['employer']), getHiredEmployees); // Get hired employees
 router.put('/:id/status', protect, checkRole(['employer']), updateApplicationStatus); // Update status
+router.post('/:id/mark-paid', protect, checkRole(['employer']), markAsPaid); // Mark as paid
 
 // Shared routes (Job Seeker or Employer)
 router.post('/:id/confirm', protect, confirmWork); // Dual Confirmation

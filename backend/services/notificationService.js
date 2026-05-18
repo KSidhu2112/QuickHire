@@ -123,6 +123,91 @@ const notificationTemplates = {
         priority: 'LOW',
     }),
 
+    // ============ VERIFICATION SYSTEM NOTIFICATIONS ============
+    WORK_CONFIRMED: (jobTitle, confirmedBy) => ({
+        icon: '✅',
+        title: 'Work Completion Confirmed',
+        message: `${confirmedBy} has confirmed work completion for "${jobTitle}".`,
+        priority: 'HIGH',
+    }),
+
+    PAYMENT_CONFIRMED: (jobTitle, amount) => ({
+        icon: '💰',
+        title: 'Payment Confirmed',
+        message: `Payment of ₹${amount || 'N/A'} has been confirmed for "${jobTitle}".`,
+        priority: 'HIGH',
+    }),
+
+    WORK_SUBMITTED: (jobTitle, employeeName) => ({
+        icon: '✅',
+        title: 'Work Submitted',
+        message: `${employeeName} has submitted work for "${jobTitle}". Please review.`,
+        priority: 'HIGH',
+    }),
+
+    WORK_COMPLETION_REMINDER: (jobTitle, employeeName) => ({
+        icon: '⏰',
+        title: 'Pending Work Confirmation',
+        message: `Please confirm work completion for ${employeeName} on "${jobTitle}". Action required within 48 hours.`,
+        priority: 'URGENT',
+    }),
+
+    PAYMENT_REMINDER: (jobTitle) => ({
+        icon: '⚠️',
+        title: 'Payment Confirmation Pending',
+        message: `Payment confirmation for "${jobTitle}" is still pending. Please confirm or raise a dispute.`,
+        priority: 'URGENT',
+    }),
+
+    ESCROW_LOCKED: (jobTitle, amount) => ({
+        icon: '🔒',
+        title: 'Payment Secured in Escrow',
+        message: `₹${amount} has been locked in escrow for "${jobTitle}". Payment will be released after mutual confirmation.`,
+        priority: 'HIGH',
+    }),
+
+    ESCROW_RELEASED: (jobTitle, amount) => ({
+        icon: '🔓',
+        title: 'Payment Released from Escrow',
+        message: `₹${amount} has been released from escrow for "${jobTitle}".`,
+        priority: 'HIGH',
+    }),
+
+    PENALTY_APPLIED: (reason, percentage) => ({
+        icon: '⚠️',
+        title: 'Penalty Applied',
+        message: `A ${percentage}% late payment penalty has been applied: ${reason}.`,
+        priority: 'URGENT',
+    }),
+
+    DISPUTE_OPENED: (jobTitle, raisedByName) => ({
+        icon: '🚨',
+        title: 'Dispute Opened',
+        message: `A dispute has been raised for "${jobTitle}" by ${raisedByName}. Please review.`,
+        priority: 'URGENT',
+    }),
+
+    DISPUTE_RESOLVED: (jobTitle, resolution) => ({
+        icon: '✅',
+        title: 'Dispute Resolved',
+        message: `The dispute for "${jobTitle}" has been resolved. Resolution: ${resolution}.`,
+        priority: 'HIGH',
+    }),
+
+    LATE_PAYMENT_WARNING: (jobTitle, hoursOverdue) => ({
+        icon: '🔴',
+        title: 'Late Payment Warning',
+        message: `Payment for "${jobTitle}" is ${hoursOverdue} hours overdue. A penalty may be applied.`,
+        priority: 'URGENT',
+    }),
+
+    ADMIN_ALERT: (message) => ({
+        icon: '🔔',
+        title: 'Admin Alert',
+        message: message,
+        priority: 'URGENT',
+    }),
+
     // ============ SYSTEM NOTIFICATIONS ============
     LOGIN_ALERT: () => ({
         icon: '🔐',
@@ -135,6 +220,35 @@ const notificationTemplates = {
         icon: '🎉',
         title: 'Welcome to QuickHire!',
         message: 'Your account has been created successfully. Start exploring jobs now!',
+        priority: 'HIGH',
+    }),
+
+    // ============ JOINING SYSTEM NOTIFICATIONS ============
+    JOINING_CONFIRMED: (jobTitle) => ({
+        icon: '✅',
+        title: 'Joining Confirmed',
+        message: `Your joining for "${jobTitle}" has been confirmed by the employer.`,
+        priority: 'HIGH',
+    }),
+
+    JOINING_NOT_CONFIRMED: (jobTitle) => ({
+        icon: '⚠️',
+        title: 'Joining Not Confirmed',
+        message: `The employer marked you as Not Joined for "${jobTitle}". You can dispute this within 3 days.`,
+        priority: 'URGENT',
+    }),
+
+    JOINING_DISPUTED: (jobTitle, employeeName) => ({
+        icon: '🚨',
+        title: 'Joining Status Disputed',
+        message: `${employeeName} has disputed the "Not Joined" status for "${jobTitle}".`,
+        priority: 'HIGH',
+    }),
+
+    WORK_MARKED_COMPLETED: (jobTitle) => ({
+        icon: '✅',
+        title: 'Work Marked Done',
+        message: `Your employer has marked the job "${jobTitle}" as completed. Please confirm payment or report if there's an issue.`,
         priority: 'HIGH',
     }),
 };
@@ -260,7 +374,7 @@ const notifyApplicationSubmitted = async (jobseekerId, jobId, applicationId, job
         templateData: { jobTitle, companyName },
         relatedJob: jobId,
         relatedApplication: applicationId,
-        actionUrl: `/employee/applications`, // Updated to point to My Applications
+        actionUrl: `/employee/applications`,
     });
 };
 
@@ -298,6 +412,129 @@ const notifyAccountCreated = async (userId) => {
     });
 };
 
+// ===== VERIFICATION SYSTEM NOTIFICATIONS =====
+
+const notifyWorkConfirmed = async (recipientId, jobId, applicationId, jobTitle, confirmedBy) => {
+    return await createNotification({
+        recipientId,
+        type: 'WORK_CONFIRMED',
+        templateData: { jobTitle, confirmedBy },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+        actionUrl: `/employer/verification`,
+    });
+};
+
+const notifyPaymentConfirmed = async (recipientId, jobId, applicationId, jobTitle, amount) => {
+    return await createNotification({
+        recipientId,
+        type: 'PAYMENT_CONFIRMED',
+        templateData: { jobTitle, amount },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+    });
+};
+
+const notifyWorkSubmitted = async (recipientId, jobId, applicationId, jobTitle, employeeName) => {
+    return await createNotification({
+        recipientId,
+        type: 'WORK_SUBMITTED',
+        templateData: { jobTitle, employeeName },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+        actionUrl: `/employer/verification`, // Assumes employer route for checking this
+    });
+};
+
+const notifyWorkCompletionReminder = async (employerId, jobId, applicationId, jobTitle, employeeName) => {
+    return await createNotification({
+        recipientId: employerId,
+        type: 'WORK_COMPLETION_REMINDER',
+        templateData: { jobTitle, employeeName },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+        actionUrl: `/employer/verification`,
+    });
+};
+
+const notifyPaymentReminder = async (recipientId, jobId, applicationId, jobTitle) => {
+    return await createNotification({
+        recipientId,
+        type: 'PAYMENT_REMINDER',
+        templateData: { jobTitle },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+    });
+};
+
+const notifyEscrowLocked = async (recipientId, jobId, applicationId, jobTitle, amount) => {
+    return await createNotification({
+        recipientId,
+        type: 'ESCROW_LOCKED',
+        templateData: { jobTitle, amount },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+    });
+};
+
+const notifyEscrowReleased = async (recipientId, jobId, applicationId, jobTitle, amount) => {
+    return await createNotification({
+        recipientId,
+        type: 'ESCROW_RELEASED',
+        templateData: { jobTitle, amount },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+    });
+};
+
+const notifyPenaltyApplied = async (recipientId, jobId, applicationId, reason, percentage) => {
+    return await createNotification({
+        recipientId,
+        type: 'PENALTY_APPLIED',
+        templateData: { reason, percentage },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+    });
+};
+
+const notifyDisputeOpened = async (recipientId, jobId, applicationId, jobTitle, raisedByName) => {
+    return await createNotification({
+        recipientId,
+        type: 'DISPUTE_OPENED',
+        templateData: { jobTitle, raisedByName },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+    });
+};
+
+const notifyDisputeResolved = async (recipientId, jobId, applicationId, jobTitle, resolution) => {
+    return await createNotification({
+        recipientId,
+        type: 'DISPUTE_RESOLVED',
+        templateData: { jobTitle, resolution },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+    });
+};
+
+const notifyLatePaymentWarning = async (recipientId, jobId, applicationId, jobTitle, hoursOverdue) => {
+    return await createNotification({
+        recipientId,
+        type: 'LATE_PAYMENT_WARNING',
+        templateData: { jobTitle, hoursOverdue },
+        relatedJob: jobId,
+        relatedApplication: applicationId,
+    });
+};
+
+const notifyAdmin = async (adminId, message) => {
+    return await createNotification({
+        recipientId: adminId,
+        type: 'ADMIN_ALERT',
+        templateData: { message },
+    });
+};
+
 module.exports = {
     createNotification,
     createBulkNotifications,
@@ -308,4 +545,58 @@ module.exports = {
     notifyShortlisted,
     notifyRejected,
     notifyAccountCreated,
+    // Verification system
+    notifyWorkConfirmed,
+    notifyPaymentConfirmed,
+    notifyWorkSubmitted,
+    notifyWorkCompletionReminder,
+    notifyPaymentReminder,
+    notifyEscrowLocked,
+    notifyEscrowReleased,
+    notifyPenaltyApplied,
+    notifyDisputeOpened,
+    notifyDisputeResolved,
+    notifyLatePaymentWarning,
+    notifyAdmin,
+    // Joining system
+    notifyJoiningConfirmed: async (recipientId, jobId, applicationId, jobTitle) => {
+        return await createNotification({
+            recipientId,
+            type: 'JOINING_CONFIRMED',
+            templateData: { jobTitle },
+            relatedJob: jobId,
+            relatedApplication: applicationId,
+            actionUrl: '/employee/applications'
+        });
+    },
+    notifyJoiningNotConfirmed: async (recipientId, jobId, applicationId, jobTitle) => {
+        return await createNotification({
+            recipientId,
+            type: 'JOINING_NOT_CONFIRMED',
+            templateData: { jobTitle },
+            relatedJob: jobId,
+            relatedApplication: applicationId,
+            actionUrl: '/employee/applications'
+        });
+    },
+    notifyJoiningDisputed: async (recipientId, jobId, applicationId, jobTitle, employeeName) => {
+        return await createNotification({
+            recipientId,
+            type: 'JOINING_DISPUTED',
+            templateData: { jobTitle, employeeName },
+            relatedJob: jobId,
+            relatedApplication: applicationId,
+            actionUrl: `/employer/applications?job=${jobId}`
+        });
+    },
+    notifyWorkMarkedCompleted: async (recipientId, jobId, applicationId, jobTitle) => {
+        return await createNotification({
+            recipientId,
+            type: 'WORK_MARKED_COMPLETED',
+            templateData: { jobTitle },
+            relatedJob: jobId,
+            relatedApplication: applicationId,
+            actionUrl: '/employee/applications'
+        });
+    },
 };

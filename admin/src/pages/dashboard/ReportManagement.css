@@ -1,0 +1,122 @@
+.report-mgmt-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.report-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(380px, 1fr));
+    gap: 1.5rem;
+}
+
+.report-card {
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 2rem;
+    border-radius: 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    transition: 0.2s;
+}
+
+.report-card.pending {
+    border-left: 5px solid #f59e0b;
+}
+
+.report-card.resolved {
+    border-left: 5px solid #10b981;
+}
+
+.report-card.dismissed {
+    border-left: 5px solid #64748b;
+}
+
+.report-badge {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    font-weight: 800;
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: fit-content;
+}
+
+.report-desc {
+    background: #0f172a;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    color: #94a3b8;
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.report-meta {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+    font-size: 0.85rem;
+    color: #94a3b8;
+    margin-top: 1rem;
+}
+
+.report-meta strong {
+    color: #f1f5f9;
+}
+
+.report-actions {
+    display: flex;
+    gap: 1rem;
+    margin-top: 1rem;
+}
+
+.report-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    font-weight: 700;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.report-btn.action {
+    background: #10b981;
+    color: #fff;
+}
+
+.report-btn.action:hover {
+    background: #059669;
+}
+
+.report-btn.dismiss {
+    background: #334155;
+    color: #94a3b8;
+}
+
+.report-btn.dismiss:hover {
+    background: #475569;
+    color: #f1f5f9;
+}
+
+.report-resolution {
+    background: #0f172a;
+    padding: 1rem;
+    border-radius: 0.5rem;
+    color: #38bdf8;
+    font-size: 0.85rem;
+}
+
+.report-resolution .remarks {
+    color: #94a3b8;
+    margin-top: 0.5rem;
+    font-style: italic;
+}

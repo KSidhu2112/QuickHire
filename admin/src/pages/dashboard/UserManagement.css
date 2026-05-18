@@ -1,0 +1,195 @@
+.user-mgmt-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.search-bar {
+    display: flex;
+    align-items: center;
+    background: #1e293b;
+    padding: 0.5rem 1rem;
+    border-radius: 0.5rem;
+    border: 1px solid #334155;
+    gap: 0.75rem;
+    width: 300px;
+}
+
+.search-bar input {
+    background: transparent;
+    border: none;
+    color: white;
+    width: 100%;
+}
+
+.tab-control {
+    display: flex;
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid #1e293b;
+}
+
+.tab-btn {
+    padding: 1rem 1.5rem;
+    background: transparent;
+    border: none;
+    color: #94a3b8;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.tab-btn.active {
+    color: #38bdf8;
+    border-bottom: 2px solid #38bdf8;
+}
+
+.admin-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 1rem;
+}
+
+.admin-table th,
+.admin-table td {
+    padding: 1.25rem 1rem;
+    text-align: left;
+    border-bottom: 1px solid #1e293b;
+}
+
+.admin-table th {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.05rem;
+}
+
+.user-cell {
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+.user-avatar {
+    width: 35px;
+    height: 35px;
+    background: #38bdf8;
+    color: #0f172a;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+}
+
+.user-cell strong {
+    display: block;
+    color: #f8fafc;
+}
+
+.user-cell span {
+    font-size: 0.85rem;
+    color: #94a3b8;
+}
+
+.badge-role {
+    background: #334155;
+    padding: 0.25rem 0.75rem;
+    border-radius: 1rem;
+    font-size: 0.75rem;
+    font-weight: 600;
+    color: #e2e8f0;
+}
+
+.trust-meter {
+    width: 120px;
+    height: 8px;
+    background: #1e293b;
+    border-radius: 1rem;
+    position: relative;
+    overflow: visible;
+}
+
+.trust-bar {
+    height: 100%;
+    border-radius: 1rem;
+}
+
+.trust-meter span {
+    position: absolute;
+    right: -45px;
+    top: -5px;
+    font-size: 0.75rem;
+    color: #94a3b8;
+}
+
+.status-pill {
+    padding: 0.25rem 0.75rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    text-transform: uppercase;
+}
+
+.status-pill.active {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    border: 1px solid #10b981;
+}
+
+.status-pill.suspended {
+    background: rgba(245, 158, 11, 0.1);
+    color: #f59e0b;
+    border: 1px solid #f59e0b;
+}
+
+.status-pill.blocked {
+    background: rgba(239, 68, 68, 0.1);
+    color: #ef4444;
+    border: 1px solid #ef4444;
+}
+
+.action-btns {
+    display: flex;
+    gap: 0.75rem;
+}
+
+.action-btn {
+    width: 35px;
+    height: 35px;
+    border-radius: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #334155;
+    background: #1e293b;
+    color: #94a3b8;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.action-btn:hover {
+    color: white;
+    border-color: white;
+}
+
+.action-btn.ban:hover {
+    background: #f59e0b;
+    border-color: #f59e0b;
+}
+
+.action-btn.activate:hover {
+    background: #10b981;
+    border-color: #10b981;
+}
+
+.action-btn.delete:hover {
+    background: #ef4444;
+    border-color: #ef4444;
+}

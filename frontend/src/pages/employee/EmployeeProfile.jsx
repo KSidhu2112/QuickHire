@@ -4,6 +4,16 @@ import axios from 'axios';
 import { reviewAPI } from '../../services/api';
 import './EmployeeProfile.css';
 
+const renderStars = (rating) => {
+    const val = typeof rating === 'number' ? Math.round(rating) : 0;
+    if (val === 5) return '⭐⭐⭐⭐⭐';
+    if (val === 4) return '⭐⭐⭐⭐☆';
+    if (val === 3) return '⭐⭐⭐☆☆';
+    if (val === 2) return '⭐⭐☆☆☆';
+    if (val === 1) return '⭐☆☆☆☆';
+    return '☆☆☆☆☆';
+};
+
 const EmployeeProfile = () => {
     const navigate = useNavigate();
     const [user, setUser] = useState(null);
@@ -256,10 +266,10 @@ const EmployeeProfile = () => {
                                                     <span className="review-date">{new Date(review.createdAt).toLocaleDateString()}</span>
                                                 </div>
                                                 <div className="review-rating">
-                                                    {'★'.repeat(review.rating)}{'☆'.repeat(5 - review.rating)}
+                                                    {renderStars(review.stars)}
                                                 </div>
                                                 <p className="review-job">Job: {review.job?.title}</p>
-                                                <p className="review-comment">{review.comment}</p>
+                                                <p className="review-comment">{review.feedback}</p>
                                             </div>
                                         ))}
                                     </div>

@@ -1,9 +1,11 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { authAPI } from '../services/api';
 import { toast } from 'react-toastify';
 import './Auth.css';
 
 const Signup = ({ onClose, onSwitchToLogin }) => {
+    const navigate = useNavigate();
     const [step, setStep] = useState(1); // 1: Details, 2: OTP Verification
     const [formData, setFormData] = useState({
         name: '',
@@ -129,12 +131,16 @@ const Signup = ({ onClose, onSwitchToLogin }) => {
 
             // Redirect based on role
             setTimeout(() => {
-                if (formData.role === 'jobseeker') {
-                    window.location.href = '/dashboard';
-                } else if (formData.role === 'employer') {
-                    window.location.href = '/employer/dashboard';
+                if (onClose) {
+                    window.location.reload();
                 } else {
-                    window.location.href = '/';
+                    if (formData.role === 'jobseeker') {
+                        navigate('/dashboard');
+                    } else if (formData.role === 'employer') {
+                        navigate('/employer/dashboard');
+                    } else {
+                        navigate('/');
+                    }
                 }
             }, 1500);
         } catch (error) {
@@ -219,7 +225,7 @@ const Signup = ({ onClose, onSwitchToLogin }) => {
 
                         <p className="auth-switch">
                             Already have an account?{' '}
-                            <span onClick={onSwitchToLogin}>Login</span>
+                            <span onClick={onSwitchToLogin || (() => navigate('/login'))}>Login</span>
                         </p>
                     </form>
                 ) : (

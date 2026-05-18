@@ -1,0 +1,40 @@
+.star-rating {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+
+.star-rating button {
+    background-color: transparent;
+    border: none;
+    outline: none;
+    cursor: pointer;
+    font-size: 2rem;
+    transition: transform 0.2s, color 0.2s;
+    padding: 0;
+}
+
+.star-rating.small button {
+    font-size: 1.2rem;
+}
+
+.star-rating.large button {
+    font-size: 3rem;
+}
+
+.star-rating button:hover {
+    transform: scale(1.2);
+}
+
+.star-rating button.on {
+    color: #ffc107;
+    filter: drop-shadow(0 0 5px rgba(255, 193, 7, 0.5));
+}
+
+.star-rating button.off {
+    color: #4a4a4a;
+}
+
+.star-rating button:disabled {
+    cursor: default;
+}

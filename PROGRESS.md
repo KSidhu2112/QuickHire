@@ -33,7 +33,7 @@
 - ✅ application API (7 functions) - JUST ADDED
 
 ### Components (To Build)
-- ⏳ JobCard.jsx
+- ✅ JobCard.jsx
 - ⏳ JobFilters.jsx
 - ⏳ ApplicationCard.jsx
 - ⏳ Protected Route
@@ -43,7 +43,7 @@
 - ⏳ Part-Time Jobs
 - ⏳ Full-Time Jobs  
 - ⏳ Daily Jobs
-- ⏳ My Applications
+- ✅ My Applications (Shortlisted Jobs)
 - ⏳ Job Details
 
 ### Pages - Employer (To Build)

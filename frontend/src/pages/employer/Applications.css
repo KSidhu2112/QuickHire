@@ -115,6 +115,30 @@
     color: #4a5568;
 }
 
+.candidate-meta {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.25rem;
+}
+
+.candidate-rating {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #fffbeb;
+    color: #92400e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border: 1px solid #fef3c7;
+}
+
+.candidate-rating .star {
+    color: #f59e0b;
+}
+
 .status-badge {
     padding: 0.4rem 1rem;
     border-radius: 20px;
@@ -356,6 +380,34 @@
 .modal-header h2 {
     font-size: 1.8rem;
     margin-bottom: 0.5rem;
+}
+
+.modal-candidate-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 5px;
+}
+
+.modal-candidate-rating {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: rgba(255, 255, 255, 0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+.modal-candidate-rating .star {
+    color: #ffd700;
+}
+
+.modal-candidate-rating .rating-count {
+    font-size: 0.8rem;
+    opacity: 0.9;
+    font-weight: 400;
 }
 
 .modal-body {

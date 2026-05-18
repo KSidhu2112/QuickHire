@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
+import axios from 'axios';
 import { FaSearch, FaEye, FaTrash, FaFilter } from 'react-icons/fa';
 import './ManageJobs.css';
 
@@ -22,56 +23,43 @@ const ManageJobs = () => {
             setLoading(true);
             const token = localStorage.getItem('adminToken');
 
-            // Check if token exists
             if (!token) {
                 toast.error('Please login to continue');
                 window.location.href = '/login';
                 return;
             }
 
-            // Build query parameters
-            const params = new URLSearchParams({
+            const params = {
                 page: currentPage,
                 limit: 10,
+            };
+
+            if (statusFilter !== 'ALL') params.status = statusFilter;
+            if (jobTypeFilter !== 'ALL') params.jobType = jobTypeFilter;
+            if (searchTerm) params.keyword = searchTerm;
+
+            const response = await axios.get('http://localhost:5000/api/admin/jobs', {
+                headers: { Authorization: `Bearer ${token}` },
+                params
             });
 
-            if (statusFilter !== 'ALL') {
-                params.append('status', statusFilter);
-            }
-
-            if (jobTypeFilter !== 'ALL') {
-                params.append('jobType', jobTypeFilter);
-            }
-
-            if (searchTerm) {
-                params.append('keyword', searchTerm);
-            }
-
-            const response = await fetch(`http://localhost:5000/api/admin/jobs?${params}`, {
-                headers: {
-                    'Authorization': `Bearer ${token}`
+            if (response.data.success) {
+                setJobs(response.data.data || []);
+                setTotalJobs(response.data.count || (response.data.data ? response.data.data.length : 0));
+                // If backend provides pagination, update it
+                if (response.data.pagination) {
+                    setTotalPages(response.data.pagination.totalPages);
                 }
-            });
-
-            if (response.status === 401 || response.status === 403) {
-                toast.error('Session expired. Please login again.');
-                localStorage.removeItem('adminToken');
-                window.location.href = '/login';
-                return;
-            }
-
-            if (response.ok) {
-                const data = await response.json();
-                setJobs(data.jobs || []);
-                setTotalPages(data.pages || 1);
-                setTotalJobs(data.total || 0);
-            } else {
-                const errorData = await response.json();
-                toast.error(errorData.message || 'Failed to fetch jobs');
             }
         } catch (error) {
             console.error('Error fetching jobs:', error);
-            toast.error('An error occurred while fetching jobs');
+            if (error.response?.status === 401) {
+                toast.error('Session expired. Please login again.');
+                localStorage.removeItem('adminToken');
+                window.location.href = '/login';
+            } else {
+                toast.error(error.response?.data?.message || 'Failed to fetch jobs');
+            }
         } finally {
             setLoading(false);
         }

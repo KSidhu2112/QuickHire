@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { FaUserPlus, FaUserTie, FaBriefcase, FaArrowRight } from 'react-icons/fa';
+import { FaUserPlus, FaUserTie, FaBriefcase, FaArrowRight, FaChartLine, FaShieldAlt } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
 import './Dashboard.css';
 
 const Dashboard = () => {
     const [stats, setStats] = useState({
-        employers: 0,
-        employees: 0,
-        jobs: 0
+        totalEmployers: 0,
+        totalEmployees: 0,
+        totalJobs: 0,
+        totalApplications: 0,
+        activeJobs: 0
     });
     const [loading, setLoading] = useState(true);
 
@@ -23,7 +25,7 @@ const Dashboard = () => {
                 };
                 const res = await axios.get('http://localhost:5000/api/admin/stats', config);
                 if (res.data.success) {
-                    setStats(res.data.data);
+                    setStats(res.data.data.stats);
                 }
             } catch (error) {
                 console.error('Error fetching dashboard stats:', error);
@@ -38,53 +40,61 @@ const Dashboard = () => {
     return (
         <div className="dashboard-container container">
             <header className="dashboard-header">
-                <h2>Admin Dashboard</h2>
+                <h2>Platform Overview</h2>
+                <p>Real-time metrics and management shortcuts</p>
             </header>
 
             <section className="stats-grid">
-                <NavLink to="/dashboard/employers" className="stat-card">
-                    <FaUserTie className="stat-icon" />
+                <NavLink to="/dashboard/users" className="stat-card">
+                    <FaUserTie className="stat-icon" style={{ color: '#3b82f6', background: 'rgba(59, 130, 246, 0.1)' }} />
                     <div className="stat-info">
-                        <span>Total Employers</span>
-                        <h3>{stats.employers}</h3>
+                        <span>Employers</span>
+                        <h3>{stats.totalEmployers || 0}</h3>
                     </div>
                 </NavLink>
-                <NavLink to="/dashboard/employees" className="stat-card">
-                    <FaUserPlus className="stat-icon" />
+                <NavLink to="/dashboard/users" className="stat-card">
+                    <FaUserPlus className="stat-icon" style={{ color: '#8b5cf6', background: 'rgba(139, 92, 246, 0.1)' }} />
                     <div className="stat-info">
-                        <span>Active Job Seekers</span>
-                        <h3>{stats.employees}</h3>
+                        <span>Job Seekers</span>
+                        <h3>{stats.totalEmployees || 0}</h3>
                     </div>
                 </NavLink>
                 <NavLink to="/dashboard/jobs" className="stat-card">
-                    <FaBriefcase className="stat-icon" />
+                    <FaBriefcase className="stat-icon" style={{ color: '#10b981', background: 'rgba(16, 185, 129, 0.1)' }} />
                     <div className="stat-info">
-                        <span>Live Jobs</span>
-                        <h3>{stats.jobs}</h3>
+                        <span>Total Jobs</span>
+                        <h3>{stats.totalJobs || 0}</h3>
+                    </div>
+                </NavLink>
+                <NavLink to="/dashboard/activity-monitor" className="stat-card">
+                    <FaChartLine className="stat-icon" style={{ color: '#f59e0b', background: 'rgba(245, 158, 11, 0.1)' }} />
+                    <div className="stat-info">
+                        <span>Active Jobs</span>
+                        <h3>{stats.activeJobs || 0}</h3>
                     </div>
                 </NavLink>
             </section>
 
             <section className="recent-activity">
-                <h3 className="section-title">Quick Actions</h3>
+                <h3 className="section-title">Quick Control Center</h3>
                 <div className="link-card-grid">
-                    <NavLink to="/dashboard/employers" className="link-card">
-                        <FaUserPlus className="link-card-icon" />
-                        <h3>Manage Employers</h3>
-                        <p>View, verify, or remove employer accounts.</p>
-                        <span className="btn btn-outline">Go to Employers <FaArrowRight /></span>
+                    <NavLink to="/dashboard/users" className="link-card">
+                        <FaShieldAlt className="link-card-icon" />
+                        <h3>Identity Management</h3>
+                        <p>Verify profiles, manage trust scores, and suspend accounts.</p>
+                        <span className="btn btn-outline">Access Control <FaArrowRight /></span>
                     </NavLink>
-                    <NavLink to="/dashboard/employees" className="link-card">
-                        <FaUserPlus className="link-card-icon" />
-                        <h3>Manage Employees</h3>
-                        <p>Review job seeker profiles and activity.</p>
-                        <span className="btn btn-outline">Go to Employees <FaArrowRight /></span>
-                    </NavLink>
-                    <NavLink to="/dashboard/jobs" className="link-card">
+                    <NavLink to="/dashboard/applications" className="link-card">
                         <FaBriefcase className="link-card-icon" />
-                        <h3>Manage Jobs</h3>
-                        <p>Moderate job listings and categories.</p>
-                        <span className="btn btn-outline">Go to Jobs <FaArrowRight /></span>
+                        <h3>Hiring Pipeline</h3>
+                        <p>Track applications from submission to payment release.</p>
+                        <span className="btn btn-outline">Track Lifecycle <FaArrowRight /></span>
+                    </NavLink>
+                    <NavLink to="/dashboard/payments" className="link-card">
+                        <FaArrowRight className="link-card-icon" style={{ transform: 'rotate(-45deg)' }} />
+                        <h3>Financial Audit</h3>
+                        <p>Monitor platform revenue and transaction success rates.</p>
+                        <span className="btn btn-outline">View Payments <FaArrowRight /></span>
                     </NavLink>
                 </div>
             </section>

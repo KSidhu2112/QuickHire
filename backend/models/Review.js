@@ -17,16 +17,25 @@ const reviewSchema = new mongoose.Schema(
             ref: 'Job',
             required: true,
         },
-        rating: {
+        stars: {
             type: Number,
             required: [true, 'Rating is required'],
             min: 1,
             max: 5,
         },
-        comment: {
+        feedback: {
             type: String,
             trim: true,
-            maxlength: [500, 'Comment cannot be more than 500 characters'],
+            maxlength: [300, 'Feedback cannot be more than 300 characters'],
+        },
+        role: {
+            type: String,
+            enum: ['Employer', 'Employee'],
+            required: true,
+        },
+        isPublished: {
+            type: Boolean,
+            default: false,
         },
     },
     {
@@ -34,7 +43,7 @@ const reviewSchema = new mongoose.Schema(
     }
 );
 
-// Prevent duplicate reviews for the same job by the same reviewer
+// Prevent duplicate reviews for the same job between the same parties
 reviewSchema.index({ reviewer: 1, reviewee: 1, job: 1 }, { unique: true });
 
 module.exports = mongoose.model('Review', reviewSchema);

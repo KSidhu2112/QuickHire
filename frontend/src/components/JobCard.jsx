@@ -1,5 +1,6 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
+import { FaMapMarkerAlt, FaMoneyBillWave, FaCalendarAlt, FaClock, FaUsers, FaEnvelope, FaPhone } from 'react-icons/fa';
 import './JobCard.css';
 
 const JobCard = ({ job, showApplyButton = true, onApply, onCardClick, userRole = 'jobseeker' }) => {
@@ -66,7 +67,16 @@ const JobCard = ({ job, showApplyButton = true, onApply, onCardClick, userRole =
             <div className="job-card-header">
                 <div className="job-card-title-section">
                     <h3 className="job-title">{job.title}</h3>
-                    <p className="job-company">{job.company}</p>
+                    <div className="company-rating-wrapper">
+                        <p className="job-company">{job.company}</p>
+                        {job.employer?.stats?.avgRating > 0 && (
+                            <div className="employer-rating-badge">
+                                <span className="star">★</span>
+                                <span>{job.employer.stats.avgRating.toFixed(1)}</span>
+                                <span className="rating-count">({job.employer.stats.ratingCount || 0})</span>
+                            </div>
+                        )}
+                    </div>
                 </div>
                 <span className={`job-type-badge ${getJobTypeColor(job.jobType)}`}>
                     {getJobTypeLabel(job.jobType)}
@@ -75,25 +85,25 @@ const JobCard = ({ job, showApplyButton = true, onApply, onCardClick, userRole =
 
             <div className="job-card-info">
                 <div className="job-info-item">
-                    <i className="icon-location"></i>
-                    <span>{job.location?.city || 'Location not specified'}</span>
+                    <FaMapMarkerAlt className="info-icon location" />
+                    <span>{job.location?.city || job.location?.address || (typeof job.location === 'string' ? job.location : 'Location not specified')}</span>
                 </div>
 
                 <div className="job-info-item">
-                    <i className="icon-money"></i>
+                    <FaMoneyBillWave className="info-icon salary" />
                     <span>{formatSalary(job.salaryMin, job.salaryMax, job.salaryType)}</span>
                 </div>
 
                 {job.jobType === 'DAILY' && job.workDate && (
                     <div className="job-info-item">
-                        <i className="icon-calendar"></i>
+                        <FaCalendarAlt className="info-icon date" />
                         <span>{formatDate(job.workDate)}</span>
                     </div>
                 )}
 
                 {job.jobType === 'DAILY' && (
                     <div className="job-info-item">
-                        <i className="icon-clock"></i>
+                        <FaClock className="info-icon time" />
                         <span>
                             {job.startTime} - {job.endTime}
                         </span>
@@ -101,11 +111,26 @@ const JobCard = ({ job, showApplyButton = true, onApply, onCardClick, userRole =
                 )}
 
                 <div className="job-info-item">
-                    <i className="icon-users"></i>
+                    <FaUsers className="info-icon vacancies" />
                     <span>
                         Hired: {job.workersHired || 0} / Vacancies: {Math.max(0, job.workersRequired - (job.workersHired || 0))}
                     </span>
                 </div>
+
+                {job.showContactInfo && userRole === 'jobseeker' && (
+                    <div className="job-contact-details">
+                        <div className="job-info-item">
+                            <FaEnvelope className="info-icon email" />
+                            <span className="contact-label">Email:</span>
+                            <a href={`mailto:${job.employer?.email}`} className="contact-value" onClick={(e) => e.stopPropagation()}>{job.employer?.email || 'N/A'}</a>
+                        </div>
+                        <div className="job-info-item">
+                            <FaPhone className="info-icon phone" />
+                            <span className="contact-label">Phone:</span>
+                            <a href={`tel:${job.contactPhone || job.employer?.phone}`} className="contact-value" onClick={(e) => e.stopPropagation()}>{job.contactPhone || job.employer?.phone || 'N/A'}</a>
+                        </div>
+                    </div>
+                )}
             </div>
 
             {job.skills && job.skills.length > 0 && (

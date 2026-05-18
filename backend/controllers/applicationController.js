@@ -39,14 +39,46 @@ exports.getHiredEmployees = async (req, res) => {
 
         // Fetch reviews for these applications
         const employeesWithReviews = await Promise.all(applications.map(async (app) => {
+            // Query actual Review documents — this is the ONLY source of truth
             const review = await Review.findOne({
                 reviewer: req.user._id,
                 reviewee: app.jobseeker._id,
                 job: app.job._id
             });
+
+            const otherPartyReview = await Review.findOne({
+                reviewer: app.jobseeker._id,
+                reviewee: req.user._id,
+                job: app.job._id
+            });
+
+            const bothRated = !!(review && otherPartyReview);
+
+            // Self-heal: sync flags to match actual review existence
+            const correctEmployerRated = !!review;
+            const correctEmployeeRated = !!otherPartyReview;
+            const correctPublished = bothRated;
+
+            if (app.employerRated !== correctEmployerRated ||
+                app.employeeRated !== correctEmployeeRated ||
+                app.ratingPublished !== correctPublished) {
+                await Application.updateOne(
+                    { _id: app._id },
+                    {
+                        employerRated: correctEmployerRated,
+                        employeeRated: correctEmployeeRated,
+                        ratingPublished: correctPublished
+                    }
+                );
+            }
+            app.employerRated = correctEmployerRated;
+            app.employeeRated = correctEmployeeRated;
+            app.ratingPublished = correctPublished;
+
             return {
                 ...app,
-                review: review || null
+                review: review || null,
+                receivedReview: bothRated ? otherPartyReview : null
             };
         }));
 
@@ -265,20 +297,67 @@ exports.getUserApplications = async (req, res) => {
         const skip = (page - 1) * limit;
         const applications = await Application.find(query)
             .populate('job', 'title company jobType location salaryMin salaryMax workDate status')
-            .populate('employer', 'name email company')
+            .populate('employer', 'name email phone company')
             .sort('-createdAt')
             .limit(parseInt(limit))
             .skip(skip);
 
         const total = await Application.countDocuments(query);
 
+        // Fetch reviews for these applications
+        const applicationsWithReviews = await Promise.all(applications.map(async (app) => {
+            const appObj = app.toObject ? app.toObject() : app;
+
+            // Query actual Review documents — this is the ONLY source of truth
+            const review = await Review.findOne({
+                reviewer: req.user._id,
+                reviewee: appObj.employer._id,
+                job: appObj.job._id
+            });
+
+            const otherPartyReview = await Review.findOne({
+                reviewer: appObj.employer._id,
+                reviewee: req.user._id,
+                job: appObj.job._id
+            });
+
+            const bothRated = !!(review && otherPartyReview);
+
+            // Self-heal: sync flags to match actual review existence
+            const correctEmployeeRated = !!review;
+            const correctEmployerRated = !!otherPartyReview;
+            const correctPublished = bothRated;
+
+            if (appObj.employerRated !== correctEmployerRated ||
+                appObj.employeeRated !== correctEmployeeRated ||
+                appObj.ratingPublished !== correctPublished) {
+                await Application.updateOne(
+                    { _id: appObj._id },
+                    {
+                        employerRated: correctEmployerRated,
+                        employeeRated: correctEmployeeRated,
+                        ratingPublished: correctPublished
+                    }
+                );
+            }
+            appObj.employerRated = correctEmployerRated;
+            appObj.employeeRated = correctEmployeeRated;
+            appObj.ratingPublished = correctPublished;
+
+            return {
+                ...appObj,
+                review: review || null,
+                receivedReview: bothRated ? otherPartyReview : null
+            };
+        }));
+
         res.status(200).json({
             success: true,
-            count: applications.length,
+            count: applicationsWithReviews.length,
             total,
             page: parseInt(page),
             pages: Math.ceil(total / limit),
-            applications,
+            applications: applicationsWithReviews,
         });
     } catch (error) {
         console.error('Get User Applications Error:', error);
@@ -660,3 +739,48 @@ exports.confirmWork = async (req, res) => {
         res.status(500).json({ success: false, message: error.message });
     }
 };
+
+// @desc    Mark application as paid by employer
+// @route   POST /api/applications/:id/mark-paid
+// @access  Private (Employer only)
+exports.markAsPaid = async (req, res) => {
+    try {
+        const application = await Application.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Application not found' });
+        }
+        if (application.employer.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: 'Not authorized' });
+        }
+        application.isPaid = true;
+        application.payment_status = 'Paid';
+        await application.save();
+        res.status(200).json({ success: true, message: 'Marked as paid successfully', application });
+    } catch (error) {
+        console.error('Mark As Paid Error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+
+// @desc    Confirm payment received by employee
+// @route   POST /api/applications/:id/confirm-payment
+// @access  Private (Jobseeker only)
+exports.confirmPaymentReceived = async (req, res) => {
+    try {
+        const application = await Application.findById(req.params.id);
+        if (!application) {
+            return res.status(404).json({ success: false, message: 'Application not found' });
+        }
+        if (application.jobseeker.toString() !== req.user._id.toString()) {
+            return res.status(403).json({ success: false, message: 'Not authorized' });
+        }
+        application.paymentReceived = true;
+        application.payment_status = 'Received';
+        await application.save();
+        res.status(200).json({ success: true, message: 'Payment confirmed received successfully', application });
+    } catch (error) {
+        console.error('Confirm Payment Received Error:', error);
+        res.status(500).json({ success: false, message: error.message });
+    }
+};
+

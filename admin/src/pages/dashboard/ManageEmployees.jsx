@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
 
 const ManageEmployees = () => {
     const [employees, setEmployees] = useState([]);
@@ -7,6 +8,7 @@ const ManageEmployees = () => {
     const [debouncedSearch, setDebouncedSearch] = useState('');
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const navigate = useNavigate();
 
     // Debounce search
     useEffect(() => {
@@ -64,6 +66,10 @@ const ManageEmployees = () => {
             console.error('Error deleting user:', err);
             alert('Failed to delete user');
         }
+    };
+
+    const handleViewDetails = (employeeId) => {
+        navigate(`/dashboard/employees/${employeeId}`);
     };
 
     if (loading) return <div className="container dashboard-container">Loading...</div>;
@@ -132,7 +138,13 @@ const ManageEmployees = () => {
                                     </td>
                                     <td style={{ padding: '1rem' }}>{new Date(emp.createdAt).toLocaleDateString()}</td>
                                     <td style={{ padding: '1rem' }}>
-                                        <button className="btn btn-outline" style={{ fontSize: '0.8rem', padding: '0.5rem', marginRight: '0.5rem' }}>Details</button>
+                                        <button 
+                                            className="btn btn-outline" 
+                                            style={{ fontSize: '0.8rem', padding: '0.5rem', marginRight: '0.5rem' }}
+                                            onClick={() => handleViewDetails(emp._id)}
+                                        >
+                                            Details
+                                        </button>
                                         <button
                                             className="btn btn-danger"
                                             style={{

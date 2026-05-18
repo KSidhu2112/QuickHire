@@ -24,6 +24,28 @@ axiosInstance.interceptors.request.use(
     }
 );
 
+// Add response interceptor to handle 401 errors
+axiosInstance.interceptors.response.use(
+    (response) => {
+        return response;
+    },
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            console.warn('⚠️ Session expired or unauthorized. Clearing storage.');
+            localStorage.removeItem('quickhire_token');
+            localStorage.removeItem('quickhire_user');
+            
+            // Optional: Redirect to login if not already there
+            if (!window.location.pathname.includes('/login') && 
+                !window.location.pathname.includes('/signup') &&
+                window.location.pathname !== '/') {
+                window.location.href = '/login?expired=true';
+            }
+        }
+        return Promise.reject(error);
+    }
+);
+
 // Auth API functions
 export const authAPI = {
     // Send OTP for registration
@@ -33,8 +55,8 @@ export const authAPI = {
     },
 
     // Resend OTP
-    resendOTP: async (email) => {
-        const response = await axiosInstance.post('/auth/resend-otp', { email });
+    resendOTP: async (email, purpose = 'registration') => {
+        const response = await axiosInstance.post('/auth/resend-otp', { email, purpose });
         return response.data;
     },
 
@@ -165,10 +187,22 @@ export const applicationAPI = {
         return response.data;
     },
 
+    // Get all applications for current employer
+    getEmployerApplications: async (filters = {}) => {
+        const params = new URLSearchParams(filters).toString();
+        const response = await axiosInstance.get(`/employer/applications?${params}`);
+        return response.data;
+    },
+
     // Update application status (Employer)
-    updateApplicationStatus: async (id, status, notes = '') => {
+    updateStatus: async (id, status, notes = '') => {
         const response = await axiosInstance.put(`/applications/${id}/status`, { status, notes });
         return response.data;
+    },
+
+    // Legacy method name (for compatibility if used elsewhere)
+    updateApplicationStatus: async (id, status, notes = '') => {
+        return applicationAPI.updateStatus(id, status, notes);
     },
 
     // Withdraw application (Job Seeker)
@@ -180,6 +214,36 @@ export const applicationAPI = {
     // Get single application
     getApplicationById: async (id) => {
         const response = await axiosInstance.get(`/applications/${id}`);
+        return response.data;
+    },
+
+    // Get hired employees (Employer)
+    getHiredEmployees: async () => {
+        const response = await axiosInstance.get('/applications/employer/hired');
+        return response.data;
+    },
+
+    // Mark work as completed (Employer)
+    markWorkCompleted: async (id) => {
+        const response = await axiosInstance.post(`/applications/${id}/work-completed`);
+        return response.data;
+    },
+
+    // Mark work as completed (Employee)
+    markWorkCompletedEmployee: async (id) => {
+        const response = await axiosInstance.post(`/applications/${id}/work-completed-employee`);
+        return response.data;
+    },
+
+    // Mark as paid (Employer)
+    markAsPaid: async (id) => {
+        const response = await axiosInstance.post(`/applications/${id}/mark-paid`);
+        return response.data;
+    },
+
+    // Confirm payment received (Employee)
+    confirmPaymentReceived: async (id) => {
+        const response = await axiosInstance.post(`/applications/${id}/confirm-payment`);
         return response.data;
     },
 };
@@ -223,6 +287,104 @@ export const notificationAPI = {
     },
 };
 
+// Payment API functions
+export const paymentAPI = {
+    // Create Razorpay Order
+    createOrder: async (paymentData) => {
+        const response = await axiosInstance.post('/payments/create-order', paymentData);
+        return response.data;
+    },
+
+    // Verify Payment
+    verifyPayment: async (paymentData) => {
+        const response = await axiosInstance.post('/payments/verify-payment', paymentData);
+        return response.data;
+    },
+
+    // Create Verification Order (for profile verification)
+    createVerificationOrder: async () => {
+        const response = await axiosInstance.post('/payments/create-verification-order');
+        return response.data;
+    },
+
+    // Verify Verification Payment
+    verifyVerificationPayment: async (paymentData) => {
+        const response = await axiosInstance.post('/payments/verify-verification-payment', paymentData);
+        return response.data;
+    },
+
+    // Get user's transaction history
+    getHistory: async () => {
+        const response = await axiosInstance.get('/payments/history');
+        return response.data;
+    },
+};
+
+// Verification API functions
+export const verificationAPI = {
+    getEmployeeVerifications: async (params = {}) => {
+        const response = await axiosInstance.get('/verification/employee/all', { params });
+        return response.data;
+    },
+    getEmployerVerifications: async (params = {}) => {
+        const response = await axiosInstance.get('/verification/employer/all', { params });
+        return response.data;
+    },
+    startWork: async (id) => {
+        const response = await axiosInstance.post(`/verification/${id}/start-work`);
+        return response.data;
+    },
+    submitWork: async (id, data) => {
+        const response = await axiosInstance.post(`/verification/${id}/submit-work`, data);
+        return response.data;
+    },
+    employeeConfirm: async (id, data) => {
+        const response = await axiosInstance.post(`/verification/${id}/employee-confirm`, data);
+        return response.data;
+    },
+    employerConfirm: async (id, data) => {
+        const response = await axiosInstance.post(`/verification/${id}/employer-confirm`, data);
+        return response.data;
+    },
+    lockEscrow: async (id, amount) => {
+        const response = await axiosInstance.post(`/verification/${id}/lock-escrow`, { amount });
+        return response.data;
+    },
+    getTimeline: async (id) => {
+        const response = await axiosInstance.get(`/verification/${id}/timeline`);
+        return response.data;
+    },
+    uploadFile: async (file) => {
+        const formData = new FormData();
+        formData.append('file', file);
+        const response = await axiosInstance.post('/upload', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' }
+        });
+        return response.data;
+    }
+};
+
+// Dispute API functions
+export const disputeAPI = {
+    raiseDispute: async (data) => {
+        const response = await axiosInstance.post('/disputes', data);
+        return response.data;
+    },
+    getDisputes: async (params = {}) => {
+        const response = await axiosInstance.get('/disputes', { params });
+        return response.data;
+    },
+    getDisputeDetails: async (id) => {
+        const response = await axiosInstance.get(`/disputes/${id}`);
+        return response.data;
+    },
+    // Report payment issue
+    reportPaymentIssue: async (data) => {
+        const response = await axiosInstance.post('/disputes/report-payment', data);
+        return response.data;
+    }
+};
+
 // Review API functions
 export const reviewAPI = {
     // Create a new review
@@ -236,6 +398,18 @@ export const reviewAPI = {
         const response = await axiosInstance.get(`/reviews/${userId}`);
         return response.data;
     },
+};
+
+// Rating API functions (Alias for reviewAPI to support RatingModal)
+export const ratingAPI = {
+    submitRating: async ({ jobId, toUserId, stars, feedback }) => {
+        return reviewAPI.createReview({
+            jobId,
+            revieweeId: toUserId,
+            rating: stars,
+            comment: feedback
+        });
+    }
 };
 
 export default axiosInstance;

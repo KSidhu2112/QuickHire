@@ -8,12 +8,15 @@ const {
     deleteJob,
     getMyJobs,
     getJobStats,
+    getNearbyJobs,
 } = require('../controllers/jobController');
 const { protect, optionalProtect } = require('../middleware/authMiddleware');
 const { checkRole } = require('../middleware/roleMiddleware');
 
 // Public routes
 router.get('/', optionalProtect, getJobs); // Get all jobs with filters
+router.get('/nearby', optionalProtect, getNearbyJobs); // Get nearby jobs by lat/lng/distance
+
 
 // Employer routes (protected) - MUST come before /:id route
 router.post('/', protect, checkRole(['employer']), createJob); // Create job
@@ -26,3 +29,4 @@ router.get('/:id/stats', protect, checkRole(['employer']), getJobStats); // Get 
 router.get('/:id', getJobById); // Get single job
 
 module.exports = router;
+

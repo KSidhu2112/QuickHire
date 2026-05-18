@@ -70,14 +70,41 @@
 }
 
 .role-badge {
-    background: #e7f5ff;
-    color: #0984e3;
+    background: rgba(255, 255, 255, 0.2);
     padding: 4px 12px;
     border-radius: 20px;
-    font-size: 12px;
-    font-weight: 600;
-    text-transform: uppercase;
-    letter-spacing: 1px;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.profile-badges {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.profile-rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 215, 0, 0.2);
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    color: #ffd700;
+}
+
+.profile-rating-badge .star {
+    font-size: 1rem;
+}
+
+.profile-rating-badge .rating-val {
+    font-weight: 700;
+}
+
+.profile-rating-badge .rating-cnt {
+    opacity: 0.8;
+    font-size: 0.8rem;
 }
 
 .profile-details-grid {

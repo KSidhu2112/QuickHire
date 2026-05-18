@@ -25,7 +25,7 @@ const userSchema = new mongoose.Schema(
         },
         role: {
             type: String,
-            enum: ['jobseeker', 'employer', 'admin'],
+            enum: ['jobseeker', 'employer', 'admin', 'employee', 'employ'],
             default: 'jobseeker',
         },
         status: {
@@ -82,6 +82,16 @@ const userSchema = new mongoose.Schema(
             latePayments: { type: Number, default: 0 },
             avgRating: { type: Number, default: 0 },
             ratingCount: { type: Number, default: 0 },
+            totalRatings: { type: Number, default: 0 },
+            reliabilityScore: { type: Number, default: 0 },
+            jobsEnrolled: { type: Number, default: 0 },
+            totalJoined: { type: Number, default: 0 },
+            noShows: { type: Number, default: 0 },
+            // Employer specific stats
+            totalJobsPosted: { type: Number, default: 0 },
+            paymentConfirmedCount: { type: Number, default: 0 },
+            validComplaints: { type: Number, default: 0 },
+            reliabilityPercentage: { type: Number, default: 100 },
         },
         blacklisted: {
             isBlacklisted: { type: Boolean, default: false },

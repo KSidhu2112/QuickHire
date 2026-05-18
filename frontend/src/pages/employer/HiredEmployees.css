@@ -141,10 +141,33 @@
     border: 2px solid rgba(255, 255, 255, 0.4);
 }
 
+.employee-name-rating {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
 .employee-info h3 {
     font-size: 18px;
-    margin: 0 0 4px 0;
+    margin: 0;
     font-weight: 600;
+}
+
+.employee-rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 12px;
+    font-weight: 600;
+    border: 1px solid rgba(255, 255, 255, 0.4);
+}
+
+.employee-rating-badge .star {
+    color: #ffc107;
 }
 
 .job-role {
@@ -240,6 +263,58 @@
 
 .primary-btn:hover {
     transform: scale(1.05);
+}
+
+/* Status Badges */
+.status-badges {
+    display: flex;
+    gap: 8px;
+    margin: 15px 0;
+    flex-wrap: wrap;
+}
+
+.status-badge {
+    padding: 4px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.work-pending { background: #fff3cd; color: #856404; border: 1px solid #ffeeba; }
+.work-completed { background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+.work-disputed { background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+
+.payment-unpaid { background: #e2e3e5; color: #383d41; border: 1px solid #d6d8db; }
+.payment-paid { background: #cce5ff; color: #004085; border: 1px solid #b8daff; }
+
+.completed-tag {
+    color: #27ae60;
+    font-weight: 700;
+    font-size: 14px;
+    display: flex;
+    align-items: center;
+    gap: 5px;
+}
+
+/* Action Button Variants */
+.work-btn {
+    background: #0984e3;
+    color: white;
+}
+
+.work-btn:hover {
+    background: #0773c5;
+}
+
+.pay-btn {
+    background: #6c5ce7;
+    color: white;
+}
+
+.pay-btn:hover {
+    background: #5b4cc4;
 }
 
 /* Rating Modal Styles */
@@ -411,3 +486,237 @@
     color: #888;
     font-size: 12px;
 }
+
+/* Review Summaries */
+.review-summaries {
+    margin-top: 15px;
+    padding-top: 15px;
+    border-top: 1px dashed #eee;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.review-summary {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+}
+
+.review-label {
+    font-weight: 600;
+    color: #666;
+    min-width: 100px;
+}
+
+.stars {
+    color: #f1c40f;
+    font-size: 16px;
+    letter-spacing: 2px;
+}
+
+.view-text-btn {
+    background: #f1f2f6;
+    border: 1px solid #dfe4ea;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 11px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.view-text-btn:hover {
+    background: #ced4da;
+}
+
+/* Modern Hired / Shortlisted Status Card Design */
+.hired-card {
+    background: #ffffff;
+    border-radius: 20px;
+    padding: 24px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.04);
+    border-left: 5px solid #10b981; /* Green left accent */
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    transition: all 0.3s ease;
+    border-top: 1px solid rgba(0, 0, 0, 0.02);
+    border-right: 1px solid rgba(0, 0, 0, 0.02);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.02);
+    text-align: left;
+}
+
+.hired-card:hover {
+    transform: translateY(-4px);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.08);
+}
+
+.hired-card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-start;
+}
+
+.hired-card-title {
+    font-size: 22px;
+    font-weight: 700;
+    color: #1e293b;
+    margin: 0;
+    font-family: 'Outfit', 'Inter', sans-serif;
+}
+
+.hired-badge {
+    border: 1.5px solid #a855f7;
+    color: #a855f7;
+    border-radius: 9999px;
+    padding: 6px 16px;
+    font-size: 13px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.hired-card-subtitle {
+    display: flex;
+    gap: 20px;
+    color: #64748b;
+    font-size: 14px;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+
+.hired-card-subtitle span strong {
+    color: #334155;
+}
+
+.hired-status-container {
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 20px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 24px;
+    border: 1px solid #f1f5f9;
+}
+
+.status-column {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+}
+
+.status-column-title {
+    font-size: 15px;
+    font-weight: 700;
+    color: #475569;
+    margin-bottom: 4px;
+}
+
+.status-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.status-item.success {
+    color: #10b981;
+}
+
+.status-item.danger {
+    color: #ef4444;
+}
+
+.hired-card-actions {
+    display: flex;
+    gap: 12px;
+    flex-wrap: wrap;
+    margin-top: 8px;
+    align-items: center;
+}
+
+.hired-btn {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 20px;
+    border-radius: 12px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: 1.5px solid transparent;
+    background: transparent;
+}
+
+.hired-btn-success {
+    border-color: #10b981;
+    color: #10b981;
+}
+
+.hired-btn-success:hover {
+    background: rgba(16, 185, 129, 0.05);
+}
+
+.hired-btn-success.filled {
+    background: #10b981;
+    color: #ffffff;
+}
+
+.hired-btn-success.filled:hover {
+    background: #059669;
+}
+
+.hired-btn-purple {
+    border-color: #6366f1;
+    color: #6366f1;
+}
+
+.hired-btn-purple:hover {
+    background: rgba(99, 102, 241, 0.05);
+}
+
+.hired-btn-orange {
+    border-color: #f97316;
+    color: #f97316;
+}
+
+.hired-btn-orange:hover {
+    background: rgba(249, 115, 22, 0.05);
+}
+
+.hired-rating-display {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: #fef8e7;
+    border: 1.5px solid #f59e0b;
+    color: #d97706;
+    border-radius: 12px;
+    padding: 10px 20px;
+    font-size: 14px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.hired-rating-display:hover {
+    background: #fffbeb;
+    border-color: #d97706;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+.hired-rating-display.received {
+    border-color: #a855f7;
+    color: #a855f7;
+    background: #faf5ff;
+}
+
+.hired-rating-display.received:hover {
+    background: #fdf4ff;
+    border-color: #8b5cf6;
+    box-shadow: 0 4px 12px rgba(168, 85, 247, 0.15);
+}

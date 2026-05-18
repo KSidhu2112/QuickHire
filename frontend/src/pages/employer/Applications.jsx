@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
+import { applicationAPI } from '../../services/api';
 import './Applications.css';
 
 const Applications = () => {
@@ -21,17 +21,15 @@ const Applications = () => {
 
     const fetchApplications = async () => {
         try {
-            const token = localStorage.getItem('quickhire_token');
-            const url = jobIdFilter
-                ? `http://localhost:5000/api/applications/job/${jobIdFilter}`
-                : 'http://localhost:5000/api/employer/applications';
+            let response;
+            if (jobIdFilter) {
+                response = await applicationAPI.getJobApplications(jobIdFilter);
+            } else {
+                response = await applicationAPI.getEmployerApplications();
+            }
 
-            const response = await axios.get(url, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
-
-            if (response.data.success) {
-                setApplications(response.data.applications);
+            if (response.success) {
+                setApplications(response.applications);
             }
         } catch (err) {
             console.error('Error fetching applications:', err);
@@ -43,12 +41,7 @@ const Applications = () => {
 
     const handleStatusChange = async (appId, newStatus, notes = '') => {
         try {
-            const token = localStorage.getItem('quickhire_token');
-            await axios.put(
-                `http://localhost:5000/api/applications/${appId}/status`,
-                { status: newStatus, notes },
-                { headers: { Authorization: `Bearer ${token}` } }
-            );
+            await applicationAPI.updateStatus(appId, newStatus, notes);
             fetchApplications();
             setShowModal(false);
             setSelectedApp(null);
@@ -136,7 +129,14 @@ const Applications = () => {
                                         </div>
                                         <div>
                                             <h3>{app.jobseeker?.name}</h3>
-                                            <p className="email">{app.jobseeker?.email}</p>
+                                            <div className="candidate-meta">
+                                                <p className="email">{app.jobseeker?.email}</p>
+                                                <div className="candidate-rating">
+                                                    <span className="star">★</span>
+                                                    <span>{app.jobseeker?.stats?.avgRating ? app.jobseeker.stats.avgRating.toFixed(1) : '0.0'}</span>
+                                                    <span className="rating-count">({app.jobseeker?.stats?.ratingCount || 0})</span>
+                                                </div>
+                                            </div>
                                             {app.jobseeker?.phone && <p className="phone">📞 {app.jobseeker.phone}</p>}
                                         </div>
                                     </div>
@@ -252,7 +252,14 @@ const Applications = () => {
                                 {selectedApp.jobseeker?.name?.charAt(0).toUpperCase()}
                             </div>
                             <h2>{selectedApp.jobseeker?.name}</h2>
-                            <p>{selectedApp.jobseeker?.email}</p>
+                            <div className="modal-candidate-meta">
+                                <p>{selectedApp.jobseeker?.email}</p>
+                                <div className="modal-candidate-rating">
+                                    <span className="star">★</span>
+                                    <span>{selectedApp.jobseeker?.stats?.avgRating ? selectedApp.jobseeker.stats.avgRating.toFixed(1) : '0.0'}</span>
+                                    <span className="rating-count">({selectedApp.jobseeker?.stats?.ratingCount || 0} reviews)</span>
+                                </div>
+                            </div>
                         </div>
 
                         <div className="modal-body">

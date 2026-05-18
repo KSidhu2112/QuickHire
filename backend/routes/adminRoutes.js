@@ -1,18 +1,57 @@
 const express = require('express');
 const router = express.Router();
-const { getJobSeekers, getEmployers, getAllUsers, getDashboardStats, getEmployerDetails, getAllJobs, deleteAnyJob } = require('../controllers/adminController');
-const { protect } = require('../middleware/authMiddleware');
+const {
+    getJobSeekers,
+    getEmployers,
+    getAllUsers,
+    getDashboardStats,
+    getEmployerDetails,
+    getEmployeeDetails,
+    getAllJobs,
+    deleteAnyJob,
+    deleteUser,
+    updateUserStatus,
+    updateJobStatus,
+    getAllApplications,
+    getAllPayments,
+    getAllReports,
+    updateReportStatus,
+    getCommunicationLogs
+} = require('../controllers/adminController');
+const { protect, checkRole } = require('../middleware/authMiddleware');
 
-// Get all employees (job seekers) - Protected route (ensure only authenticated users can access, ideally admin)
-router.get('/employees', protect, getJobSeekers); // Changed route path to be more RESTful under /api/admin
-router.get('/employers', protect, getEmployers);
-router.get('/employers/:id', protect, getEmployerDetails);
-router.get('/users', protect, getAllUsers);
-router.get('/stats', protect, getDashboardStats);
+// Ensure all /api/admin/* routes are admin-only
+router.use(protect);
+router.use(checkRole(['admin']));
 
-// Admin job management routes
-router.get('/jobs', protect, getAllJobs); // Get all jobs (admin view)
-router.delete('/jobs/:id', protect, deleteAnyJob); // Delete any job (admin only)
-router.delete('/users/:id', protect, require('../controllers/adminController').deleteUser); // Delete user
+// User Management
+router.get('/employees', getJobSeekers);
+router.get('/employers', getEmployers);
+router.get('/employers/:id', getEmployerDetails);
+router.get('/employees/:id', getEmployeeDetails);
+router.get('/users', getAllUsers);
+router.patch('/users/:id/status', updateUserStatus);
+router.delete('/users/:id', deleteUser);
+
+// Dashboard & Analytics
+router.get('/stats', getDashboardStats);
+
+// Job Management
+router.get('/jobs', getAllJobs);
+router.patch('/jobs/:id/status', updateJobStatus);
+router.delete('/jobs/:id', deleteAnyJob);
+
+// Application Tracking
+router.get('/applications', getAllApplications);
+
+// Payment Monitoring
+router.get('/payments', getAllPayments);
+
+// Fraud Detection / Reports
+router.get('/reports', getAllReports);
+router.patch('/reports/:id/status', updateReportStatus);
+
+// Communication Logs
+router.get('/messages', getCommunicationLogs);
 
 module.exports = router;

@@ -1,0 +1,81 @@
+.admin-layout {
+    display: flex;
+    min-height: 100vh;
+    background: #0f172a;
+    color: #e2e8f0;
+}
+
+.admin-main {
+    flex: 1;
+    margin-left: 260px;
+    display: flex;
+    flex-direction: column;
+}
+
+.admin-top-bar {
+    height: 70px;
+    background: #1e293b;
+    border-bottom: 2px solid #334155;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 2rem;
+    position: sticky;
+    top: 0;
+    z-index: 90;
+}
+
+.admin-breadcrumb {
+    font-size: 0.9rem;
+    color: #cbd5e1;
+    font-weight: 500;
+}
+
+.breadcrumb-link {
+    text-decoration: none;
+    color: inherit;
+    transition: color 0.2s ease;
+}
+
+.breadcrumb-link:hover {
+    color: #38bdf8;
+}
+
+.admin-breadcrumb .active-view {
+    color: #38bdf8;
+    text-transform: capitalize;
+}
+
+.admin-user-profile {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+}
+
+.admin-badge {
+    background: #0ea5e9;
+    color: #ffffff;
+    padding: 0.35rem 0.85rem;
+    border-radius: 2rem;
+    font-size: 0.75rem;
+    font-weight: 700;
+    letter-spacing: 0.05rem;
+}
+
+.admin-avatar {
+    width: 40px;
+    height: 40px;
+    background: #38bdf8;
+    color: #1e293b;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 800;
+    font-size: 1.25rem;
+}
+
+.admin-content-inner {
+    padding: 2.5rem;
+    flex: 1;
+}

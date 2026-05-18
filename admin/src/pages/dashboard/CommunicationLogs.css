@@ -1,0 +1,95 @@
+.communication-logs-container {
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.msg-log-wrapper {
+    background: #1e293b;
+    border: 1px solid #334155;
+    padding: 2rem;
+    border-radius: 1rem;
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.msg-log-item {
+    background: #0f172a;
+    border: 1px solid #334155;
+    border-radius: 1rem;
+    padding: 1.5rem;
+    margin-bottom: 1.5rem;
+    transition: 0.2s;
+}
+
+.msg-log-item:hover {
+    border-color: #38bdf8;
+}
+
+.msg-log-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #1e293b;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+    flex-wrap: wrap;
+    gap: 1rem;
+}
+
+.msg-parties {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    font-weight: 700;
+    color: #f8fafc;
+}
+
+.party {
+    color: #38bdf8;
+}
+
+.msg-arrow {
+    color: #94a3b8;
+}
+
+.msg-meta {
+    display: flex;
+    gap: 1.5rem;
+    color: #94a3b8;
+    font-size: 0.85rem;
+    align-items: center;
+}
+
+.msg-meta svg {
+    color: #38bdf8;
+    margin-right: 0.4rem;
+}
+
+.msg-body {
+    display: flex;
+    gap: 1.25rem;
+    align-items: flex-start;
+}
+
+.quote-icon {
+    font-size: 1.5rem;
+    color: #334155;
+}
+
+.msg-text {
+    font-size: 1rem;
+    color: #e2e8f0;
+    line-height: 1.6;
+    margin: 0;
+}
+
+.attachment-badge {
+    display: inline-block;
+    background: rgba(56, 189, 248, 0.1);
+    color: #38bdf8;
+    padding: 0.4rem 1rem;
+    border-radius: 0.5rem;
+    font-size: 0.85rem;
+    font-weight: 700;
+    margin-top: 1rem;
+}

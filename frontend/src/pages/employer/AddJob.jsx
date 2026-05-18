@@ -1,6 +1,7 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
+import { jobAPI } from '../../services/api';
+import { toast } from 'react-toastify';
 import './AddJob.css';
 
 const AddJob = () => {
@@ -72,11 +73,13 @@ const AddJob = () => {
         setError('');
         setSuccess('');
 
+        let jobData = {};
+
         try {
             const token = localStorage.getItem('quickhire_token');
 
             // Prepare job data based on type
-            const jobData = {
+            jobData = {
                 title: formData.title,
                 description: formData.description,
                 company: formData.company,
@@ -115,11 +118,9 @@ const AddJob = () => {
                 jobData.endTime = formData.endTime;
                 jobData.foodProvided = formData.foodProvided;
             }
-            const response = await axios.post('http://localhost:5000/api/jobs', jobData, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            const response = await jobAPI.createJob(jobData);
 
-            if (response.data && (response.data.success || response.status === 200 || response.status === 201)) {
+            if (response.success) {
                 navigate('/employer/manage-jobs');
             } else {
                 setError('Failed to post job. Please try again.');
@@ -140,6 +141,11 @@ const AddJob = () => {
                 // Display validation errors from backend
                 const validationErrors = err.response.data.errors.join('. ');
                 setError(`Validation failed: ${validationErrors}`);
+            } else if (err.response?.status === 402) {
+                // Payment required - save data and navigate to checkout
+                localStorage.setItem('pending_job_data', JSON.stringify(jobData));
+                toast.info('Payment required to post a job. Redirecting to checkout...');
+                navigate('/checkout/post');
             } else {
                 setError(err.response?.data?.message || 'Failed to post job');
             }

@@ -29,3 +29,22 @@ logs/
 # OS generated files
 .DS_Store
 Thumbs.db
+
+# Scratch files and keys
+scratch/
+rzp-key.csv
+
+# Temp files and diagnostic scripts
+*.txt
+backend/*.txt
+backend/check_*.js
+backend/debug_*.js
+backend/list_*.js
+backend/print_*.js
+backend/test_*.js
+backend/verify_*.js
+backend/fix_*.js
+backend/scripts/payment-check-output.txt
+backend/scripts/dbcheck.json
+backend/scripts/dbcheck2.json
+backend/sync_ratings.js

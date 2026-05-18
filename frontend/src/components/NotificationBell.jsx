@@ -14,16 +14,25 @@ const NotificationBell = () => {
 
     // Fetch unread count
     const fetchUnreadCount = async () => {
+        const token = localStorage.getItem('quickhire_token');
+        if (!token) return;
+
         try {
             const data = await notificationAPI.getUnreadCount();
             setUnreadCount(data.unreadCount);
         } catch (error) {
-            console.error('Error fetching unread count:', error);
+            // Only log if it's not a 401 (handled by interceptor)
+            if (error.response?.status !== 401) {
+                console.error('Error fetching unread count:', error);
+            }
         }
     };
 
     // Fetch recent notifications (only latest 5)
     const fetchNotifications = async () => {
+        const token = localStorage.getItem('quickhire_token');
+        if (!token) return;
+
         setLoading(true);
         try {
             const data = await notificationAPI.getNotifications({ page: 1, limit: 5, read: false });
@@ -31,7 +40,9 @@ const NotificationBell = () => {
             setUnreadCount(data.unreadCount);
             setTotalCount(data.total); // Total count of all notifications
         } catch (error) {
-            console.error('Error fetching notifications:', error);
+            if (error.response?.status !== 401) {
+                console.error('Error fetching notifications:', error);
+            }
         } finally {
             setLoading(false);
         }

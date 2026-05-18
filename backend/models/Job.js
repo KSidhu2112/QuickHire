@@ -82,6 +82,24 @@ const jobSchema = new mongoose.Schema(
                 trim: true,
             },
         },
+        // GeoJSON coordinates for geospatial "nearby jobs" search
+        // Stores [longitude, latitude] per GeoJSON spec
+        coordinates: {
+            type: {
+                type: String,
+                enum: ['Point'],
+            },
+            coordinates: {
+                type: [Number], // [longitude, latitude]
+                validate: {
+                    validator: function (v) {
+                        if (!this.coordinates || !this.coordinates.type) return true;
+                        return Array.isArray(v) && v.length === 2;
+                    },
+                    message: 'Coordinates must be an array of two numbers [longitude, latitude]'
+                }
+            },
+        },
         // For DAILY and EVENT_BASED jobs
         workDate: {
             type: Date,
@@ -165,6 +183,14 @@ const jobSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        showContactInfo: {
+            type: Boolean,
+            default: true,
+        },
+        contactPhone: {
+            type: String,
+            trim: true,
+        },
         shift: {
             type: String,
             enum: ['DAY', 'NIGHT', 'ROTATIONAL', 'FLEXIBLE'],
@@ -184,11 +210,20 @@ const jobSchema = new mongoose.Schema(
         joiningDate: {
             type: Date,
         },
+        accommodation: {
+            type: Boolean,
+            default: false,
+        },
+        immediateJoining: {
+            type: Boolean,
+            default: false,
+        },
     },
     {
         timestamps: true,
     }
 );
+
 
 // Indexes for faster queries
 jobSchema.index({ employer: 1, createdAt: -1 });
@@ -196,6 +231,9 @@ jobSchema.index({ jobType: 1, status: 1 });
 jobSchema.index({ 'location.city': 1 });
 jobSchema.index({ workDate: 1 });
 jobSchema.index({ status: 1, createdAt: -1 });
+// 2dsphere index for geospatial nearby-jobs queries
+jobSchema.index({ coordinates: '2dsphere' });
+
 
 // Virtual for checking if job is full (for daily/event jobs)
 jobSchema.virtual('isFull').get(function () {

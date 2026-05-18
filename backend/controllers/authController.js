@@ -11,10 +11,9 @@ const checkMongoConnection = () => {
             connected: false,
             error: {
                 success: false,
-                message: 'Database not available. Please whitelist your IP in MongoDB Atlas.',
+                message: 'Database not available. Please ensure your database is running or whitelist your IP in MongoDB Atlas.',
                 details: 'Visit: https://cloud.mongodb.com/v2#/security/network/accessList',
-                yourIP: '223.187.5.165',
-                action: 'Add this IP to whitelist and restart server'
+                action: 'Check your internet connection and MongoDB Atlas IP whitelist'
             }
         };
     }
@@ -304,6 +303,9 @@ exports.getMe = async (req, res) => {
                 phone: user.phone,
                 profile: user.profile,
                 createdAt: user.createdAt,
+                trustScore: user.trustScore,
+                stats: user.stats,
+                badges: user.badges,
             },
         });
     } catch (error) {
@@ -327,7 +329,7 @@ exports.resendOTP = async (req, res) => {
             return res.status(503).json(mongoCheck.error);
         }
 
-        const { email } = req.body;
+        const { email, purpose = 'registration' } = req.body;
 
         if (!email) {
             return res.status(400).json({
@@ -341,23 +343,23 @@ exports.resendOTP = async (req, res) => {
         const expiryMinutes = parseInt(process.env.OTP_EXPIRY_MINUTES) || 10;
         const expiresAt = new Date(Date.now() + expiryMinutes * 60 * 1000);
 
-        // Delete old OTPs
-        await OTP.deleteMany({ email });
+        // Delete old OTPs for this purpose
+        await OTP.deleteMany({ email, purpose });
 
         // Save new OTP
         await OTP.create({
             email,
             otp,
-            purpose: 'registration',
+            purpose,
             expiresAt,
         });
 
         // Send OTP email
-        await sendOTPEmail(email, otp, 'registration');
+        await sendOTPEmail(email, otp, purpose);
 
         res.status(200).json({
             success: true,
-            message: 'New OTP sent successfully',
+            message: `New OTP sent successfully for ${purpose.replace('-', ' ')}`,
             expiresIn: expiryMinutes,
         });
     } catch (error) {
@@ -486,7 +488,7 @@ exports.resetPassword = async (req, res) => {
         const otpRecord = await OTP.findOne({
             email,
             otp,
-            purpose: 'password_reset'
+            purpose: 'password-reset'
         });
 
         if (!otpRecord) {

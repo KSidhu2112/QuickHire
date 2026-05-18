@@ -140,10 +140,35 @@
     margin: 0 0 4px 0;
 }
 
+.company-rating-wrapper {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+
 .company {
     font-size: 14px;
     color: #6b7280;
     margin: 0;
+}
+
+.employer-rating-badge {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    background: #fffbeb;
+    color: #92400e;
+    padding: 2px 8px;
+    border-radius: 12px;
+    font-size: 11px;
+    font-weight: 600;
+    border: 1px solid #fef3c7;
+}
+
+.employer-rating-badge .star {
+    color: #f59e0b;
+    font-size: 12px;
 }
 
 .status-badge {
@@ -222,6 +247,55 @@
     color: #78350f;
     font-size: 13px;
     line-height: 1.4;
+}
+
+.employer-contact-box {
+    margin-top: 16px;
+    padding: 16px;
+    background: #f0fdf4;
+    border-radius: 12px;
+    border: 1px solid #bbf7d0;
+}
+
+.employer-contact-box h4 {
+    font-size: 14px;
+    color: #166534;
+    margin: 0 0 12px 0;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.025em;
+}
+
+.contact-row {
+    display: flex;
+    justify-content: space-between;
+    font-size: 14px;
+    margin-bottom: 8px;
+}
+
+.contact-row:last-child {
+    margin-bottom: 0;
+}
+
+.contact-row .label {
+    color: #166534;
+    font-weight: 500;
+}
+
+.contact-row .value {
+    color: #14532d;
+    font-weight: 600;
+}
+
+.contact-link {
+    color: inherit;
+    text-decoration: none;
+    transition: all 0.2s;
+}
+
+.contact-link:hover {
+    color: #2563eb;
+    text-decoration: underline;
 }
 
 .app-actions {
