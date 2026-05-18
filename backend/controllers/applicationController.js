@@ -29,7 +29,7 @@ exports.getHiredEmployees = async (req, res) => {
 
         const applications = await Application.find(query)
             .populate('job', 'title company jobType location salaryMin salaryMax')
-            .populate('jobseeker', 'name email phone profile')
+            .populate('jobseeker', 'name email phone profile stats trustScore')
             .sort('-reviewedAt') // Most recently hired first
             .limit(parseInt(limit))
             .skip(skip)
@@ -199,9 +199,9 @@ exports.applyForJob = async (req, res) => {
 
         // Populate application for response
         const populatedApplication = await application.populate([
-            { path: 'job', select: 'title company jobType location salaryMin salaryMax' },
-            { path: 'jobseeker', select: 'name email phone' }
-        ]);
+                { path: 'job', select: 'title company jobType location salaryMin salaryMax' },
+                { path: 'jobseeker', select: 'name email phone stats trustScore' }
+            ]);
 
         console.log('✅ Application populated successfully');
 
@@ -297,7 +297,7 @@ exports.getUserApplications = async (req, res) => {
         const skip = (page - 1) * limit;
         const applications = await Application.find(query)
             .populate('job', 'title company jobType location salaryMin salaryMax workDate status')
-            .populate('employer', 'name email phone company')
+            .populate('employer', 'name email phone company stats trustScore')
             .sort('-createdAt')
             .limit(parseInt(limit))
             .skip(skip);
@@ -402,7 +402,7 @@ exports.getJobApplications = async (req, res) => {
 
         const skip = (page - 1) * limit;
         const applications = await Application.find(query)
-            .populate('jobseeker', 'name email phone profile')
+            .populate('jobseeker', 'name email phone profile stats trustScore')
             .sort('-createdAt')
             .limit(parseInt(limit))
             .skip(skip);
@@ -593,8 +593,8 @@ exports.getApplicationById = async (req, res) => {
     try {
         const application = await Application.findById(req.params.id)
             .populate('job')
-            .populate('jobseeker', 'name email phone profile')
-            .populate('employer', 'name email company');
+            .populate('jobseeker', 'name email phone profile stats trustScore')
+            .populate('employer', 'name email company stats trustScore');
 
         if (!application) {
             return res.status(404).json({

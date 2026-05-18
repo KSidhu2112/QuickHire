@@ -134,7 +134,16 @@ const JobDetails = () => {
                     <div className="job-header-main">
                         <div>
                             <h1 className="job-title-large">{job.title}</h1>
-                            <p className="company-name-large">{job.company}</p>
+                            <div style={{ display: 'flex', alignItems: 'center', gap: '12px', flexWrap: 'wrap', marginTop: '4px' }}>
+                                <p className="company-name-large" style={{ margin: 0 }}>{job.company}</p>
+                                {job.employer?.stats?.avgRating > 0 && (
+                                    <div className="employer-rating-badge-header" style={{ display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#d97706', padding: '4px 10px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: '600' }}>
+                                        <span>★</span>
+                                        <span>{job.employer.stats.avgRating.toFixed(1)}</span>
+                                        <span style={{ fontSize: '0.75rem', color: '#78350f', fontWeight: 'normal' }}>({job.employer.stats.ratingCount || 0} reviews)</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
                         <div className="job-status-badge">
                             <span className={`status-tag ${job.status?.toLowerCase()}`}>
@@ -221,12 +230,18 @@ const JobDetails = () => {
                     </div>
 
                     <aside className="sidebar-content">
-                        {/* Employer Contact Card */}
                         {job.employer && job.showContactInfo !== false && (
                             <div className="employer-card">
                                 <h3>Contact Employer</h3>
                                 <div className="employer-info">
-                                    <p className="emp-name">👤 {job.employer.name}</p>
+                                    <p className="emp-name" style={{ marginBottom: '6px' }}>👤 {job.employer.name}</p>
+                                    {job.employer?.stats?.avgRating > 0 && (
+                                        <div className="employer-rating-badge-sidebar" style={{ display: 'flex', alignItems: 'center', gap: '4px', backgroundColor: 'rgba(245, 158, 11, 0.12)', color: '#d97706', padding: '4px 10px', borderRadius: '12px', fontSize: '0.85rem', fontWeight: '600', width: 'fit-content', marginBottom: '12px' }}>
+                                            <span>★</span>
+                                            <span>{job.employer.stats.avgRating.toFixed(1)}</span>
+                                            <span style={{ fontSize: '0.75rem', color: '#78350f', fontWeight: 'normal' }}>({job.employer.stats.ratingCount || 0} reviews)</span>
+                                        </div>
+                                    )}
                                     {job.employer.email && (
                                         <p><a href={`mailto:${job.employer.email}`}>📧 {job.employer.email}</a></p>
                                     )}

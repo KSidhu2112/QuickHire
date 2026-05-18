@@ -109,7 +109,7 @@ exports.getAllApplications = async (req, res) => {
 
         let applications = await Application.find(query)
             .populate('job', 'title company jobType location salaryMin salaryMax workDate status')
-            .populate('jobseeker', 'name email phone profile')
+            .populate('jobseeker', 'name email phone profile stats trustScore')
             .sort('-createdAt')
             .limit(parseInt(limit))
             .skip(skip);
@@ -200,7 +200,7 @@ exports.getHiredEmployees = async (req, res) => {
             status: 'ACCEPTED',
         })
             .populate('job', 'title company jobType workDate location')
-            .populate('jobseeker', 'name email phone profile')
+            .populate('jobseeker', 'name email phone profile stats trustScore')
             .sort('-updatedAt')
             .limit(parseInt(limit))
             .skip(skip);

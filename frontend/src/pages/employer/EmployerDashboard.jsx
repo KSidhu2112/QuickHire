@@ -12,12 +12,28 @@ const EmployerDashboard = () => {
     const [recentApplications, setRecentApplications] = useState([]);
     const [selectedJob, setSelectedJob] = useState(null);
     const [showJobModal, setShowJobModal] = useState(false);
+    const [user, setUser] = useState(null);
 
     useEffect(() => {
         fetchDashboardStats();
         fetchRecentJobs();
         fetchRecentApplications();
+        fetchEmployerProfile();
     }, []);
+
+    const fetchEmployerProfile = async () => {
+        try {
+            const token = localStorage.getItem('quickhire_token');
+            const response = await axios.get('http://localhost:5000/api/auth/me', {
+                headers: { Authorization: `Bearer ${token}` }
+            });
+            if (response.data.success) {
+                setUser(response.data.user);
+            }
+        } catch (err) {
+            console.error('Error fetching employer profile:', err);
+        }
+    };
 
     const fetchDashboardStats = async () => {
         try {
@@ -128,6 +144,26 @@ const EmployerDashboard = () => {
                 {/* Stats Cards */}
                 {stats && (
                     <div className="stats-grid">
+                        {user?.stats?.avgRating !== undefined && (
+                            <div className="stat-card rating">
+                                <div className="stat-icon">⭐</div>
+                                <div className="stat-info">
+                                    <h3>{user.stats.avgRating > 0 ? user.stats.avgRating.toFixed(1) : '0.0'}</h3>
+                                    <p>My Rating ({user.stats.ratingCount || 0} reviews)</p>
+                                </div>
+                            </div>
+                        )}
+
+                        {user?.trustScore !== undefined && (
+                            <div className="stat-card rating">
+                                <div className="stat-icon" style={{ background: 'linear-gradient(135deg, #10b981 0%, #059669 100%)' }}>🛡️</div>
+                                <div className="stat-info">
+                                    <h3>{user.trustScore}</h3>
+                                    <p>Trust Score</p>
+                                </div>
+                            </div>
+                        )}
+
                         <div className="stat-card primary">
                             <div className="stat-icon">📋</div>
                             <div className="stat-info">

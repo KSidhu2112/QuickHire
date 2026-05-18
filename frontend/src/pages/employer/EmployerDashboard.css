@@ -528,19 +528,20 @@
     color: #667eea;
 }
 
-/* Job Details Modal */
-.modal-overlay {
+/* Job Details Modal Scoped to Employer Dashboard */
+.employer-dashboard .modal-overlay {
     position: fixed;
     top: 0;
     left: 0;
     right: 0;
     bottom: 0;
-    background: rgba(0, 0, 0, 0.7);
+    background: rgba(15, 23, 42, 0.6);
     display: flex;
     justify-content: center;
     align-items: center;
     z-index: 2000;
     padding: 1rem;
+    backdrop-filter: blur(6px);
     animation: fadeIn 0.3s ease;
 }
 
@@ -554,7 +555,7 @@
     }
 }
 
-.job-modal {
+.employer-dashboard .job-modal {
     background: white;
     border-radius: 20px;
     max-width: 800px;
@@ -563,7 +564,7 @@
     overflow-y: auto;
     position: relative;
     animation: slideUp 0.3s ease;
-    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.3);
+    box-shadow: 0 25px 50px rgba(0, 0, 0, 0.25);
 }
 
 @keyframes slideUp {
@@ -578,7 +579,7 @@
     }
 }
 
-.close-modal {
+.employer-dashboard .close-modal {
     position: absolute;
     top: 1.5rem;
     right: 1.5rem;
@@ -594,35 +595,37 @@
     justify-content: center;
     transition: all 0.3s ease;
     color: #4a5568;
+    z-index: 10;
 }
 
-.close-modal:hover {
+.employer-dashboard .close-modal:hover {
     background: rgba(0, 0, 0, 0.2);
     transform: rotate(90deg);
 }
 
-.modal-header {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+.employer-dashboard .modal-header {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
     padding: 2rem;
     border-radius: 20px 20px 0 0;
-    color: white;
+    color: white !important;
 }
 
-.modal-header h2 {
-    margin: 0 0 0.5rem 0;
+.employer-dashboard .modal-header h2 {
+    margin: 0 0 0.5rem 0 !important;
     font-size: 2rem;
     padding-right: 50px;
+    color: white !important;
 }
 
-.modal-content {
+.employer-dashboard .modal-content {
     padding: 2rem;
 }
 
-.job-detail-section {
+.employer-dashboard .job-detail-section {
     margin-bottom: 2rem;
 }
 
-.job-detail-section h3 {
+.employer-dashboard .job-detail-section h3 {
     color: #1a202c;
     font-size: 1.3rem;
     margin-bottom: 1rem;
@@ -631,19 +634,19 @@
     padding-left: 1rem;
 }
 
-.detail-grid {
+.employer-dashboard .detail-grid {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 1rem;
 }
 
-.detail-item {
+.employer-dashboard .detail-item {
     display: flex;
     flex-direction: column;
     gap: 0.25rem;
 }
 
-.detail-label {
+.employer-dashboard .detail-label {
     font-size: 0.85rem;
     color: #718096;
     font-weight: 500;
@@ -651,27 +654,27 @@
     letter-spacing: 0.5px;
 }
 
-.detail-value {
+.employer-dashboard .detail-value {
     font-size: 1rem;
     color: #1a202c;
     font-weight: 600;
 }
 
-.job-description {
+.employer-dashboard .job-description {
     color: #4a5568;
     line-height: 1.8;
     font-size: 1rem;
 }
 
-.requirements-list,
-.benefits-list {
+.employer-dashboard .requirements-list,
+.employer-dashboard .benefits-list {
     list-style: none;
     padding: 0;
     margin: 0;
 }
 
-.requirements-list li,
-.benefits-list li {
+.employer-dashboard .requirements-list li,
+.employer-dashboard .benefits-list li {
     padding: 0.75rem;
     margin-bottom: 0.5rem;
     background: rgba(102, 126, 234, 0.05);
@@ -681,7 +684,7 @@
     padding-left: 2rem;
 }
 
-.requirements-list li::before {
+.employer-dashboard .requirements-list li::before {
     content: '✓';
     position: absolute;
     left: 0.75rem;
@@ -689,24 +692,24 @@
     font-weight: bold;
 }
 
-.benefits-list li::before {
+.employer-dashboard .benefits-list li::before {
     content: '★';
     position: absolute;
     left: 0.75rem;
     color: #f59e0b;
 }
 
-.applicants-count {
+.employer-dashboard .applicants-count {
     font-size: 1.1rem;
     color: #4a5568;
 }
 
-.applicants-count strong {
+.employer-dashboard .applicants-count strong {
     color: #667eea;
     font-size: 1.3rem;
 }
 
-.modal-footer {
+.employer-dashboard .modal-footer {
     padding: 1.5rem 2rem;
     border-top: 1px solid rgba(0, 0, 0, 0.1);
     display: flex;
@@ -714,8 +717,8 @@
     justify-content: flex-end;
 }
 
-.btn-primary,
-.btn-secondary {
+.employer-dashboard .btn-primary,
+.employer-dashboard .btn-secondary {
     padding: 0.75rem 2rem;
     border-radius: 10px;
     font-weight: 600;
@@ -725,23 +728,23 @@
     font-size: 1rem;
 }
 
-.btn-primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    color: white;
+.employer-dashboard .btn-primary {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+    color: white !important;
 }
 
-.btn-primary:hover {
+.employer-dashboard .btn-primary:hover {
     transform: translateY(-2px);
     box-shadow: 0 8px 20px rgba(102, 126, 234, 0.4);
 }
 
-.btn-secondary {
+.employer-dashboard .btn-secondary {
     background: white;
     color: #667eea;
     border: 2px solid #667eea;
 }
 
-.btn-secondary:hover {
+.employer-dashboard .btn-secondary:hover {
     background: rgba(102, 126, 234, 0.1);
     transform: translateY(-2px);
 }

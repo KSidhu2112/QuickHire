@@ -35,7 +35,7 @@
     }
 }
 
-.modal-header {
+.complaint-modal .modal-header {
     background: #fdf2f2;
     padding: 20px;
     display: flex;
@@ -130,7 +130,7 @@
     font-size: 0.85rem;
 }
 
-.modal-footer {
+.complaint-modal .modal-footer {
     padding-top: 10px;
     display: flex;
     gap: 12px;

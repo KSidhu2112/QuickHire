@@ -26,13 +26,33 @@ const EmployeeDashboard = () => {
     }, [searchTerm]);
 
     useEffect(() => {
-        // Check if user is logged in and is a jobseeker
         const storedUser = authAPI.getStoredUser();
         if (!storedUser || storedUser.role !== 'jobseeker') {
             navigate('/login');
             return;
         }
         setUser(storedUser);
+
+        const fetchFreshProfile = async () => {
+            try {
+                const response = await authAPI.getMe();
+                if (response.success && response.user) {
+                    setUser(response.user);
+                    localStorage.setItem('quickhire_user', JSON.stringify(response.user));
+                }
+            } catch (error) {
+                console.error('Error fetching fresh user profile:', error);
+            }
+        };
+        fetchFreshProfile();
+    }, []);
+
+    useEffect(() => {
+        const storedUser = authAPI.getStoredUser();
+        if (!storedUser || storedUser.role !== 'jobseeker') {
+            navigate('/login');
+            return;
+        }
         fetchJobs();
     }, [activeTab, filters, debouncedSearch]);
 
@@ -145,6 +165,13 @@ const EmployeeDashboard = () => {
                     </div>
                 </div>
                 <div className="dashboard-actions">
+                    {user?.stats?.avgRating !== undefined && (
+                        <div className="user-rating-mini" title="Your average employee rating" style={{ display: 'flex', alignItems: 'center', gap: '6px', background: '#fffbeb', padding: '8px 16px', borderRadius: '12px', border: '1px solid #fef3c7', boxShadow: '0 2px 4px rgba(0,0,0,0.05)', marginRight: '10px' }}>
+                            <span className="star" style={{ color: '#f59e0b', fontSize: '18px' }}>★</span>
+                            <span className="rating-value" style={{ fontSize: '18px', fontWeight: '700', color: '#92400e' }}>{user.stats.avgRating > 0 ? user.stats.avgRating.toFixed(1) : '0.0'}</span>
+                            <span className="rating-label" style={{ fontSize: '12px', color: '#d97706', textTransform: 'uppercase', fontWeight: '600' }}>({user.stats.ratingCount || 0})</span>
+                        </div>
+                    )}
                     <button
                         className="btn-my-applications"
                         onClick={() => navigate('/employee/applications')}
@@ -258,7 +285,16 @@ const EmployeeDashboard = () => {
 
                         <div className="modal-header">
                             <h2>{selectedJob.title}</h2>
-                            <p className="company-name">{selectedJob.company}</p>
+                            <div style={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', flexWrap: 'wrap', gap: '8px', marginTop: '4px' }}>
+                                <p className="company-name" style={{ margin: 0 }}>{selectedJob.company}</p>
+                                {selectedJob.employer?.stats?.avgRating > 0 && (
+                                    <div className="employer-rating-badge" style={{ display: 'flex', alignItems: 'center', gap: '4px', background: 'rgba(255, 255, 255, 0.2)', padding: '4px 10px', borderRadius: '12px', border: '1px solid rgba(255, 255, 255, 0.3)', color: 'white', fontSize: '0.85rem', fontWeight: '600' }}>
+                                        <span>★</span>
+                                        <span>{selectedJob.employer.stats.avgRating.toFixed(1)}</span>
+                                        <span style={{ fontSize: '0.75rem', opacity: 0.85 }}>({selectedJob.employer.stats.ratingCount || 0} reviews)</span>
+                                    </div>
+                                )}
+                            </div>
                         </div>
 
                         <div className="modal-content">

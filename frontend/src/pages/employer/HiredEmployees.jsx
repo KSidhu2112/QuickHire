@@ -189,7 +189,16 @@ const HiredEmployees = () => {
                                     </div>
 
                                     <div className="hired-card-subtitle">
-                                        <span>Employee: <strong>{app.jobseeker?.name || 'Unknown User'}</strong></span>
+                                        <div style={{ display: 'flex', alignItems: 'center', gap: '8px', flexWrap: 'wrap' }}>
+                                            <span>Employee: <strong>{app.jobseeker?.name || 'Unknown User'}</strong></span>
+                                            {app.jobseeker?.stats?.avgRating > 0 && (
+                                                <span className="candidate-rating" style={{ display: 'inline-flex', alignItems: 'center', gap: '2px', backgroundColor: 'rgba(245, 158, 11, 0.15)', color: '#d97706', padding: '2px 8px', borderRadius: '8px', fontSize: '0.8rem', fontWeight: '600' }}>
+                                                    <span>★</span>
+                                                    <span>{app.jobseeker.stats.avgRating.toFixed(1)}</span>
+                                                    <span style={{ fontSize: '0.7rem', color: '#78350f', fontWeight: 'normal' }}>({app.jobseeker.stats.ratingCount || 0})</span>
+                                                </span>
+                                            )}
+                                        </div>
                                         <span>Date: <strong>{app.reviewedAt ? new Date(app.reviewedAt).toLocaleDateString() : new Date(app.updatedAt).toLocaleDateString()}</strong></span>
                                     </div>
 
