@@ -157,6 +157,12 @@ export const jobAPI = {
         const response = await axiosInstance.get(`/jobs/${id}/stats`);
         return response.data;
     },
+
+    // Get public statistics (jobs, employees, employers count)
+    getPublicStats: async () => {
+        const response = await axiosInstance.get('/jobs/public/stats');
+        return response.data;
+    },
 };
 
 // Application API functions

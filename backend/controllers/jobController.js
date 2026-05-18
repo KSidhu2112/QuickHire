@@ -527,3 +527,30 @@ exports.getNearbyJobs = async (req, res) => {
         res.status(500).json({ success: false, message: 'Nearby jobs failed', error: error.message });
     }
 };
+
+// @desc    Get public statistics (counts of jobs, employees/jobseekers, employers)
+// @route   GET /api/jobs/public/stats
+// @access  Public
+exports.getPublicStats = async (req, res) => {
+    try {
+        const noOfJobs = await Job.countDocuments();
+        const noOfEmployees = await User.countDocuments({ role: 'jobseeker' });
+        const noOfEmployers = await User.countDocuments({ role: 'employer' });
+
+        res.status(200).json({
+            success: true,
+            stats: {
+                noOfJobs,
+                noOfEmployees,
+                noOfEmployers
+            }
+        });
+    } catch (error) {
+        console.error('Get Public Stats Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to fetch public statistics',
+            error: error.message,
+        });
+    }
+};

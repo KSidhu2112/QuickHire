@@ -1,13 +1,49 @@
 import React from 'react';
 import './Footer.css';
 import logo from '../assets/logo.png';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Link, useNavigate } from 'react-router-dom';
+import { authAPI } from '../services/api';
+import { toast } from 'react-toastify';
 
 const Footer = () => {
     const location = useLocation();
-    const isEmployerPage = location.pathname.startsWith('/employer');
-    const isEmployeePage = location.pathname.startsWith('/employee') || location.pathname === '/dashboard';
-    const isPublicPage = !isEmployerPage && !isEmployeePage;
+    const navigate = useNavigate();
+    const [user, setUser] = React.useState(null);
+    const [isLoggedIn, setIsLoggedIn] = React.useState(false);
+
+    React.useEffect(() => {
+        const loggedIn = authAPI.isLoggedIn();
+        setIsLoggedIn(loggedIn);
+        if (loggedIn) {
+            setUser(authAPI.getStoredUser());
+        } else {
+            setUser(null);
+        }
+    }, [location.pathname]);
+
+    const userRole = user?.role; // 'jobseeker' or 'employer'
+
+    const handleProtectedLinkClick = (e, path, allowedRole = null) => {
+        if (!isLoggedIn) {
+            e.preventDefault();
+            toast.info('Please log in to access this feature');
+            return;
+        }
+
+        if (allowedRole && userRole !== allowedRole) {
+            e.preventDefault();
+            toast.warning(`This feature is restricted to ${allowedRole === 'employer' ? 'Employers' : 'Job Seekers'}`);
+            return;
+        }
+    };
+
+    // Determine which columns to show based on URL path and logged-in state
+    const isEmployerRoute = location.pathname.startsWith('/employer');
+    const isEmployeeRoute = location.pathname.startsWith('/employee') || location.pathname === '/dashboard';
+    const isPublicRoute = !isEmployerRoute && !isEmployeeRoute;
+
+    const showJobSeekerLinks = isEmployeeRoute || (isPublicRoute && (!isLoggedIn || userRole === 'jobseeker'));
+    const showEmployerLinks = isEmployerRoute || (isPublicRoute && (!isLoggedIn || userRole === 'employer'));
 
     return (
         <footer className="footer">
@@ -44,38 +80,202 @@ const Footer = () => {
                     <div className="footer-column">
                         <h4>Quick Links</h4>
                         <ul>
-                            <li><a href="#home">Home</a></li>
-                            <li><a href="#about">About Us</a></li>
-                            <li><a href="#jobs">Browse Jobs</a></li>
-                            <li><a href="#employers">For Employers</a></li>
-                            <li><a href="#contact">Contact Us</a></li>
+                            <li><Link to="/">Home</Link></li>
+                            <li>
+                                <a 
+                                    href="#about" 
+                                    onClick={(e) => { 
+                                        e.preventDefault(); 
+                                        if (location.pathname !== '/') {
+                                            navigate('/');
+                                            setTimeout(() => {
+                                                window.scrollTo({ top: 0, behavior: 'smooth' });
+                                            }, 100);
+                                        } else {
+                                            window.scrollTo({ top: 0, behavior: 'smooth' });
+                                        }
+                                    }}
+                                >
+                                    About Us
+                                </a>
+                            </li>
+                            <li>
+                                {isLoggedIn && userRole === 'jobseeker' && (
+                                    <Link to="/dashboard">Browse Jobs</Link>
+                                )}
+                                {isLoggedIn && userRole === 'employer' && (
+                                    <Link to="/employer/dashboard">Employer Dashboard</Link>
+                                )}
+                                {!isLoggedIn && (
+                                    <a 
+                                        href="#jobs" 
+                                        onClick={(e) => {
+                                            e.preventDefault();
+                                            if (location.pathname !== '/') {
+                                                navigate('/');
+                                                setTimeout(() => {
+                                                    document.querySelector('.features-section')?.scrollIntoView({ behavior: 'smooth' });
+                                                }, 100);
+                                            } else {
+                                                document.querySelector('.features-section')?.scrollIntoView({ behavior: 'smooth' });
+                                            }
+                                        }}
+                                    >
+                                        Browse Jobs
+                                    </a>
+                                )}
+                            </li>
+                            <li>
+                                {isLoggedIn && userRole === 'employer' && (
+                                    <Link to="/employer/add-job">Post a Job</Link>
+                                )}
+                                {isLoggedIn && userRole === 'jobseeker' && (
+                                    <a 
+                                        href="#" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employer/add-job', 'employer')}
+                                    >
+                                        For Employers
+                                    </a>
+                                )}
+                                {!isLoggedIn && (
+                                    <a 
+                                        href="#" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employer/dashboard', 'employer')}
+                                    >
+                                        For Employers
+                                    </a>
+                                )}
+                            </li>
+                            <li>
+                                <a 
+                                    href="#contact" 
+                                    onClick={(e) => { 
+                                        e.preventDefault(); 
+                                        document.querySelector('.footer-contact')?.scrollIntoView({ behavior: 'smooth' }); 
+                                    }}
+                                >
+                                    Contact Us
+                                </a>
+                            </li>
                         </ul>
                     </div>
 
-                    {/* For Job Seekers - Show on Public & Employee Pages */}
-                    {(isPublicPage || isEmployeePage) && (
+                    {/* For Job Seekers - Show dynamically based on path & logged-in role */}
+                    {showJobSeekerLinks && (
                         <div className="footer-column">
                             <h4>For Job Seekers</h4>
                             <ul>
-                                <li><a href="#browse">Browse Jobs</a></li>
-                                <li><a href="#profile">Create Profile</a></li>
-                                <li><a href="#resume">Upload Resume</a></li>
-                                <li><a href="#alerts">Job Alerts</a></li>
-                                <li><a href="#career">Career Advice</a></li>
+                                <li>
+                                    {isLoggedIn && userRole === 'jobseeker' ? (
+                                        <Link to="/dashboard">Browse Jobs</Link>
+                                    ) : (
+                                        <a 
+                                            href="#browse" 
+                                            onClick={(e) => {
+                                                e.preventDefault();
+                                                if (location.pathname !== '/') {
+                                                    navigate('/');
+                                                    setTimeout(() => {
+                                                        window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                    }, 100);
+                                                } else {
+                                                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                                                }
+                                            }}
+                                        >
+                                            Browse Jobs
+                                        </a>
+                                    )}
+                                </li>
+                                <li>
+                                    <Link 
+                                        to="/employee/profile" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employee/profile', 'jobseeker')}
+                                    >
+                                        My Profile
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link 
+                                        to="/employee/shortlisted" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employee/shortlisted', 'jobseeker')}
+                                    >
+                                        Shortlisted Jobs
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link 
+                                        to="/employee/applications" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employee/applications', 'jobseeker')}
+                                    >
+                                        My Applications
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link 
+                                        to="/notifications" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/notifications', 'jobseeker')}
+                                    >
+                                        Notifications
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
                     )}
 
-                    {/* For Employers - Show on Public & Employer Pages */}
-                    {(isPublicPage || isEmployerPage) && (
+                    {/* For Employers - Show dynamically based on path & logged-in role */}
+                    {showEmployerLinks && (
                         <div className="footer-column">
                             <h4>For Employers</h4>
                             <ul>
-                                <li><a href="#post">Post a Job</a></li>
-                                <li><a href="#candidates">Find Candidates</a></li>
-                                <li><a href="#pricing">Pricing</a></li>
-                                <li><a href="#solutions">Enterprise Solutions</a></li>
-                                <li><a href="#support">Support</a></li>
+                                <li>
+                                    <Link 
+                                        to="/employer/dashboard" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employer/dashboard', 'employer')}
+                                    >
+                                        Employer Dashboard
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link 
+                                        to="/employer/add-job" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employer/add-job', 'employer')}
+                                    >
+                                        Post a Job
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link 
+                                        to="/employer/manage-jobs" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employer/manage-jobs', 'employer')}
+                                    >
+                                        Manage Jobs
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link 
+                                        to="/employer/applications" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employer/applications', 'employer')}
+                                    >
+                                        Review Applications
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link 
+                                        to="/employer/hired-employees" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employer/hired-employees', 'employer')}
+                                    >
+                                        Hired Employees
+                                    </Link>
+                                </li>
+                                <li>
+                                    <Link 
+                                        to="/employer/payments" 
+                                        onClick={(e) => handleProtectedLinkClick(e, '/employer/payments', 'employer')}
+                                    >
+                                        Payment History
+                                    </Link>
+                                </li>
                             </ul>
                         </div>
                     )}

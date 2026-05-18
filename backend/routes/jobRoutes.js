@@ -9,11 +9,13 @@ const {
     getMyJobs,
     getJobStats,
     getNearbyJobs,
+    getPublicStats,
 } = require('../controllers/jobController');
 const { protect, optionalProtect } = require('../middleware/authMiddleware');
 const { checkRole } = require('../middleware/roleMiddleware');
 
 // Public routes
+router.get('/public/stats', getPublicStats); // Get public statistics
 router.get('/', optionalProtect, getJobs); // Get all jobs with filters
 router.get('/nearby', optionalProtect, getNearbyJobs); // Get nearby jobs by lat/lng/distance
 

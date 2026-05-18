@@ -1,8 +1,29 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import './Home.css';
 import heroImage from '../assets/hero_image.png';
+import { jobAPI } from '../services/api';
 
 const Home = () => {
+    const [stats, setStats] = useState({
+        noOfJobs: 0,
+        noOfEmployees: 0,
+        noOfEmployers: 0
+    });
+
+    useEffect(() => {
+        const fetchStats = async () => {
+            try {
+                const res = await jobAPI.getPublicStats();
+                if (res.success && res.stats) {
+                    setStats(res.stats);
+                }
+            } catch (err) {
+                console.error('Error fetching public stats:', err);
+            }
+        };
+        fetchStats();
+    }, []);
+
     return (
         <div className="home-container">
             {/* Hero Section */}
@@ -18,24 +39,20 @@ const Home = () => {
                             QuickHire revolutionizes job searching with intelligent matching algorithms,
                             connecting talented professionals with their perfect career opportunities in seconds.
                         </p>
-                        <div className="hero-buttons">
-                            <button className="btn-primary">Get Started</button>
-                            <button className="btn-secondary">Learn More</button>
-                        </div>
 
                         {/* Stats */}
                         <div className="hero-stats">
                             <div className="stat-item">
-                                <h3>10K+</h3>
-                                <p>Active Jobs</p>
+                                <h3>{stats.noOfJobs}</h3>
+                                <p>Jobs Available</p>
                             </div>
                             <div className="stat-item">
-                                <h3>5K+</h3>
-                                <p>Companies</p>
+                                <h3>{stats.noOfEmployees}</h3>
+                                <p>Employees</p>
                             </div>
                             <div className="stat-item">
-                                <h3>50K+</h3>
-                                <p>Happy Users</p>
+                                <h3>{stats.noOfEmployers}</h3>
+                                <p>Employers</p>
                             </div>
                         </div>
                     </div>
