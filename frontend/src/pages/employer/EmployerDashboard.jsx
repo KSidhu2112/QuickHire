@@ -283,10 +283,16 @@ const EmployerDashboard = () => {
                                         </p>
                                         <p className="job-salary">
                                             <span className="icon">💰</span>
-                                            {job.salary && job.salary.min && job.salary.max
-                                                ? `₹${job.salary.min} - ₹${job.salary.max}`
-                                                : 'To be discussed'
+                                            {job.salaryMin !== undefined
+                                                ? `₹${job.salaryMin}${job.salaryMax && job.salaryMax !== job.salaryMin ? ` - ₹${job.salaryMax}` : ''} / ${job.salaryType ? job.salaryType.toLowerCase() : 'monthly'}`
+                                                : (job.salary && job.salary.min && job.salary.max
+                                                    ? `₹${job.salary.min} - ₹${job.salary.max}`
+                                                    : 'To be discussed')
                                             }
+                                        </p>
+                                        <p className="job-vacancies">
+                                            <span className="icon">👥</span>
+                                            Hired: {job.workersHired || 0} / Vacancies: {Math.max(0, job.workersRequired - (job.workersHired || 0))}
                                         </p>
                                     </div>
                                     <div className="job-card-footer">
@@ -343,14 +349,6 @@ const EmployerDashboard = () => {
                             <p>Manage your workforce</p>
                         </button>
 
-                        <button
-                            className="action-card payments"
-                            onClick={() => navigate('/employer/payments')}
-                        >
-                            <span className="action-icon">💰</span>
-                            <h3>Payments</h3>
-                            <p>View payment summary</p>
-                        </button>
 
                         <button
                             className="action-card profile"
@@ -435,15 +433,19 @@ const EmployerDashboard = () => {
                                     <div className="detail-item">
                                         <span className="detail-label">Salary Range:</span>
                                         <span className="detail-value">
-                                            {selectedJob.salary && selectedJob.salary.min && selectedJob.salary.max
-                                                ? `₹${selectedJob.salary.min} - ₹${selectedJob.salary.max}`
-                                                : 'To be discussed'
+                                            {selectedJob.salaryMin !== undefined
+                                                ? `₹${selectedJob.salaryMin}${selectedJob.salaryMax && selectedJob.salaryMax !== selectedJob.salaryMin ? ` - ₹${selectedJob.salaryMax}` : ''} / ${selectedJob.salaryType ? selectedJob.salaryType.toLowerCase() : 'monthly'}`
+                                                : (selectedJob.salary && selectedJob.salary.min && selectedJob.salary.max
+                                                    ? `₹${selectedJob.salary.min} - ₹${selectedJob.salary.max}`
+                                                    : 'To be discussed')
                                             }
                                         </span>
                                     </div>
                                     <div className="detail-item">
-                                        <span className="detail-label">Openings:</span>
-                                        <span className="detail-value">{selectedJob.openings || 'N/A'}</span>
+                                        <span className="detail-label">Vacancies:</span>
+                                        <span className="detail-value">
+                                            Hired: {selectedJob.workersHired || 0} / Vacancies: {Math.max(0, selectedJob.workersRequired - (selectedJob.workersHired || 0))}
+                                        </span>
                                     </div>
                                     <div className="detail-item">
                                         <span className="detail-label">Posted:</span>

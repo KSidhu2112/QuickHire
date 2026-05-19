@@ -202,6 +202,35 @@ const HiredEmployees = () => {
                                         <span>Date: <strong>{app.reviewedAt ? new Date(app.reviewedAt).toLocaleDateString() : new Date(app.updatedAt).toLocaleDateString()}</strong></span>
                                     </div>
 
+                                    <div className="hired-card-contact" style={{
+                                        display: 'flex',
+                                        gap: '20px',
+                                        flexWrap: 'wrap',
+                                        padding: '8px 16px',
+                                        margin: '0 0 10px 0',
+                                        background: 'linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%)',
+                                        borderRadius: '8px',
+                                        fontSize: '13.5px',
+                                        color: '#334155'
+                                    }}>
+                                        {app.jobseeker?.email && (
+                                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <span style={{ fontSize: '15px' }}>📧</span>
+                                                <a href={`mailto:${app.jobseeker.email}`} style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500 }}>
+                                                    {app.jobseeker.email}
+                                                </a>
+                                            </span>
+                                        )}
+                                        {app.jobseeker?.phone && (
+                                            <span style={{ display: 'flex', alignItems: 'center', gap: '6px' }}>
+                                                <span style={{ fontSize: '15px' }}>📞</span>
+                                                <a href={`tel:${app.jobseeker.phone}`} style={{ color: '#2563eb', textDecoration: 'none', fontWeight: 500 }}>
+                                                    {app.jobseeker.phone}
+                                                </a>
+                                            </span>
+                                        )}
+                                    </div>
+
                                     <div className="hired-status-container">
                                         <div className="status-column">
                                             <span className="status-column-title">Employer Side</span>
@@ -273,10 +302,6 @@ const HiredEmployees = () => {
                                                 <span className="icon">💰</span> Mark as Paid
                                             </button>
                                         )}
-
-                                        <button className="hired-btn hired-btn-purple" onClick={() => window.location.href = `mailto:${app.jobseeker?.email}`}>
-                                            <span className="icon">👤</span> Employee Profile
-                                        </button>
                                     </div>
                                 </div>
                             );

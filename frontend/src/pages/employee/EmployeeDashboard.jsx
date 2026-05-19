@@ -333,12 +333,18 @@ const EmployeeDashboard = () => {
                                 <div className="detail-item">
                                     <span className="label">Salary:</span>
                                     <span className="value">
-                                        {selectedJob.salaryMin} - {selectedJob.salaryMax} {selectedJob.salaryType}
+                                        ₹{selectedJob.salaryMin} - ₹{selectedJob.salaryMax} {selectedJob.salaryType}
                                     </span>
                                 </div>
                                 <div className="detail-item">
                                     <span className="label">Job Type:</span>
                                     <span className="value">{selectedJob.jobType?.replace('_', ' ')}</span>
+                                </div>
+                                <div className="detail-item">
+                                    <span className="label">Vacancies:</span>
+                                    <span className="value">
+                                        Hired: {selectedJob.workersHired || 0} / Vacancies: {Math.max(0, selectedJob.workersRequired - (selectedJob.workersHired || 0))}
+                                    </span>
                                 </div>
                                 {selectedJob.experience && (
                                     <div className="detail-item">

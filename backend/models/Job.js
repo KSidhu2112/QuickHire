@@ -218,6 +218,10 @@ const jobSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        embedding: {
+            type: [Number],
+            default: undefined
+        },
     },
     {
         timestamps: true,
@@ -251,6 +255,26 @@ jobSchema.pre('save', async function () {
 
         if (workDay < today && this.status === 'ACTIVE') {
             this.status = 'EXPIRED';
+        }
+    }
+});
+
+// Auto-generate embeddings for job description and required skills on creation or updates
+jobSchema.pre('save', async function () {
+    const isDescriptionOrSkillsModified = this.isModified('title') || 
+                                          this.isModified('description') || 
+                                          this.isModified('skills') || 
+                                          this.isModified('category') ||
+                                          this.isNew;
+                                          
+    if (isDescriptionOrSkillsModified) {
+        try {
+            const embeddingService = require('../services/embeddingService');
+            const text = embeddingService.buildJobText(this);
+            this.embedding = await embeddingService.generateEmbedding(text);
+            console.log(`🤖 Auto-generated embedding vector (length ${this.embedding.length}) for job: ${this.title}`);
+        } catch (err) {
+            console.error('⚠️ Error generating job embedding in pre-save:', err.message);
         }
     }
 });

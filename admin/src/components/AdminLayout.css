@@ -1,8 +1,10 @@
+/* src/components/AdminLayout.css */
+
 .admin-layout {
     display: flex;
     min-height: 100vh;
-    background: #0f172a;
-    color: #e2e8f0;
+    background: var(--background-color);
+    color: var(--text-primary);
 }
 
 .admin-main {
@@ -10,16 +12,18 @@
     margin-left: 260px;
     display: flex;
     flex-direction: column;
+    min-width: 0; /* Prevents flex items from overflowing */
 }
 
 .admin-top-bar {
     height: 70px;
-    background: #1e293b;
-    border-bottom: 2px solid #334155;
+    background: rgba(13, 19, 33, 0.85);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid var(--border-color);
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 0 2rem;
+    padding: 0 2.5rem;
     position: sticky;
     top: 0;
     z-index: 90;
@@ -27,8 +31,8 @@
 
 .admin-breadcrumb {
     font-size: 0.9rem;
-    color: #cbd5e1;
-    font-weight: 500;
+    color: var(--text-secondary);
+    font-weight: 600;
 }
 
 .breadcrumb-link {
@@ -38,44 +42,66 @@
 }
 
 .breadcrumb-link:hover {
-    color: #38bdf8;
+    color: var(--primary-color);
 }
 
 .admin-breadcrumb .active-view {
-    color: #38bdf8;
+    color: #818cf8;
     text-transform: capitalize;
+    font-weight: 700;
 }
 
 .admin-user-profile {
     display: flex;
     align-items: center;
-    gap: 1.5rem;
+    gap: 1.25rem;
 }
 
 .admin-badge {
-    background: #0ea5e9;
-    color: #ffffff;
-    padding: 0.35rem 0.85rem;
-    border-radius: 2rem;
-    font-size: 0.75rem;
-    font-weight: 700;
-    letter-spacing: 0.05rem;
+    background: linear-gradient(135deg, rgba(99, 102, 241, 0.15) 0%, rgba(139, 92, 246, 0.15) 100%);
+    color: #a5b4fc;
+    padding: 0.4rem 1rem;
+    border-radius: 100px;
+    font-size: 0.72rem;
+    font-weight: 800;
+    letter-spacing: 0.08em;
+    border: 1px solid rgba(99, 102, 241, 0.2);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 }
 
 .admin-avatar {
-    width: 40px;
-    height: 40px;
-    background: #38bdf8;
-    color: #1e293b;
-    border-radius: 50%;
+    width: 38px;
+    height: 38px;
+    background: var(--primary-gradient);
+    color: #ffffff;
+    border-radius: 12px; /* Squash circle avatar to elegant squircle */
     display: flex;
     align-items: center;
     justify-content: center;
     font-weight: 800;
-    font-size: 1.25rem;
+    font-size: 1.15rem;
+    box-shadow: 0 4px 10px rgba(99, 102, 241, 0.25);
+    border: 1px solid rgba(255, 255, 255, 0.1);
 }
 
 .admin-content-inner {
     padding: 2.5rem;
     flex: 1;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+}
+
+@media (max-width: 992px) {
+    .admin-main {
+        margin-left: 0;
+    }
+    
+    .admin-sidebar {
+        transform: translateX(-100%);
+    }
+    
+    .admin-sidebar.active {
+        transform: translateX(0);
+    }
 }

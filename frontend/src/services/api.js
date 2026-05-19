@@ -252,6 +252,11 @@ export const applicationAPI = {
         const response = await axiosInstance.post(`/applications/${id}/confirm-payment`);
         return response.data;
     },
+    // Direct hire matched worker (Employer only)
+    directHireWorker: async (jobId, workerId) => {
+        const response = await axiosInstance.post('/applications/direct-hire', { jobId, workerId });
+        return response.data;
+    },
 };
 
 // Notification API functions
@@ -415,6 +420,27 @@ export const ratingAPI = {
             rating: stars,
             comment: feedback
         });
+    }
+};
+
+// AI API functions
+export const aiAPI = {
+    // Get AI matched workers for a job
+    getMatchedWorkers: async (jobId, limit = 5) => {
+        const response = await axiosInstance.get(`/ai/match-workers/${jobId}?limit=${limit}`);
+        return response.data;
+    },
+
+    // Get recommended jobs for logged-in worker
+    getRecommendedJobs: async (limit = 5) => {
+        const response = await axiosInstance.get(`/ai/recommend-jobs?limit=${limit}`);
+        return response.data;
+    },
+
+    // Refresh profile embedding
+    refreshProfileEmbedding: async () => {
+        const response = await axiosInstance.post('/ai/refresh-profile-embedding');
+        return response.data;
     }
 };
 

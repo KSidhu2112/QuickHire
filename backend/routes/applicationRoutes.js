@@ -12,9 +12,13 @@ const {
     confirmWork,
     markAsPaid,
     confirmPaymentReceived,
+    directHireWorker,
 } = require('../controllers/applicationController');
 const { protect } = require('../middleware/authMiddleware');
 const { checkRole } = require('../middleware/roleMiddleware');
+
+// Employer routes
+router.post('/direct-hire', protect, checkRole(['employer']), directHireWorker); // Direct hire a matched worker
 
 // Job Seeker routes
 router.get('/', protect, checkRole(['jobseeker']), getUserApplications); // Get user's applications
@@ -23,7 +27,7 @@ router.post('/:jobId', protect, checkRole(['jobseeker']), applyForJob); // Apply
 router.delete('/:id', protect, checkRole(['jobseeker']), withdrawApplication); // Withdraw application
 router.post('/:id/confirm-payment', protect, checkRole(['jobseeker']), confirmPaymentReceived); // Confirm payment received
 
-// Employer routes
+// Employer routes (remaining)
 router.get('/job/:jobId', protect, checkRole(['employer']), getJobApplications); // Get job applications
 router.get('/employer/hired', protect, checkRole(['employer']), getHiredEmployees); // Get hired employees
 router.put('/:id/status', protect, checkRole(['employer']), updateApplicationStatus); // Update status

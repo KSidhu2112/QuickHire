@@ -141,11 +141,6 @@ const AddJob = () => {
                 // Display validation errors from backend
                 const validationErrors = err.response.data.errors.join('. ');
                 setError(`Validation failed: ${validationErrors}`);
-            } else if (err.response?.status === 402) {
-                // Payment required - save data and navigate to checkout
-                localStorage.setItem('pending_job_data', JSON.stringify(jobData));
-                toast.info('Payment required to post a job. Redirecting to checkout...');
-                navigate('/checkout/post');
             } else {
                 setError(err.response?.data?.message || 'Failed to post job');
             }

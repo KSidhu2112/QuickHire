@@ -189,21 +189,6 @@ exports.getJobById = async (req, res) => {
 // @access  Private (Employer only)
 exports.createJob = async (req, res) => {
     try {
-        // Check for payment
-        const payment = await Payment.findOne({
-            userId: req.user._id,
-            action: 'post_job',
-            paymentStatus: 'completed',
-            used: false
-        }).sort({ timestamp: -1 });
-
-        if (!payment) {
-            return res.status(402).json({
-                success: false,
-                message: 'Payment required to post a job'
-            });
-        }
-
         const jobData = {
             ...req.body,
             employer: req.user._id,
@@ -237,11 +222,6 @@ exports.createJob = async (req, res) => {
         }
 
         const job = await Job.create(jobData);
-
-        // Mark payment as used
-        payment.used = true;
-        payment.jobId = job._id;
-        await payment.save();
 
         // Update Employer Stats
         await User.findByIdAndUpdate(req.user._id, { $inc: { 'stats.totalJobsPosted': 1 } });

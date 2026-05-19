@@ -784,3 +784,118 @@ exports.confirmPaymentReceived = async (req, res) => {
     }
 };
 
+// @desc    Direct hire a matched worker
+// @route   POST /api/applications/direct-hire
+// @access  Private (Employer only)
+exports.directHireWorker = async (req, res) => {
+    try {
+        const { jobId, workerId } = req.body;
+
+        if (!jobId || !workerId) {
+            return res.status(400).json({
+                success: false,
+                message: 'Job ID and Worker ID are required'
+            });
+        }
+
+        // Verify the job exists and is owned by the employer
+        const job = await Job.findById(jobId);
+        if (!job) {
+            return res.status(404).json({
+                success: false,
+                message: 'Job post not found'
+            });
+        }
+
+        if (job.employer.toString() !== req.user._id.toString()) {
+            return res.status(403).json({
+                success: false,
+                message: 'Not authorized to hire for this job'
+            });
+        }
+
+        // Check if positions are full
+        if (job.workersHired >= job.workersRequired) {
+            return res.status(400).json({
+                success: false,
+                message: 'All positions for this job have already been filled!'
+            });
+        }
+
+        // Verify worker exists and is a jobseeker
+        const worker = await User.findById(workerId);
+        if (!worker) {
+            return res.status(404).json({
+                success: false,
+                message: 'Candidate worker not found'
+            });
+        }
+
+        if (worker.role !== 'jobseeker') {
+            return res.status(400).json({
+                success: false,
+                message: 'Target user is not a registered worker'
+            });
+        }
+
+        // Check if there is an existing application
+        let application = await Application.findOne({ job: jobId, jobseeker: workerId });
+
+        if (application) {
+            if (application.status === 'ACCEPTED') {
+                return res.status(400).json({
+                    success: false,
+                    message: 'This worker has already been hired for this job!'
+                });
+            }
+            application.status = 'ACCEPTED';
+            application.employerNotes = 'Hired directly from AI recommendation matches';
+            application.reviewedAt = new Date();
+            application.reviewedBy = req.user._id;
+            await application.save();
+        } else {
+            application = await Application.create({
+                job: jobId,
+                jobseeker: workerId,
+                employer: job.employer,
+                coverLetter: 'Hired directly from AI Matching Recommendations',
+                status: 'ACCEPTED',
+                employerNotes: 'Directly hired by employer from AI recommendation matches',
+                reviewedAt: new Date(),
+                reviewedBy: req.user._id
+            });
+            await job.incrementApplicants();
+        }
+
+        // Increment workers hired
+        await job.hireWorker();
+
+        // Send notification to hired employee
+        try {
+            await notifyShortlisted(
+                workerId,
+                jobId,
+                application._id,
+                job.title,
+                job.company
+            );
+            console.log(`✅ Direct hire notification sent successfully to employee: ${worker.name}`);
+        } catch (notifError) {
+            console.error('Notification Error (non-fatal):', notifError);
+        }
+
+        res.status(200).json({
+            success: true,
+            message: `Successfully hired ${worker.name} and sent direct notification!`,
+            application
+        });
+    } catch (error) {
+        console.error('Direct Hire Worker Error:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Failed to complete direct hire',
+            error: error.message
+        });
+    }
+};
+

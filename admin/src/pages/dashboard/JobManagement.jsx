@@ -107,7 +107,8 @@ const JobManagement = () => {
                         <h3 className="job-title">{job.title}</h3>
                         <div className="job-meta">
                             <span>Posted by: <strong>{job.employer?.name}</strong></span>
-                            <span>Budget: <strong>₹{job.budget?.min} - ₹{job.budget?.max}</strong></span>
+                            <span>Salary: <strong>₹{job.salaryMin} - ₹{job.salaryMax} / {job.salaryType?.toLowerCase() || 'monthly'}</strong></span>
+                            <span>Vacancies: <strong>{Math.max(0, job.workersRequired - (job.workersHired || 0))}</strong></span>
                         </div>
                         <div className="job-footer">
                             <div className="job-actions">

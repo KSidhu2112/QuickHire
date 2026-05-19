@@ -26,6 +26,7 @@ const verificationRoutes = require('./routes/verificationRoutes');
 const ratingRoutes = require('./routes/ratingRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
+const aiRoutes = require('./routes/aiRoutes');
 
 // Middleware
 const corsOptions = {
@@ -67,6 +68,7 @@ app.use('/api/disputes', disputeRoutes);
 app.use('/api/verification', verificationRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/rating', ratingRoutes);
+app.use('/api/ai', aiRoutes);
 
 // Services
 const { runPenaltyCheck } = require('./services/penaltyService');
