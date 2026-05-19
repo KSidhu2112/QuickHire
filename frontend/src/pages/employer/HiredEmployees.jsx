@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { toast } from 'react-toastify';
 import './HiredEmployees.css';
 
@@ -57,7 +58,7 @@ const HiredEmployees = () => {
         setSubmitting(true);
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.post('http://localhost:5000/api/reviews', {
+            const response = await axios.post(`${API_BASE}/reviews`, {
                 revieweeId: selectedEmployee.jobseeker._id,
                 jobId: selectedEmployee.job._id,
                 rating,
@@ -86,7 +87,7 @@ const HiredEmployees = () => {
     const fetchHiredEmployees = async () => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.get('http://localhost:5000/api/applications/employer/hired', {
+            const response = await axios.get(`${API_BASE}/applications/employer/hired`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -109,7 +110,7 @@ const HiredEmployees = () => {
     const handleConfirmWork = async (app) => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.post(`http://localhost:5000/api/verification/${app._id}/employer-confirm`, {
+            const response = await axios.post(`${API_BASE}/verification/${app._id}/employer-confirm`, {
                 status: 'FULL',
                 feedback: 'Work completed successfully',
                 rating: 5
@@ -129,7 +130,7 @@ const HiredEmployees = () => {
     const handleMarkAsPaid = async (app) => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.post(`http://localhost:5000/api/applications/${app._id}/mark-paid`, {}, {
+            const response = await axios.post(`${API_BASE}/applications/${app._id}/mark-paid`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.success) {

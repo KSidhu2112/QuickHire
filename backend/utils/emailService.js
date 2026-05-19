@@ -214,7 +214,7 @@ const sendWelcomeEmail = async (email, name) => {
               Start exploring thousands of job opportunities tailored just for you with our AI-powered matching system.
             </p>
             <div style="text-align: center; margin: 30px 0;">
-              <a href="http://localhost:5173" style="display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 15px 40px; border-radius: 8px; text-decoration: none; font-weight: 600;">
+              <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}" style="display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 15px 40px; border-radius: 8px; text-decoration: none; font-weight: 600;">
                 Start Job Hunting 🚀
               </a>
             </div>

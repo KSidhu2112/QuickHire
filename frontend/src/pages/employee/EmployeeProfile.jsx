@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { reviewAPI } from '../../services/api';
 import './EmployeeProfile.css';
 
@@ -44,7 +45,7 @@ const EmployeeProfile = () => {
             const token = localStorage.getItem('quickhire_token');
             const skillsArray = formData.skills.split(',').map(s => s.trim()).filter(s => s);
 
-            const response = await axios.put('http://localhost:5000/api/auth/profile', {
+            const response = await axios.put(`${API_BASE}/auth/profile`, {
                 name: formData.name,
                 phone: formData.phone,
                 profile: {
@@ -77,7 +78,7 @@ const EmployeeProfile = () => {
         try {
             const token = localStorage.getItem('quickhire_token');
             // Try fetching from 'me' endpoint or use local storage
-            const response = await axios.get('http://localhost:5000/api/auth/me', {
+            const response = await axios.get(`${API_BASE}/auth/me`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

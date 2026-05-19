@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './ManageJobs.css';
 
 const ManageJobs = () => {
@@ -17,7 +19,7 @@ const ManageJobs = () => {
     const fetchJobs = async () => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.get('http://localhost:5000/api/jobs/employer/my-jobs', {
+            const response = await axios.get(`${API_BASE}/jobs/employer/my-jobs`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -38,7 +40,7 @@ const ManageJobs = () => {
         try {
             const token = localStorage.getItem('quickhire_token');
             await axios.put(
-                `http://localhost:5000/api/jobs/${jobId}`,
+                `${API_BASE}/jobs/${jobId}`,
                 { status: 'CLOSED' },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -53,7 +55,7 @@ const ManageJobs = () => {
         try {
             const token = localStorage.getItem('quickhire_token');
             await axios.put(
-                `http://localhost:5000/api/jobs/${jobId}`,
+                `${API_BASE}/jobs/${jobId}`,
                 { isUrgent: !currentStatus },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -69,7 +71,7 @@ const ManageJobs = () => {
 
         try {
             const token = localStorage.getItem('quickhire_token');
-            await axios.delete(`http://localhost:5000/api/jobs/${jobId}`, {
+            await axios.delete(`${API_BASE}/jobs/${jobId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
             fetchJobs();

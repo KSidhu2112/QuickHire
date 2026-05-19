@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { FaExclamationTriangle, FaCheckCircle, FaBan, FaTimes, FaSearch } from 'react-icons/fa';
 import './ReportManagement.css';
 
@@ -16,7 +17,7 @@ const ReportManagement = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.get('http://localhost:5000/api/admin/reports', {
+            const res = await axios.get(`${API_BASE}/admin/reports`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {
@@ -32,7 +33,7 @@ const ReportManagement = () => {
     const handleUpdateReport = async (reportId, status, remarks) => {
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.patch(`http://localhost:5000/api/admin/reports/${reportId}/status`, { status, adminRemarks: remarks }, {
+            const res = await axios.patch(`${API_BASE}/admin/reports/${reportId}/status`, { status, adminRemarks: remarks }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {

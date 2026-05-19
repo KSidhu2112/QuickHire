@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './Auth.css'; // Shared CSS
 
 const Login = () => {
@@ -23,7 +24,7 @@ const Login = () => {
         setError('');
 
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/login', { email, password });
+            const res = await axios.post(`${API_BASE}/auth/login`, { email, password });
 
             console.log('Login success:', res.data);
 

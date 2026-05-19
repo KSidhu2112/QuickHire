@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Link, useSearchParams, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './Auth.css';
 
 const ResetPassword = () => {
@@ -43,7 +44,7 @@ const ResetPassword = () => {
         setLoading(true);
 
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/reset-password', {
+            const res = await axios.post(`${API_BASE}/auth/reset-password`, {
                 email: formData.email,
                 otp: formData.otp,
                 newPassword: formData.newPassword

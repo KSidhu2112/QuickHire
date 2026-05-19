@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { useParams, useNavigate } from 'react-router-dom';
 import './DetailPages.css';
 import { FaArrowLeft, FaEnvelope, FaBuilding, FaMapMarkerAlt, FaCalendarAlt, FaBriefcase, FaUsers, FaCheckCircle } from 'react-icons/fa';
@@ -20,7 +21,7 @@ const EmployerDetails = () => {
                         Authorization: `Bearer ${token}`
                     }
                 };
-                const res = await axios.get(`http://localhost:5000/api/admin/employers/${id}`, config);
+                const res = await axios.get(`${API_BASE}/admin/employers/${id}`, config);
                 if (res.data.success) {
                     setDetails(res.data.data);
                 } else {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './EmployerProfile.css';
 
 const EmployerProfile = () => { // Employer Profile Component
@@ -30,7 +31,7 @@ const EmployerProfile = () => { // Employer Profile Component
         try {
             setLoading(true);
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.put('http://localhost:5000/api/auth/profile', {
+            const response = await axios.put(`${API_BASE}/auth/profile`, {
                 name: formData.name,
                 phone: formData.phone,
                 profile: {
@@ -74,7 +75,7 @@ const EmployerProfile = () => { // Employer Profile Component
             // Checking existing authRoutes...
             // Fetching fresh data is better.
 
-            const response = await axios.get('http://localhost:5000/api/auth/me', {
+            const response = await axios.get(`${API_BASE}/auth/me`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

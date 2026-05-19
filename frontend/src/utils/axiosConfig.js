@@ -2,7 +2,7 @@ import axios from 'axios';
 
 // Create axios instance
 const axiosInstance = axios.create({
-    baseURL: 'http://localhost:5000/api',
+    baseURL: import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api',
     headers: {
         'Content-Type': 'application/json',
     },

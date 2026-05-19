@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { FaClock, FaCheckCircle, FaTimesCircle, FaTasks, FaSearch } from 'react-icons/fa';
 import './ApplicationTracking.css';
 
@@ -16,7 +17,7 @@ const ApplicationTracking = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.get('http://localhost:5000/api/admin/applications', {
+            const res = await axios.get(`${API_BASE}/admin/applications`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {

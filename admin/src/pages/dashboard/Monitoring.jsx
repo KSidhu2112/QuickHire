@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './Monitoring.css';
 
 const Monitoring = () => {
@@ -29,8 +30,8 @@ const Monitoring = () => {
             const config = { headers: { Authorization: `Bearer ${token}` } };
 
             const [statsRes, disputesRes] = await Promise.all([
-                axios.get('http://localhost:5000/api/disputes/monitoring', config),
-                axios.get('http://localhost:5000/api/disputes?limit=50', config),
+                axios.get(`${API_BASE}/disputes/monitoring`, config),
+                axios.get(`${API_BASE}/disputes?limit=50`, config),
             ]);
 
             if (statsRes.data.success) setStats(statsRes.data.data);
@@ -48,7 +49,7 @@ const Monitoring = () => {
         try {
             const token = localStorage.getItem('adminToken');
             const res = await axios.put(
-                `http://localhost:5000/api/disputes/${selectedDispute._id}/resolve`,
+                `${API_BASE}/disputes/${selectedDispute._id}/resolve`,
                 resolveData,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -68,7 +69,7 @@ const Monitoring = () => {
         try {
             const token = localStorage.getItem('adminToken');
             await axios.put(
-                `http://localhost:5000/api/disputes/${disputeId}/status`,
+                `${API_BASE}/disputes/${disputeId}/status`,
                 { status, comment: `Status updated to ${status} by admin` },
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -82,7 +83,7 @@ const Monitoring = () => {
         try {
             const token = localStorage.getItem('adminToken');
             const res = await axios.post(
-                'http://localhost:5000/api/verification/check-penalties',
+                `${API_BASE}/verification/check-penalties`,
                 {},
                 { headers: { Authorization: `Bearer ${token}` } }
             );

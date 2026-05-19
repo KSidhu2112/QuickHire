@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { useNavigate } from 'react-router-dom';
 
 const ManageEmployees = () => {
@@ -32,7 +33,7 @@ const ManageEmployees = () => {
                 };
 
                 // Fetch data from backend
-                const res = await axios.get('http://localhost:5000/api/admin/employees', config);
+                const res = await axios.get(`${API_BASE}/admin/employees`, config);
 
                 if (res.data.success) {
                     setEmployees(res.data.data);
@@ -60,7 +61,7 @@ const ManageEmployees = () => {
                     Authorization: `Bearer ${token}`
                 }
             };
-            await axios.delete(`http://localhost:5000/api/admin/users/${id}`, config);
+            await axios.delete(`${API_BASE}/admin/users/${id}`, config);
             setEmployees(employees.filter(emp => emp._id !== id));
         } catch (err) {
             console.error('Error deleting user:', err);

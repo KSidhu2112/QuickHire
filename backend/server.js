@@ -36,7 +36,9 @@ const corsOptions = {
         'http://localhost:5000',
         'http://localhost:5174',
         'http://localhost:5175',
-        'http://localhost:5176'
+        'http://localhost:5176',
+        'https://quickhirecareer.netlify.app',
+        'https://quickhirecareerplatform.netlify.app'
     ],
     credentials: true,
     optionsSuccessStatus: 200,

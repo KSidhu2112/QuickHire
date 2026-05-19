@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { useNavigate } from 'react-router-dom';
 import { FaUserShield, FaTrash, FaCheckCircle, FaBan, FaSearch, FaEye } from 'react-icons/fa';
 import './UserManagement.css';
@@ -19,7 +20,7 @@ const UserManagement = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.get(`http://localhost:5000/api/admin/${activeTab === 'jobseeker' ? 'employees' : 'employers'}`, {
+            const res = await axios.get(`${API_BASE}/admin/${activeTab === 'jobseeker' ? 'employees' : 'employers'}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {
@@ -35,7 +36,7 @@ const UserManagement = () => {
     const handleStatusUpdate = async (userId, newStatus) => {
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.patch(`http://localhost:5000/api/admin/users/${userId}/status`, { status: newStatus }, {
+            const res = await axios.patch(`${API_BASE}/admin/users/${userId}/status`, { status: newStatus }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {
@@ -51,7 +52,7 @@ const UserManagement = () => {
         if (!window.confirm('Are you sure you want to delete this user? This action is irreversible.')) return;
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.delete(`http://localhost:5000/api/admin/users/${userId}`, {
+            const res = await axios.delete(`${API_BASE}/admin/users/${userId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {

@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './AddJob.css';
 
 const EditJob = () => {
@@ -54,7 +55,7 @@ const EditJob = () => {
     const fetchJobDetails = async () => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.get(`http://localhost:5000/api/jobs/${id}`, {
+            const response = await axios.get(`${API_BASE}/jobs/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -174,7 +175,7 @@ const EditJob = () => {
                 jobData.foodProvided = formData.foodProvided;
             }
 
-            const response = await axios.put(`http://localhost:5000/api/jobs/${id}`, jobData, {
+            const response = await axios.put(`${API_BASE}/jobs/${id}`, jobData, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

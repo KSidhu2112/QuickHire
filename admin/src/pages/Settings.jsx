@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './Settings.css';
 
 const Settings = () => {
@@ -30,7 +31,7 @@ const Settings = () => {
     const fetchAccountDetails = async () => {
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch('http://localhost:5000/api/admin/profile', {
+            const response = await fetch(`${API_BASE}/admin/profile`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -104,7 +105,7 @@ const Settings = () => {
                 updateData.newPassword = formData.newPassword;
             }
 
-            const response = await fetch('http://localhost:5000/api/admin/profile', {
+            const response = await fetch(`${API_BASE}/admin/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

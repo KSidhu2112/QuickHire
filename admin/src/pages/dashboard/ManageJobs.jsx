@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { FaSearch, FaEye, FaTrash, FaFilter } from 'react-icons/fa';
 import './ManageJobs.css';
 
@@ -38,7 +39,7 @@ const ManageJobs = () => {
             if (jobTypeFilter !== 'ALL') params.jobType = jobTypeFilter;
             if (searchTerm) params.keyword = searchTerm;
 
-            const response = await axios.get('http://localhost:5000/api/admin/jobs', {
+            const response = await axios.get(`${API_BASE}/admin/jobs`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params
             });
@@ -72,7 +73,7 @@ const ManageJobs = () => {
 
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch(`http://localhost:5000/api/admin/jobs/${jobId}`, {
+            const response = await fetch(`${API_BASE}/admin/jobs/${jobId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`
@@ -93,7 +94,7 @@ const ManageJobs = () => {
     };
 
     const handleViewJob = (jobId) => {
-        window.open(`http://localhost:5173/jobs/${jobId}`, '_blank');
+        window.open(`https://quickhirecareer.netlify.app/jobs/${jobId}`, '_blank');
     };
 
     const formatDate = (dateString) => {

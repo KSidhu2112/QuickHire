@@ -1,6 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './EmployerDashboard.css';
 
 const EmployerDashboard = () => {
@@ -24,7 +25,7 @@ const EmployerDashboard = () => {
     const fetchEmployerProfile = async () => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.get('http://localhost:5000/api/auth/me', {
+            const response = await axios.get(`${API_BASE}/auth/me`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.success) {
@@ -38,7 +39,7 @@ const EmployerDashboard = () => {
     const fetchDashboardStats = async () => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.get('http://localhost:5000/api/employer/dashboard/stats', {
+            const response = await axios.get(`${API_BASE}/employer/dashboard/stats`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 
@@ -67,7 +68,7 @@ const EmployerDashboard = () => {
     const fetchRecentJobs = async () => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.get('http://localhost:5000/api/jobs/employer/my-jobs', {
+            const response = await axios.get(`${API_BASE}/jobs/employer/my-jobs`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: { limit: 4 }
             });
@@ -83,7 +84,7 @@ const EmployerDashboard = () => {
     const fetchRecentApplications = async () => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.get('http://localhost:5000/api/employer/applications', {
+            const response = await axios.get(`${API_BASE}/employer/applications`, {
                 headers: { Authorization: `Bearer ${token}` },
                 params: {
                     limit: 5,
@@ -102,7 +103,7 @@ const EmployerDashboard = () => {
     const handleJobClick = async (jobId) => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.get(`http://localhost:5000/api/jobs/${jobId}`, {
+            const response = await axios.get(`${API_BASE}/jobs/${jobId}`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
 

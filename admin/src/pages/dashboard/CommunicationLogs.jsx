@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { FaSearch, FaComments, FaCalendarAlt, FaBriefcase } from 'react-icons/fa';
 import './CommunicationLogs.css';
 
@@ -16,7 +17,7 @@ const CommunicationLogs = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.get('http://localhost:5000/api/admin/messages', {
+            const res = await axios.get(`${API_BASE}/admin/messages`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {

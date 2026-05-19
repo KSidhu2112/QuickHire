@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import {
     Chart as ChartJS,
     CategoryScale, LinearScale, BarElement,
@@ -25,7 +26,7 @@ const AnalyticsDashboard = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.get('http://localhost:5000/api/admin/stats', {
+            const res = await axios.get(`${API_BASE}/admin/stats`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {

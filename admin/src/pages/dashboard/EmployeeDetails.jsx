@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaEnvelope, FaCalendarAlt, FaBriefcase, FaMoneyBillWave, FaInfoCircle, FaCheckCircle } from 'react-icons/fa';
 import './DetailPages.css';
@@ -15,7 +16,7 @@ const EmployeeDetails = () => {
         const fetchDetails = async () => {
             try {
                 const token = localStorage.getItem('adminToken');
-                const res = await axios.get(`http://localhost:5000/api/admin/employees/${id}`, {
+                const res = await axios.get(`${API_BASE}/admin/employees/${id}`, {
                     headers: { Authorization: `Bearer ${token}` }
                 });
                 if (res.data.success) {

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { FaTrash, FaCheck, FaTimes, FaExclamationTriangle, FaSearch, FaEye } from 'react-icons/fa';
 import './JobManagement.css';
 
@@ -17,7 +18,7 @@ const JobManagement = () => {
         setLoading(true);
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.get(`http://localhost:5000/api/admin/jobs?status=${filterStatus}`, {
+            const res = await axios.get(`${API_BASE}/admin/jobs?status=${filterStatus}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {
@@ -33,7 +34,7 @@ const JobManagement = () => {
     const handleStatusUpdate = async (jobId, status) => {
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.patch(`http://localhost:5000/api/admin/jobs/${jobId}/status`, { status }, {
+            const res = await axios.patch(`${API_BASE}/admin/jobs/${jobId}/status`, { status }, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {
@@ -49,7 +50,7 @@ const JobManagement = () => {
         if (!window.confirm('Delete this job?')) return;
         try {
             const token = localStorage.getItem('adminToken');
-            const res = await axios.delete(`http://localhost:5000/api/admin/jobs/${jobId}`, {
+            const res = await axios.delete(`${API_BASE}/admin/jobs/${jobId}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (res.data.success) {

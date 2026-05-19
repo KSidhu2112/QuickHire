@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './Auth.css';
 
 const ForgotPassword = () => {
@@ -17,7 +18,7 @@ const ForgotPassword = () => {
         setMessage('');
 
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/forgot-password', { email });
+            const res = await axios.post(`${API_BASE}/auth/forgot-password`, { email });
             setMessage(res.data.message);
 
             // Redirect to reset password page after short delay

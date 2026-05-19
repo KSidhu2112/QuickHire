@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { loadScript } from '../../utils/loadScript';
 import { useNavigate } from 'react-router-dom';
 import { verificationAPI, disputeAPI, paymentAPI } from '../../services/api';
+const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api').replace('/api', '');
 import { toast } from 'react-toastify';
 import './Verification.css';
 
@@ -338,7 +339,7 @@ const EmployeeVerification = () => {
                                             <p>{app.workSubmission.notes}</p>
                                             <div className="v-proofs">
                                                 {app.workSubmission.proofs && app.workSubmission.proofs.map((url, i) => (
-                                                    <a key={i} href={`http://localhost:5000${url}`} target="_blank" rel="noopener noreferrer" className="v-proof-link">📄 View Proof {i + 1}</a>
+                                                    <a key={i} href={`${BACKEND_URL}${url}`} target="_blank" rel="noopener noreferrer" className="v-proof-link">📄 View Proof {i + 1}</a>
                                                 ))}
                                             </div>
                                             <small className="v-date">Submitted: {new Date(app.workSubmission.submittedAt).toLocaleString()}</small>

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { FaUserPlus, FaUserTie, FaBriefcase, FaArrowRight, FaChartLine, FaShieldAlt } from 'react-icons/fa';
 import { NavLink } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './Dashboard.css';
 
 const Dashboard = () => {
@@ -23,7 +24,7 @@ const Dashboard = () => {
                         Authorization: `Bearer ${token}`
                     }
                 };
-                const res = await axios.get('http://localhost:5000/api/admin/stats', config);
+                const res = await axios.get(`${API_BASE}/admin/stats`, config);
                 if (res.data.success) {
                     setStats(res.data.data.stats);
                 }

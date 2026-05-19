@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import './Auth.css'; // Shared CSS
 
 const Signup = () => {
@@ -39,7 +40,7 @@ const Signup = () => {
         setLoading(true);
 
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/send-otp', {
+            const res = await axios.post(`${API_BASE}/auth/send-otp`, {
                 email,
                 name
             });
@@ -60,7 +61,7 @@ const Signup = () => {
         setLoading(true);
 
         try {
-            const res = await axios.post('http://localhost:5000/api/auth/register', {
+            const res = await axios.post(`${API_BASE}/auth/register`, {
                 name,
                 email,
                 password,

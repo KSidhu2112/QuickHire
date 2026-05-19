@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import { applicationAPI, authAPI } from '../../services/api';
 import { toast } from 'react-toastify';
 import '../employer/HiredEmployees.css';
@@ -90,7 +91,7 @@ const ShortlistedJobs = () => {
     const handleConfirmWork = async (app) => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.post(`http://localhost:5000/api/verification/${app._id}/employee-confirm`, {
+            const response = await axios.post(`${API_BASE}/verification/${app._id}/employee-confirm`, {
                 status: 'FULL_PAYMENT',
                 feedback: 'Work completed successfully',
                 rating: 5
@@ -110,7 +111,7 @@ const ShortlistedJobs = () => {
     const handleConfirmPaymentReceived = async (app) => {
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.post(`http://localhost:5000/api/applications/${app._id}/confirm-payment`, {}, {
+            const response = await axios.post(`${API_BASE}/applications/${app._id}/confirm-payment`, {}, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.success) {
@@ -153,7 +154,7 @@ const ShortlistedJobs = () => {
         setSubmitting(true);
         try {
             const token = localStorage.getItem('quickhire_token');
-            const response = await axios.post('http://localhost:5000/api/reviews', {
+            const response = await axios.post(`${API_BASE}/reviews`, {
                 revieweeId: selectedApp.employer._id,
                 jobId: selectedApp.job._id,
                 rating,

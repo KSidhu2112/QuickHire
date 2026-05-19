@@ -24,7 +24,7 @@ import {
 } from 'react-icons/fa';
 import './PaymentMonitoring.css';
 
-const API_BASE = 'http://localhost:5000/api/payments/admin';
+const API_BASE = `${import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api'}/payments/admin`;
 
 const PaymentMonitoring = () => {
   // Data

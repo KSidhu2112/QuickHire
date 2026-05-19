@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
 import {
     FaBolt, FaUserCircle, FaBriefcase, FaPaperPlane,
     FaExchangeAlt, FaHistory, FaEye, FaArrowRight
@@ -26,9 +27,9 @@ const ActivityMonitor = () => {
 
                 // Fetch stats and latest jobs/apps to form an activity feed
                 const [statsRes, jobsRes, appsRes] = await Promise.all([
-                    axios.get('http://localhost:5000/api/admin/stats', { headers }),
-                    axios.get('http://localhost:5000/api/admin/jobs?limit=10', { headers }),
-                    axios.get('http://localhost:5000/api/admin/applications?limit=10', { headers })
+                    axios.get(`${API_BASE}/admin/stats`, { headers }),
+                    axios.get(`${API_BASE}/admin/jobs?limit=10`, { headers }),
+                    axios.get(`${API_BASE}/admin/applications?limit=10`, { headers })
                 ]);
 
                 if (statsRes.data.success) {
