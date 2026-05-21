@@ -142,22 +142,25 @@ const startServer = async () => {
     }
 };
 
-
-
-app.get("/api/health", (req, res) => {
+app.get("/api/health",(req,res)=>{
     res.status(200).json({
-        success: true
+        success:true
     });
 });
 
+app.head("/api/health",(req,res)=>{
+    res.sendStatus(200);
+});
 
-app.get("/", (req, res) => {
+app.get("/",(req,res)=>{
     res.status(200).send("QuickHire API Running");
 });
 
-app.head("/", (req, res) => {
+app.head("/",(req,res)=>{
     res.sendStatus(200);
 });
+
+startServer();
 
 
 
