@@ -142,4 +142,8 @@ const startServer = async () => {
     }
 };
 
+app.use("/", (req, res) => {
+  res.status(200).send("OK");
+});
+
 startServer();
