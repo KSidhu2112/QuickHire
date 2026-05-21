@@ -144,14 +144,22 @@ const startServer = async () => {
 
 
 
+
 app.get("/api/health",(req,res)=>{
    res.status(200).json({
-      status:"OK"
+      success: true
    });
 });
 
 app.use("/", (req, res) => {
    res.status(200).send("QuickHire API Running");
 });
+
+app.head("/health", (req, res) => {
+    res.sendStatus(200);
+});
+
+
+
 
 startServer();
