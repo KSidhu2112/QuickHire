@@ -150,16 +150,14 @@ app.get("/api/health", (req, res) => {
     });
 });
 
-app.head("/api/health", (req, res) => {
-    res.sendStatus(200);
-});
 
 app.get("/", (req, res) => {
     res.status(200).send("QuickHire API Running");
 });
 
-startServer();
-
+app.head("/", (req, res) => {
+    res.sendStatus(200);
+});
 
 
 
