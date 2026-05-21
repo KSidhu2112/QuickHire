@@ -163,5 +163,3 @@ app.head("/",(req,res)=>{
 startServer();
 
 
-
-startServer();
