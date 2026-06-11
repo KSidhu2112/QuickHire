@@ -4,6 +4,8 @@ import './EmployerChatbot.css';
 import { toast } from 'react-toastify';
 import { FaPaperPlane, FaRobot, FaUser, FaSync, FaPlus, FaTrash } from 'react-icons/fa';
 
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
+
 const EmployerChatbot = () => {
     const greetingMessage = {
         sender: 'bot',
@@ -29,7 +31,7 @@ const EmployerChatbot = () => {
     const fetchConversations = async () => {
         if (!token) return;
         try {
-            const response = await axios.get('http://localhost:5000/api/rag/conversations', {
+            const response = await axios.get(`${API_BASE}/rag/conversations`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.success) {
@@ -52,7 +54,7 @@ const EmployerChatbot = () => {
     const loadConversation = async (id) => {
         if (!token) return;
         try {
-            const response = await axios.get(`http://localhost:5000/api/rag/conversations/${id}`, {
+            const response = await axios.get(`${API_BASE}/rag/conversations/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.success) {
@@ -80,7 +82,7 @@ const EmployerChatbot = () => {
         if (!window.confirm("Are you sure you want to delete this conversation?")) return;
 
         try {
-            const response = await axios.delete(`http://localhost:5000/api/rag/conversations/${id}`, {
+            const response = await axios.delete(`${API_BASE}/rag/conversations/${id}`, {
                 headers: { Authorization: `Bearer ${token}` }
             });
             if (response.data.success) {
@@ -111,7 +113,7 @@ const EmployerChatbot = () => {
             }
 
             const response = await axios.post(
-                'http://localhost:5000/api/rag/chat',
+                `${API_BASE}/rag/chat`,
                 payload,
                 { headers: { Authorization: `Bearer ${token}` } }
             );
@@ -146,7 +148,7 @@ const EmployerChatbot = () => {
             setIsSyncing(true);
             try {
                 const response = await axios.post(
-                    'http://localhost:5000/api/rag/sync',
+                    `${API_BASE}/rag/sync`,
                     {},
                     { headers: { Authorization: `Bearer ${token}` } }
                 );
