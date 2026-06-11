@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Create axios instance
 const axiosInstance = axios.create({
@@ -34,9 +34,9 @@ axiosInstance.interceptors.response.use(
             console.warn('⚠️ Session expired or unauthorized. Clearing storage.');
             localStorage.removeItem('quickhire_token');
             localStorage.removeItem('quickhire_user');
-            
+
             // Optional: Redirect to login if not already there
-            if (!window.location.pathname.includes('/login') && 
+            if (!window.location.pathname.includes('/login') &&
                 !window.location.pathname.includes('/signup') &&
                 window.location.pathname !== '/') {
                 window.location.href = '/login?expired=true';
@@ -423,25 +423,6 @@ export const ratingAPI = {
     }
 };
 
-// AI API functions
-export const aiAPI = {
-    // Get AI matched workers for a job
-    getMatchedWorkers: async (jobId, limit = 5) => {
-        const response = await axiosInstance.get(`/ai/match-workers/${jobId}?limit=${limit}`);
-        return response.data;
-    },
 
-    // Get recommended jobs for logged-in worker
-    getRecommendedJobs: async (limit = 5) => {
-        const response = await axiosInstance.get(`/ai/recommend-jobs?limit=${limit}`);
-        return response.data;
-    },
-
-    // Refresh profile embedding
-    refreshProfileEmbedding: async () => {
-        const response = await axiosInstance.post('/ai/refresh-profile-embedding');
-        return response.data;
-    }
-};
 
 export default axiosInstance;

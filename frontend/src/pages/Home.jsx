@@ -33,7 +33,7 @@ const Home = () => {
                     <div className="hero-text">
                         <h1 className="hero-title">
                             Find Your Dream Job with{' '}
-                            <span className="gradient-text">AI-Powered Precision</span>
+                            <span className="gradient-text">Unmatched Precision</span>
                         </h1>
                         <p className="hero-description">
                             QuickHire revolutionizes job searching with intelligent matching algorithms,
@@ -72,9 +72,9 @@ const Home = () => {
 
                 <div className="features-grid">
                     <div className="feature-card">
-                        <div className="feature-icon">🤖</div>
-                        <h3>AI-Powered Matching</h3>
-                        <p>Our advanced AI analyzes your skills and preferences to find perfect job matches instantly.</p>
+                        <div className="feature-icon">🔍</div>
+                        <h3>Advanced Matching</h3>
+                        <p>Our system analyzes your skills and preferences to find perfect job matches instantly.</p>
                     </div>
 
                     <div className="feature-card">

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 import './EmployerDashboard.css';
 
 const EmployerDashboard = () => {
@@ -314,6 +314,7 @@ const EmployerDashboard = () => {
                 <div className="quick-actions">
                     <h2>Quick Actions</h2>
                     <div className="action-grid">
+
                         <button
                             className="action-card add-job"
                             onClick={() => navigate('/employer/add-job')}
@@ -358,6 +359,16 @@ const EmployerDashboard = () => {
                             <span className="action-icon">⚙️</span>
                             <h3>Settings</h3>
                             <p>Update your profile</p>
+                        </button>
+
+                        <button
+                            className="action-card chatbot"
+                            onClick={() => navigate('/employer/chatbot')}
+                            style={{ background: 'linear-gradient(135deg, #f0e6ff 0%, #e0c8ff 100%)' }}
+                        >
+                            <span className="action-icon">🤖</span>
+                            <h3>AI Matcher</h3>
+                            <p>Find candidates with AI</p>
                         </button>
                     </div>
                 </div>

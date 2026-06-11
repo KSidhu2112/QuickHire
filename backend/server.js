@@ -26,7 +26,8 @@ const verificationRoutes = require('./routes/verificationRoutes');
 const ratingRoutes = require('./routes/ratingRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
-const aiRoutes = require('./routes/aiRoutes');
+const ragRoutes = require('./routes/ragRoutes');
+
 
 // Middleware
 const corsOptions = {
@@ -70,7 +71,8 @@ app.use('/api/disputes', disputeRoutes);
 app.use('/api/verification', verificationRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/rating', ratingRoutes);
-app.use('/api/ai', aiRoutes);
+app.use('/api/rag', ragRoutes);
+
 
 // Services
 const { runPenaltyCheck } = require('./services/penaltyService');
@@ -142,21 +144,21 @@ const startServer = async () => {
     }
 };
 
-app.get("/api/health",(req,res)=>{
+app.get("/api/health", (req, res) => {
     res.status(200).json({
-        success:true
+        success: true
     });
 });
 
-app.head("/api/health",(req,res)=>{
+app.head("/api/health", (req, res) => {
     res.sendStatus(200);
 });
 
-app.get("/",(req,res)=>{
+app.get("/", (req, res) => {
     res.status(200).send("QuickHire API Running");
 });
 
-app.head("/",(req,res)=>{
+app.head("/", (req, res) => {
     res.sendStatus(200);
 });
 

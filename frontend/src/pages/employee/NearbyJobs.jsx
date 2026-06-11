@@ -256,11 +256,11 @@ const NearbyJobs = () => {
     const [usingSampleData, setUsingSampleData] = useState(false);
 
     // Apply modal state
-    const [selectedJob, setSelectedJob] = useState(null);
+    const [selectedCategory, setSelectedCategory] = useState("All");
     const [showJobModal, setShowJobModal] = useState(false);
-    const [showTrustModal, setShowTrustModal] = useState(false);
-    const [showPaymentModal, setShowPaymentModal] = useState(false);
+    const [selectedJob, setSelectedJob] = useState(null);
     const [isApplying, setIsApplying] = useState(false);
+    const [showTrustModal, setShowTrustModal] = useState(false);
     const [showDistant, setShowDistant] = useState(false); // Toggle for distant jobs
 
     // ── Step 1: Detect location and load INITIAL jobs ──────────────
@@ -399,25 +399,12 @@ const NearbyJobs = () => {
             return;
         }
         setSelectedJob(job);
-        try {
-            const status = await paymentAPI.checkStatus('apply', job._id);
-            if (status.paid) {
-                setShowTrustModal(true);
-            } else {
-                setShowPaymentModal(true);
-            }
-        } catch (error) {
-            toast.error('Failed to check payment status');
-        }
-    };
 
-    const handlePaymentSuccess = () => {
-        toast.success('Payment successful! You can now apply.');
-        setShowPaymentModal(false);
+        // Directly open the Trust Apply Modal (where the resume is uploaded)
         setShowTrustModal(true);
     };
 
-    const handleConfirmApply = async (trustDetails) => {
+    const handleConfirmApply = async (trustDetails, resumeUrl) => {
         setIsApplying(true);
         try {
             await applicationAPI.applyForJob(selectedJob._id, {
@@ -425,6 +412,7 @@ const NearbyJobs = () => {
                 availability: 'Immediate',
                 shareContactInfo: true,
                 trustDetails,
+                resumeUrl
             });
             toast.success('Application submitted successfully!');
             setShowTrustModal(false);
@@ -901,18 +889,7 @@ const NearbyJobs = () => {
                     onClose={() => setShowTrustModal(false)}
                     onApply={handleConfirmApply}
                     isApplying={isApplying}
-                />
-            )}
-
-            {/* ── Payment Modal ──────────────────────────────────── */}
-            {showPaymentModal && selectedJob && (
-                <PaymentModal
-                    isOpen={showPaymentModal}
-                    onClose={() => setShowPaymentModal(false)}
-                    onSuccess={handlePaymentSuccess}
-                    amount={10}
-                    action="apply"
-                    jobId={selectedJob._id}
+                    jobType={selectedJob?.jobType}
                 />
             )}
         </div>

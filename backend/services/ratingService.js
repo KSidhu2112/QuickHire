@@ -129,8 +129,8 @@ async function autoPublishOldReviews() {
 
             // Update app flags for the correct pair
             await Application.findOneAndUpdate(
-                { 
-                    job: review.job, 
+                {
+                    job: review.job,
                     $or: [
                         { employer: review.reviewer, jobseeker: review.reviewee },
                         { jobseeker: review.reviewer, employer: review.reviewee }

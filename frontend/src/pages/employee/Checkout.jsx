@@ -22,7 +22,7 @@ const Checkout = () => {
             return;
         }
         setUser(storedUser);
-        
+
         if (type === 'post') {
             const savedData = localStorage.getItem('pending_job_data');
             if (savedData) {
@@ -100,7 +100,7 @@ const Checkout = () => {
                         });
 
                         toast.success('Payment successful!');
-                        
+
                         if (isPost) {
                             // 4. Post job
                             await jobAPI.createJob(jobData);
@@ -108,13 +108,11 @@ const Checkout = () => {
                             toast.success('Job posted successfully!');
                             navigate('/employer/dashboard');
                         } else {
-                            // 4. Apply for job
-                            await applicationAPI.applyForJob(job._id, {
-                                coverLetter: 'Applied through checkout flow',
-                                availability: 'Immediate',
-                            });
-                            toast.success('Application submitted successfully!');
-                            navigate('/employee/applications');
+                            // Since application flow now requires a resume for Full-Time and Part-Time
+                            // and the Checkout flow doesn't have the resume fields, we should redirect the user
+                            // to the Job Details page to complete their application with trust details
+                            toast.success('Payment successful! Please complete your application.');
+                            navigate(`/job/${job._id}`);
                         }
                     } catch (err) {
                         console.error('Verification Error:', err);
@@ -237,14 +235,14 @@ const Checkout = () => {
                                 <span>₹{type === 'post' ? '20.00' : '10.00'}</span>
                             </div>
 
-                            <button 
+                            <button
                                 className={`btn-checkout ${processing ? 'loading' : ''}`}
                                 onClick={handlePayment}
                                 disabled={processing}
                             >
                                 {processing ? 'Processing...' : (type === 'post' ? 'Pay & Post Job' : 'Pay & Join Job')}
                             </button>
-                            
+
                             <p className="secure-text">
                                 <FaShieldAlt /> Secure 256-bit SSL Encrypted Payment
                             </p>

@@ -30,7 +30,7 @@ const seedRealUsers = async () => {
                 profile: {
                     company: 'Tech Solutions Inc.',
                     location: 'San Francisco, CA',
-                    bio: 'Leading tech company specializing in AI solutions.',
+                    bio: 'Leading tech company specializing in modern software solutions.',
                     website: 'https://techsolutions.com',
                     avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
                 }

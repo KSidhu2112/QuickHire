@@ -123,7 +123,7 @@ const sendOTPEmail = async (email, otp, purpose = 'registration') => {
         <div class="container">
           <div class="header">
             <h1>🚀 QuickHire</h1>
-            <p style="margin: 10px 0 0 0; opacity: 0.9;">AI-Powered Job Platform</p>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">Modern Job Platform</p>
           </div>
           
           <div class="content">
@@ -211,7 +211,7 @@ const sendWelcomeEmail = async (email, name) => {
               Your email has been successfully verified! You're now part of the QuickHire community.
             </p>
             <p style="color: #64748b; line-height: 1.8;">
-              Start exploring thousands of job opportunities tailored just for you with our AI-powered matching system.
+              Start exploring thousands of job opportunities tailored just for you with our advanced matching system.
             </p>
             <div style="text-align: center; margin: 30px 0;">
               <a href="${process.env.CLIENT_URL || 'http://localhost:5173'}" style="display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 15px 40px; border-radius: 8px; text-decoration: none; font-weight: 600;">

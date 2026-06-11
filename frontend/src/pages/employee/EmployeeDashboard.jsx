@@ -82,18 +82,10 @@ const EmployeeDashboard = () => {
     };
 
     const handleApply = async (job) => {
-        try {
-            await applicationAPI.applyForJob(job._id, {
-                coverLetter: '',
-                availability: 'Immediate',
-            });
-            toast.success('Application submitted successfully!');
-            fetchJobs(); // Refresh to update applicant count
-            if (showJobModal) closeJobModal();
-        } catch (error) {
-            const errorMsg = error.response?.data?.message || 'Failed to apply';
-            toast.error(errorMsg);
-        }
+        // If it requires a resume and we are bypassing the modal, we need to show the modal!
+        // Right now, it just bypasses everything. We should redirect to JobDetails instead, or at least show the payment/trust flow.
+        // QuickHire design implies we should navigate to JobDetails for full application flow
+        navigate(`/job/${job._id}`);
     };
 
     const handleJobClick = (job) => {

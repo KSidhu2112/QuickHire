@@ -14,7 +14,16 @@ import Applications from './pages/employer/Applications';
 import EmployerProfile from './pages/employer/EmployerProfile';
 import HiredEmployees from './pages/employer/HiredEmployees';
 import Payments from './pages/employer/Payments';
+import EmployerChatbot from './pages/employer/EmployerChatbot';
+
 import Notifications from './pages/Notifications';
+import Login from './pages/Login';
+import Signup from './pages/Signup';
+import ForgotPassword from './pages/ForgotPassword';
+import ResetPassword from './pages/ResetPassword';
+import JobDetails from './pages/JobDetails';
+import NearbyJobs from './pages/employee/NearbyJobs';
+import Checkout from './pages/employee/Checkout';
 import ProtectedRoute from './components/ProtectedRoute';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -28,6 +37,11 @@ function App() {
         <Routes>
           {/* Public Routes */}
           <Route path="/" element={<Home />} />
+          <Route path="/login" element={<Login />} />
+          <Route path="/signup" element={<Signup />} />
+          <Route path="/forgot-password" element={<ForgotPassword />} />
+          <Route path="/reset-password/:token" element={<ResetPassword />} />
+          <Route path="/job/:id" element={<JobDetails />} />
 
           {/* Employee Routes (Protected) */}
           <Route
@@ -35,6 +49,22 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['jobseeker']}>
                 <EmployeeDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employee/nearby"
+            element={
+              <ProtectedRoute allowedRoles={['jobseeker']}>
+                <NearbyJobs />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/checkout/:type/:jobId"
+            element={
+              <ProtectedRoute allowedRoles={['jobseeker', 'employer']}>
+                <Checkout />
               </ProtectedRoute>
             }
           />
@@ -130,6 +160,15 @@ function App() {
               </ProtectedRoute>
             }
           />
+          <Route
+            path="/employer/chatbot"
+            element={
+              <ProtectedRoute allowedRoles={['employer']}>
+                <EmployerChatbot />
+              </ProtectedRoute>
+            }
+          />
+
           {/* Add more routes as we build them */}
         </Routes>
         <Footer />

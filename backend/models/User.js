@@ -45,10 +45,18 @@ const userSchema = new mongoose.Schema(
             avatar: String,
             bio: String,
             // Jobseeker fields
+            category: String,
             skills: [String],
             experience: String,
             education: String,
             resume: String,
+            certifications: [String],
+            projects: [String],
+            // Candidate Availability
+            availableForWork: { type: Boolean, default: true },
+            noticePeriod: String,
+            preferredJobRole: String,
+            expectedSalary: String,
             // Employer fields
             company: String,
             businessType: String,
@@ -98,10 +106,7 @@ const userSchema = new mongoose.Schema(
             reason: String,
             bannedAt: Date,
         },
-        embedding: {
-            type: [Number],
-            default: undefined
-        },
+
     },
     {
         timestamps: true,
@@ -116,26 +121,7 @@ userSchema.pre('save', async function () {
     this.password = await bcrypt.hash(this.password, salt);
 });
 
-// Auto-generate embeddings for jobseekers (workers) on creation or profile updates
-userSchema.pre('save', async function () {
-    if (this.role === 'jobseeker') {
-        const profileModified = this.isModified('profile') || 
-                                this.isModified('name') || 
-                                this.isModified('role') ||
-                                this.isNew;
-                                
-        if (profileModified) {
-            try {
-                const embeddingService = require('../services/embeddingService');
-                const text = embeddingService.buildWorkerProfileText(this);
-                this.embedding = await embeddingService.generateEmbedding(text);
-                console.log(`🤖 Auto-generated embedding vector (length ${this.embedding.length}) for worker: ${this.name}`);
-            } catch (err) {
-                console.error('⚠️ Error generating worker profile embedding in pre-save:', err.message);
-            }
-        }
-    }
-});
+
 
 // Compare password method
 userSchema.methods.comparePassword = async function (candidatePassword) {

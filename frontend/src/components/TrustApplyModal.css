@@ -225,3 +225,177 @@
     cursor: not-allowed;
     box-shadow: none;
 }
+
+/* ===== Resume Upload Section ===== */
+.resume-upload-section {
+    background: #f8fafc;
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid #e2e8f0;
+    transition: all 0.3s ease;
+}
+
+.resume-upload-section.required {
+    border-color: #3b82f6;
+    background: #eff6ff;
+}
+
+.resume-header h3 {
+    font-size: 1.05rem;
+    margin: 0 0 4px 0;
+    color: #1e293b;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.required-badge {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    font-size: 0.7rem;
+    padding: 2px 8px;
+    border-radius: 6px;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+    animation: pulseRequired 2s infinite;
+}
+
+@keyframes pulseRequired {
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0.7;
+    }
+}
+
+.resume-hint {
+    font-size: 0.82rem;
+    color: #64748b;
+    margin: 0 0 14px 0;
+    line-height: 1.4;
+}
+
+.resume-dropzone {
+    border: 2px dashed #cbd5e1;
+    border-radius: 14px;
+    padding: 24px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background: white;
+}
+
+.resume-dropzone:hover {
+    border-color: #3b82f6;
+    background: #f0f7ff;
+    transform: translateY(-1px);
+}
+
+.resume-dropzone.has-file {
+    border-color: #22c55e;
+    background: #f0fdf4;
+    border-style: solid;
+}
+
+.resume-dropzone.has-error {
+    border-color: #ef4444;
+    background: #fef2f2;
+}
+
+.resume-placeholder {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+}
+
+.upload-icon {
+    font-size: 2rem;
+    opacity: 0.8;
+}
+
+.upload-text {
+    font-weight: 600;
+    color: #475569;
+    font-size: 0.95rem;
+}
+
+.upload-formats {
+    font-size: 0.78rem;
+    color: #94a3b8;
+}
+
+.resume-file-info {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    text-align: left;
+}
+
+.resume-file-icon {
+    font-size: 1.5rem;
+    flex-shrink: 0;
+}
+
+.resume-file-details {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    flex: 1;
+    min-width: 0;
+}
+
+.resume-file-name {
+    font-weight: 600;
+    color: #1e293b;
+    font-size: 0.9rem;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.resume-file-size {
+    font-size: 0.78rem;
+    color: #64748b;
+}
+
+.resume-remove-btn {
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    border: none;
+    background: #fee2e2;
+    color: #ef4444;
+    font-size: 0.9rem;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+}
+
+.resume-remove-btn:hover {
+    background: #fecaca;
+    transform: scale(1.1);
+}
+
+.resume-error {
+    color: #ef4444;
+    font-size: 0.82rem;
+    margin: 8px 0 0 0;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.resume-error::before {
+    content: '⚠️';
+    font-size: 0.9rem;
+}

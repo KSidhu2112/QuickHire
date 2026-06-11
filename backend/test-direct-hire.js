@@ -19,7 +19,7 @@ const testDirectHire = async () => {
         const job = await Job.findOne({ title: 'Full Stack React & Node Developer' });
 
         if (!employer || !worker || !job) {
-            console.log('❌ Seeding data is missing. Please run test-ai-matching.js first.');
+            console.log('❌ Seeding data is missing. Please run the seed script first.');
             return;
         }
 
@@ -47,7 +47,7 @@ const testDirectHire = async () => {
         console.log('⚡ Running Direct Hire Logic...');
         // Simulating direct hire updates
         application.status = 'ACCEPTED';
-        application.employerNotes = 'Hired directly from AI recommendation matches';
+        application.employerNotes = 'Hired directly from recommendation matches';
         application.reviewedAt = new Date();
         application.reviewedBy = employer._id;
         await application.save();

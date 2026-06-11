@@ -86,8 +86,8 @@ const applicationSchema = new mongoose.Schema(
         // Dual Confirmation
         employerConfirmation: {
             confirmed: { type: Boolean, default: false },
-            status: { 
-                type: String, 
+            status: {
+                type: String,
                 enum: {
                     values: ['FULL', 'PARTIAL', 'NO_SHOW', 'FULL_PAYMENT', 'PARTIAL_PAYMENT', 'NOT_PAID'],
                     message: '{VALUE} is not a valid confirmation status'
@@ -100,8 +100,8 @@ const applicationSchema = new mongoose.Schema(
         },
         employeeConfirmation: {
             confirmed: { type: Boolean, default: false },
-            status: { 
-                type: String, 
+            status: {
+                type: String,
                 enum: {
                     values: ['FULL', 'PARTIAL', 'NO_SHOW', 'FULL_PAYMENT', 'PARTIAL_PAYMENT', 'NOT_PAID'],
                     message: '{VALUE} is not a valid confirmation status'

@@ -19,6 +19,9 @@ const jobSchema = new mongoose.Schema(
             required: [true, 'Job description is required'],
             minlength: [20, 'Description must be at least 20 characters'],
         },
+        jobDescription: { // Alias or specific field as per requirements
+            type: String,
+        },
         company: {
             type: String,
             required: [true, 'Company name is required'],
@@ -143,6 +146,10 @@ const jobSchema = new mongoose.Schema(
             type: [String],
             default: [],
         },
+        requiredSkills: {
+            type: [String],
+            default: [],
+        },
         experience: {
             type: String,
             enum: ['FRESHER', 'ENTRY', 'MID', 'SENIOR', 'ANY'],
@@ -151,6 +158,10 @@ const jobSchema = new mongoose.Schema(
         education: {
             type: String,
             trim: true,
+        },
+        qualifications: {
+            type: [String],
+            default: [],
         },
         // Job Status
         status: {
@@ -218,10 +229,7 @@ const jobSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
-        embedding: {
-            type: [Number],
-            default: undefined
-        },
+
     },
     {
         timestamps: true,
@@ -259,25 +267,7 @@ jobSchema.pre('save', async function () {
     }
 });
 
-// Auto-generate embeddings for job description and required skills on creation or updates
-jobSchema.pre('save', async function () {
-    const isDescriptionOrSkillsModified = this.isModified('title') || 
-                                          this.isModified('description') || 
-                                          this.isModified('skills') || 
-                                          this.isModified('category') ||
-                                          this.isNew;
-                                          
-    if (isDescriptionOrSkillsModified) {
-        try {
-            const embeddingService = require('../services/embeddingService');
-            const text = embeddingService.buildJobText(this);
-            this.embedding = await embeddingService.generateEmbedding(text);
-            console.log(`🤖 Auto-generated embedding vector (length ${this.embedding.length}) for job: ${this.title}`);
-        } catch (err) {
-            console.error('⚠️ Error generating job embedding in pre-save:', err.message);
-        }
-    }
-});
+
 
 // Method to increment view count
 jobSchema.methods.incrementViews = async function () {

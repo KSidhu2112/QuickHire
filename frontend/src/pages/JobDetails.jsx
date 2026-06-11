@@ -17,7 +17,6 @@ const JobDetails = () => {
     const [sharePhone, setSharePhone] = useState(true);
     const [isApplying, setIsApplying] = useState(false);
     const [showTrustModal, setShowTrustModal] = useState(false);
-    const [showPaymentModal, setShowPaymentModal] = useState(false);
 
     useEffect(() => {
         const storedUser = authAPI.getStoredUser();
@@ -56,21 +55,8 @@ const JobDetails = () => {
             return;
         }
 
-        try {
-            setIsApplying(true);
-            // Check if already paid
-            const status = await paymentAPI.checkStatus('apply', id);
-
-            if (status.paid) {
-                setShowTrustModal(true);
-            } else {
-                setShowPaymentModal(true);
-            }
-        } catch (error) {
-            toast.error('Failed to check payment status');
-        } finally {
-            setIsApplying(false);
-        }
+        // Directly open the Trust Apply Modal (where the resume is uploaded)
+        setShowTrustModal(true);
     };
 
     const handlePaymentSuccess = () => {
@@ -78,14 +64,15 @@ const JobDetails = () => {
         setShowTrustModal(true);
     };
 
-    const handleConfirmApply = async (trustDetails) => {
+    const handleConfirmApply = async (trustDetails, resumeUrl) => {
         setIsApplying(true);
         try {
             await applicationAPI.applyForJob(job._id, {
                 coverLetter: '',
                 availability: 'Immediate',
                 shareContactInfo: sharePhone,
-                trustDetails: trustDetails
+                trustDetails,
+                resumeUrl
             });
             toast.success('Application submitted successfully!');
             setShowTrustModal(false);
@@ -323,7 +310,7 @@ const JobDetails = () => {
                                         ? (job.autoApprove ? 'Joined ✓' : 'Applied ✓')
                                         : (job.workersHired >= job.workersRequired
                                             ? 'Positions Filled'
-                                            : (isApplying ? 'Processing...' : 'Pay & Apply (₹10)'))}
+                                            : (isApplying ? 'Processing...' : 'Apply Now'))}
                                 </button>
                             ) : user?.role === 'employer' && user._id === job.employer._id ? (
                                 <button
@@ -343,16 +330,9 @@ const JobDetails = () => {
                 onClose={() => setShowTrustModal(false)}
                 onApply={handleConfirmApply}
                 isApplying={isApplying}
+                jobType={job.jobType}
             />
 
-            <PaymentModal
-                isOpen={showPaymentModal}
-                onClose={() => setShowPaymentModal(false)}
-                onSuccess={handlePaymentSuccess}
-                amount={10}
-                action="apply"
-                jobId={id}
-            />
         </div >
     );
 };

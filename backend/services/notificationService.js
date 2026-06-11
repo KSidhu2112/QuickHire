@@ -324,12 +324,30 @@ const notifyJobPosted = async (employerId, jobId, jobTitle) => {
 // Broadcast notification to jobseekers when new job is posted
 const notifyJobseekers = async (jobId, jobTitle, companyName, category) => {
     try {
+        console.log(`📢 notifyJobseekers called — jobId: ${jobId}, title: ${jobTitle}`);
         const User = require('../models/User'); // Lazy load to avoid circular dependency
+        const Job = require('../models/Job');
+        const { sendJobAlertEmails } = require('./emailService');
 
-        // Find all jobseekers (in a real app, you'd filter by preferences/location)
-        const jobseekers = await User.find({ role: 'jobseeker' }).select('_id');
+        const job = await Job.findById(jobId);
+        if (!job) {
+            console.log('📢 Job not found, skipping notifications');
+            return;
+        }
 
-        if (!jobseekers.length) return;
+        // Query ALL active jobseekers — no skill/category/location filtering
+        const query = { role: 'jobseeker', status: 'active' };
+
+        const jobseekers = await User.find(query).select('_id email name');
+        console.log(`📢 Found ${jobseekers.length} active jobseekers`);
+        if (jobseekers.length > 0) {
+            console.log(`📢 Jobseeker emails:`, jobseekers.map(j => j.email));
+        }
+
+        if (!jobseekers.length) {
+            console.log('📢 No active jobseekers found, skipping');
+            return;
+        }
 
         const notifications = jobseekers.map(user => {
             const templateFn = notificationTemplates['JOB_ALERT'];
@@ -348,9 +366,14 @@ const notifyJobseekers = async (jobId, jobTitle, companyName, category) => {
             };
         });
 
-        return await createBulkNotifications(notifications);
+        await createBulkNotifications(notifications);
+
+        // Send email notifications asynchronously without blocking
+        console.log(`📢 Calling sendJobAlertEmails for ${jobseekers.length} employees...`);
+        sendJobAlertEmails(jobseekers, job).catch(err => console.error('❌ Error initiating job alert emails:', err));
+
     } catch (error) {
-        console.error('Notify Jobseekers Error:', error);
+        console.error('❌ Notify Jobseekers Error:', error);
     }
 };
 

@@ -145,6 +145,18 @@ exports.applyForJob = async (req, res) => {
             });
         }
 
+        // --- NEW: Mandatory Resume Check for Full Time and Part Time Jobs ---
+        if (['FULL_TIME', 'PART_TIME'].includes(job.jobType)) {
+            if (!req.body.resumeUrl) {
+                console.log('❌ Resume is required for FULL_TIME and PART_TIME jobs');
+                return res.status(400).json({
+                    success: false,
+                    message: 'A resume is mandatory when applying for Full-Time and Part-Time jobs. Please upload your resume.',
+                });
+            }
+        }
+        // --------------------------------------------------------------------
+
         // For daily jobs, check if positions are full
         // Check if positions are full
         if (job.workersHired >= job.workersRequired) {
@@ -170,7 +182,7 @@ exports.applyForJob = async (req, res) => {
             reviewedBy = job.employer;
         }
 
-        // Create application
+
         const application = await Application.create({
             job: jobId,
             jobseeker: jobseekerId,
@@ -181,7 +193,7 @@ exports.applyForJob = async (req, res) => {
             status: initialStatus,
             employerNotes: note,
             reviewedAt: reviewedAt,
-            reviewedBy: reviewedBy
+            reviewedBy: reviewedBy,
         });
 
         // If auto-approved, increment workers hired immediately
@@ -199,9 +211,9 @@ exports.applyForJob = async (req, res) => {
 
         // Populate application for response
         const populatedApplication = await application.populate([
-                { path: 'job', select: 'title company jobType location salaryMin salaryMax' },
-                { path: 'jobseeker', select: 'name email phone stats trustScore' }
-            ]);
+            { path: 'job', select: 'title company jobType location salaryMin salaryMax' },
+            { path: 'jobseeker', select: 'name email phone stats trustScore' }
+        ]);
 
         console.log('✅ Application populated successfully');
 
@@ -849,7 +861,7 @@ exports.directHireWorker = async (req, res) => {
                 });
             }
             application.status = 'ACCEPTED';
-            application.employerNotes = 'Hired directly from AI recommendation matches';
+            application.employerNotes = 'Hired directly from recommendation matches';
             application.reviewedAt = new Date();
             application.reviewedBy = req.user._id;
             await application.save();
@@ -858,9 +870,9 @@ exports.directHireWorker = async (req, res) => {
                 job: jobId,
                 jobseeker: workerId,
                 employer: job.employer,
-                coverLetter: 'Hired directly from AI Matching Recommendations',
+                coverLetter: 'Hired directly from Matching Recommendations',
                 status: 'ACCEPTED',
-                employerNotes: 'Directly hired by employer from AI recommendation matches',
+                employerNotes: 'Directly hired by employer from recommendation matches',
                 reviewedAt: new Date(),
                 reviewedBy: req.user._id
             });
