@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import axios from 'axios';
 import './TrustApplyModal.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://quickhire-5ho5.onrender.com/api';
 
 const TrustApplyModal = ({ isOpen, onClose, onApply, isApplying, jobType }) => {
     const [contactMobile, setContactMobile] = useState('');

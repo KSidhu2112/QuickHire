@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-9ous.onrender.com/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-5ho5.onrender.com/api';
 import { toast } from 'react-toastify';
 import './HiredEmployees.css';
 
