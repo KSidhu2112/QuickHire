@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { loadScript } from '../../utils/loadScript';
 import { useNavigate } from 'react-router-dom';
 import { verificationAPI, disputeAPI, paymentAPI } from '../../services/api';
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://quickhire-5ho5.onrender.com/api').replace('/api', '');
+const BACKEND_URL = ('https://quickhire-5ho5.onrender.com/api').replace('/api', '');
 import { toast } from 'react-toastify';
 import './Verification.css';
 

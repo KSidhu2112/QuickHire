@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://quickhire-5ho5.onrender.com/api';
+const API_URL = 'https://quickhire-5ho5.onrender.com/api';
 
 // Create axios instance
 const axiosInstance = axios.create({

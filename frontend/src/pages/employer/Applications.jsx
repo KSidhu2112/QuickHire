@@ -4,7 +4,7 @@ import { applicationAPI } from '../../services/api';
 import { toast } from 'react-toastify';
 import './Applications.css';
 
-const BACKEND_URL = (import.meta.env.VITE_API_URL || 'https://quickhire-5ho5.onrender.com/api').replace('/api', '');
+const BACKEND_URL = ('https://quickhire-5ho5.onrender.com/api').replace('/api', '');
 
 const Applications = () => {
     const navigate = useNavigate();

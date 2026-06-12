@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
 import axios from 'axios';
-const API_BASE = import.meta.env.VITE_API_URL || 'https://quickhire-5ho5.onrender.com/api';
+const API_BASE = 'https://quickhire-5ho5.onrender.com/api';
 import { FaSearch, FaEye, FaTrash, FaFilter } from 'react-icons/fa';
 import './ManageJobs.css';
 
