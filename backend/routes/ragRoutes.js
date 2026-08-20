@@ -1,15 +1,16 @@
 const express = require('express');
 const router = express.Router();
-const { syncVectors, chatWithRAG, getConversations, getConversationById, deleteConversation } = require('../controllers/ragController');
+const ragController = require('../controllers/ragController');
 const { protect } = require('../middleware/authMiddleware');
 
-// Sync endpoints
-router.post('/sync', protect, syncVectors);
+// Existing routes
+router.post('/sync', protect, ragController.syncVectors);
+router.post('/chat', protect, ragController.chatWithRAG);
+router.get('/conversations', protect, ragController.getConversations);
+router.get('/conversations/:id', protect, ragController.getConversationById);
+router.delete('/conversations/:id', protect, ragController.deleteConversation);
 
-// Conversational Chat endpoints
-router.post('/chat', protect, chatWithRAG);
-router.get('/conversations', protect, getConversations);
-router.get('/conversations/:id', protect, getConversationById);
-router.delete('/conversations/:id', protect, deleteConversation);
+// New search route for AiSearch page
+router.post('/search', protect, ragController.searchRagCandidates);
 
 module.exports = router;

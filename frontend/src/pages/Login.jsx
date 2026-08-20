@@ -42,7 +42,12 @@ const Login = ({ onClose, onSwitchToSignup }) => {
                     window.location.reload();
                 } else {
                     if (response.user.role === 'jobseeker') {
-                        navigate('/dashboard');
+                        // Check if profile is complete
+                        if (!response.user.isProfileComplete) {
+                            navigate('/employee/complete-profile');
+                        } else {
+                            navigate('/dashboard');
+                        }
                     } else if (response.user.role === 'employer') {
                         navigate('/employer/dashboard');
                     } else {

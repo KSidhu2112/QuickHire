@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { jobAPI, applicationAPI, authAPI } from '../../services/api';
+import { jobAPI, applicationAPI, authAPI, employeeProfileAPI } from '../../services/api';
 import JobCard from '../../components/JobCard';
 import JobFilters from '../../components/JobFilters';
 import { toast } from 'react-toastify';
@@ -17,6 +17,8 @@ const EmployeeDashboard = () => {
     const [showJobModal, setShowJobModal] = useState(false);
     const [searchTerm, setSearchTerm] = useState('');
     const [debouncedSearch, setDebouncedSearch] = useState('');
+    const [profileCompleteness, setProfileCompleteness] = useState(100);
+    const [trustScore, setTrustScore] = useState(50);
 
     useEffect(() => {
         const timer = setTimeout(() => {
@@ -45,6 +47,23 @@ const EmployeeDashboard = () => {
             }
         };
         fetchFreshProfile();
+
+        // Fetch employee profile completeness
+        const fetchProfileCompleteness = async () => {
+            try {
+                const profileRes = await employeeProfileAPI.getMyProfile();
+                if (profileRes.success && profileRes.profile) {
+                    setProfileCompleteness(profileRes.profile.profileCompleteness || 0);
+                    setTrustScore(profileRes.profile.trustScore || 50);
+                } else {
+                    setProfileCompleteness(0);
+                }
+            } catch (err) {
+                console.error('Error fetching profile completeness:', err);
+                setProfileCompleteness(0);
+            }
+        };
+        fetchProfileCompleteness();
     }, []);
 
     useEffect(() => {
@@ -137,6 +156,56 @@ const EmployeeDashboard = () => {
 
     return (
         <div className="employee-dashboard">
+            {/* Profile Completion Banner */}
+            {profileCompleteness < 60 && (
+                <div className="profile-completion-banner" style={{
+                    background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                    color: '#fff',
+                    padding: '1rem 1.5rem',
+                    borderRadius: '16px',
+                    margin: '0 1.5rem 1rem',
+                    display: 'flex',
+                    alignItems: 'center',
+                    justifyContent: 'space-between',
+                    flexWrap: 'wrap',
+                    gap: '1rem',
+                    boxShadow: '0 4px 15px rgba(102, 126, 234, 0.3)',
+                    animation: 'fadeInDown 0.6s ease',
+                }}>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <span style={{ fontSize: '2rem' }}>📋</span>
+                        <div>
+                            <h3 style={{ margin: 0, fontSize: '1.1rem' }}>Complete Your Profile ({profileCompleteness}%)</h3>
+                            <p style={{ margin: 0, fontSize: '0.85rem', opacity: 0.9 }}>Complete your profile to get better job matches and build trust with employers</p>
+                        </div>
+                    </div>
+                    <div style={{ display: 'flex', alignItems: 'center', gap: '1rem' }}>
+                        <div style={{ width: '120px', height: '8px', background: 'rgba(255,255,255,0.2)', borderRadius: '10px', overflow: 'hidden' }}>
+                            <div style={{ width: `${profileCompleteness}%`, height: '100%', background: profileCompleteness > 40 ? '#38ef7d' : '#fc8181', borderRadius: '10px', transition: 'width 0.5s ease' }}></div>
+                        </div>
+                        <button
+                            onClick={() => navigate('/employee/complete-profile')}
+                            style={{
+                                background: '#fff',
+                                color: '#667eea',
+                                border: 'none',
+                                padding: '0.6rem 1.2rem',
+                                borderRadius: '10px',
+                                fontWeight: '700',
+                                cursor: 'pointer',
+                                whiteSpace: 'nowrap',
+                                fontSize: '0.9rem',
+                                transition: 'transform 0.2s ease',
+                            }}
+                            onMouseOver={(e) => e.target.style.transform = 'translateY(-2px)'}
+                            onMouseOut={(e) => e.target.style.transform = 'translateY(0)'}
+                        >
+                            Complete Now →
+                        </button>
+                    </div>
+                </div>
+            )}
+
             <div className="dashboard-header">
                 <div className="dashboard-title-section">
                     <h1>Find Your Next Opportunity</h1>

@@ -1,0 +1,582 @@
+/* ============================================
+   ABOUT US PAGE - Premium Glassmorphism Design
+   ============================================ */
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap');
+
+.about-page {
+    font-family: 'Inter', sans-serif;
+    background: #0a0f1c;
+    color: #e2e8f0;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+/* ---- Hero Section ---- */
+.about-hero {
+    position: relative;
+    min-height: 70vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 120px 24px 80px;
+    overflow: hidden;
+}
+
+.about-hero-bg {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    background: linear-gradient(135deg, #0a0f1c 0%, #0f172a 40%, #1e1b4b 100%);
+}
+
+.hero-orb {
+    position: absolute;
+    border-radius: 50%;
+    filter: blur(100px);
+    opacity: 0.35;
+    animation: orbFloat 8s ease-in-out infinite;
+}
+
+.hero-orb-1 {
+    width: 500px;
+    height: 500px;
+    background: #3b82f6;
+    top: -100px;
+    right: -100px;
+    animation-delay: 0s;
+}
+
+.hero-orb-2 {
+    width: 400px;
+    height: 400px;
+    background: #8b5cf6;
+    bottom: -80px;
+    left: -80px;
+    animation-delay: 2s;
+}
+
+.hero-orb-3 {
+    width: 300px;
+    height: 300px;
+    background: #06b6d4;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    animation-delay: 4s;
+}
+
+@keyframes orbFloat {
+
+    0%,
+    100% {
+        transform: translateY(0);
+    }
+
+    50% {
+        transform: translateY(-30px);
+    }
+}
+
+.about-hero-content {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    max-width: 800px;
+}
+
+.about-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(59, 130, 246, 0.1);
+    border: 1px solid rgba(59, 130, 246, 0.25);
+    color: #60a5fa;
+    padding: 8px 20px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    font-weight: 500;
+    margin-bottom: 24px;
+    backdrop-filter: blur(10px);
+}
+
+.about-hero-content h1 {
+    font-size: 3.5rem;
+    font-weight: 800;
+    line-height: 1.15;
+    margin-bottom: 20px;
+    color: #ffffff;
+}
+
+.gradient-text {
+    background: linear-gradient(135deg, #3b82f6, #8b5cf6, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.about-hero-desc {
+    font-size: 1.15rem;
+    line-height: 1.8;
+    color: #94a3b8;
+    max-width: 700px;
+    margin: 0 auto 32px;
+}
+
+.hero-stats-row {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+}
+
+.hero-stat-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    padding: 10px 20px;
+    border-radius: 50px;
+    font-size: 0.85rem;
+    color: #cbd5e1;
+    backdrop-filter: blur(10px);
+}
+
+/* ---- Shared Section Styles ---- */
+.about-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+}
+
+.section-title {
+    text-align: center;
+    font-size: 2.5rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 12px;
+}
+
+.section-subtitle {
+    text-align: center;
+    font-size: 1.05rem;
+    color: #94a3b8;
+    margin-bottom: 50px;
+}
+
+/* ---- Statistics Section ---- */
+.about-stats-section {
+    padding: 80px 24px;
+    background: linear-gradient(180deg, #0a0f1c, #0f172a);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 24px;
+}
+
+.stat-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 36px 24px;
+    text-align: center;
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.stat-icon {
+    width: 64px;
+    height: 64px;
+    border-radius: 16px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.6rem;
+    margin: 0 auto 20px;
+}
+
+.stat-number {
+    font-size: 3rem;
+    font-weight: 800;
+    color: #ffffff;
+    margin-bottom: 6px;
+}
+
+.stat-label {
+    font-size: 0.95rem;
+    color: #94a3b8;
+    font-weight: 500;
+}
+
+.stat-glow {
+    position: absolute;
+    bottom: 0;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60%;
+    height: 3px;
+    border-radius: 3px 3px 0 0;
+    opacity: 0.5;
+}
+
+/* ---- Mission & Vision Section ---- */
+.about-mission-section {
+    padding: 80px 24px;
+    background: #0a0f1c;
+}
+
+.mission-vision-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+.mv-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 48px 36px;
+    backdrop-filter: blur(20px);
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.mv-icon-wrap {
+    width: 72px;
+    height: 72px;
+    border-radius: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.8rem;
+    margin-bottom: 24px;
+}
+
+.mission-icon {
+    background: rgba(59, 130, 246, 0.12);
+    color: #3b82f6;
+}
+
+.vision-icon {
+    background: rgba(139, 92, 246, 0.12);
+    color: #8b5cf6;
+}
+
+.mv-card h3 {
+    font-size: 1.6rem;
+    font-weight: 700;
+    color: #ffffff;
+    margin-bottom: 16px;
+}
+
+.mv-card p {
+    font-size: 1.05rem;
+    line-height: 1.8;
+    color: #94a3b8;
+}
+
+.mv-decoration {
+    position: absolute;
+    top: -40px;
+    right: -40px;
+    width: 160px;
+    height: 160px;
+    border-radius: 50%;
+    opacity: 0.05;
+}
+
+.mission-card .mv-decoration {
+    background: #3b82f6;
+}
+
+.vision-card .mv-decoration {
+    background: #8b5cf6;
+}
+
+/* ---- Why Choose / Features Section ---- */
+.about-features-section {
+    padding: 80px 24px;
+    background: linear-gradient(180deg, #0f172a, #0a0f1c);
+}
+
+.features-grid {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 20px;
+}
+
+.feature-card {
+    position: relative;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 32px 24px;
+    text-align: center;
+    backdrop-filter: blur(16px);
+    transition: all 0.3s ease;
+}
+
+.feature-card:hover {
+    border-color: rgba(59, 130, 246, 0.3);
+    background: rgba(59, 130, 246, 0.05);
+}
+
+.feature-icon {
+    font-size: 2rem;
+    color: #3b82f6;
+    margin-bottom: 16px;
+}
+
+.feature-card h4 {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #ffffff;
+    margin-bottom: 8px;
+}
+
+.feature-card p {
+    font-size: 0.85rem;
+    color: #94a3b8;
+    line-height: 1.6;
+}
+
+.feature-check {
+    position: absolute;
+    top: 16px;
+    right: 16px;
+    color: #10b981;
+    font-size: 0.9rem;
+    opacity: 0.6;
+}
+
+/* ---- Benefits Section ---- */
+.about-benefits-section {
+    padding: 80px 24px;
+    background: #0a0f1c;
+}
+
+.benefits-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+}
+
+.benefits-column {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 24px;
+    padding: 40px 36px;
+    backdrop-filter: blur(16px);
+}
+
+.benefits-header {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 28px;
+}
+
+.benefits-header-icon {
+    font-size: 1.5rem;
+    color: #3b82f6;
+}
+
+.benefits-header h3 {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: #ffffff;
+}
+
+.benefits-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+}
+
+.benefits-list li {
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    padding: 14px 18px;
+    background: rgba(255, 255, 255, 0.02);
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    border-radius: 14px;
+    font-size: 0.95rem;
+    color: #cbd5e1;
+    cursor: default;
+    transition: all 0.2s ease;
+}
+
+.benefits-list li:hover {
+    background: rgba(59, 130, 246, 0.05);
+    border-color: rgba(59, 130, 246, 0.2);
+}
+
+.benefit-icon {
+    color: #3b82f6;
+    font-size: 1.1rem;
+    min-width: 20px;
+}
+
+/* ---- Technologies Section ---- */
+.about-tech-section {
+    padding: 80px 24px 100px;
+    background: linear-gradient(180deg, #0a0f1c, #0f172a);
+}
+
+.tech-grid {
+    display: grid;
+    grid-template-columns: repeat(6, 1fr);
+    gap: 20px;
+}
+
+.tech-card {
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid rgba(255, 255, 255, 0.08);
+    border-radius: 20px;
+    padding: 32px 16px;
+    text-align: center;
+    backdrop-filter: blur(16px);
+    transition: all 0.3s ease;
+}
+
+.tech-card:hover {
+    border-color: rgba(59, 130, 246, 0.3);
+    background: rgba(255, 255, 255, 0.06);
+}
+
+.tech-icon {
+    font-size: 2.8rem;
+    margin-bottom: 14px;
+}
+
+.tech-name {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: #cbd5e1;
+}
+
+/* ============================================
+   RESPONSIVE
+   ============================================ */
+@media (max-width: 1024px) {
+    .about-hero-content h1 {
+        font-size: 2.8rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .features-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .tech-grid {
+        grid-template-columns: repeat(3, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .about-hero {
+        min-height: 60vh;
+        padding: 100px 20px 60px;
+    }
+
+    .about-hero-content h1 {
+        font-size: 2.2rem;
+    }
+
+    .about-hero-desc {
+        font-size: 1rem;
+    }
+
+    .section-title {
+        font-size: 2rem;
+    }
+
+    .mission-vision-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .benefits-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .stats-grid {
+        grid-template-columns: repeat(2, 1fr);
+        gap: 16px;
+    }
+
+    .stat-number {
+        font-size: 2.2rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 14px;
+    }
+
+    .tech-grid {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 14px;
+    }
+}
+
+@media (max-width: 480px) {
+    .about-hero {
+        padding: 90px 16px 40px;
+        min-height: 50vh;
+    }
+
+    .about-hero-content h1 {
+        font-size: 1.8rem;
+    }
+
+    .section-title {
+        font-size: 1.6rem;
+    }
+
+    .stats-grid {
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+    }
+
+    .stat-card {
+        padding: 24px 16px;
+    }
+
+    .stat-number {
+        font-size: 1.8rem;
+    }
+
+    .features-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .hero-stats-row {
+        flex-direction: column;
+        align-items: center;
+    }
+
+    .mv-card {
+        padding: 32px 24px;
+    }
+
+    .benefits-column {
+        padding: 28px 20px;
+    }
+
+    .tech-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}

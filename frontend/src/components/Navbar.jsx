@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import './Navbar.css';
 import logo from '../assets/logo.png';
 import userIcon from '../assets/user_icon.png';
@@ -10,8 +10,22 @@ import NotificationBell from './NotificationBell';
 
 const Navbar = () => {
     const navigate = useNavigate();
+    const location = useLocation();
     const [scrolled, setScrolled] = useState(false);
     const [activeLink, setActiveLink] = useState('home');
+
+    // Sync active link with path
+    useEffect(() => {
+        if (location.pathname === '/about') {
+            setActiveLink('about');
+        } else if (location.pathname === '/contact') {
+            setActiveLink('contact');
+        } else if (location.pathname === '/') {
+            setActiveLink('home');
+        } else {
+            setActiveLink('');
+        }
+    }, [location.pathname]);
     const [showLogin, setShowLogin] = useState(false);
     const [showSignup, setShowSignup] = useState(false);
     const [isLoggedIn, setIsLoggedIn] = useState(false);
@@ -99,18 +113,26 @@ const Navbar = () => {
                         </li>
                         <li>
                             <a
-                                href="#about"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setActiveLink('about');
+                                    navigate('/about');
+                                }}
+                                style={{ cursor: 'pointer' }}
                                 className={activeLink === 'about' ? 'active' : ''}
-                                onClick={() => setActiveLink('about')}
                             >
                                 About Us
                             </a>
                         </li>
                         <li>
                             <a
-                                href="#contact"
+                                onClick={(e) => {
+                                    e.preventDefault();
+                                    setActiveLink('contact');
+                                    navigate('/contact');
+                                }}
+                                style={{ cursor: 'pointer' }}
                                 className={activeLink === 'contact' ? 'active' : ''}
-                                onClick={() => setActiveLink('contact')}
                             >
                                 Contact Us
                             </a>

@@ -27,6 +27,8 @@ const ratingRoutes = require('./routes/ratingRoutes');
 const uploadRoutes = require('./routes/uploadRoutes');
 const paymentRoutes = require('./routes/paymentRoutes');
 const ragRoutes = require('./routes/ragRoutes');
+const contactRoutes = require('./routes/contactRoutes');
+const employeeProfileRoutes = require('./routes/employeeProfileRoutes');
 
 
 // Middleware
@@ -72,6 +74,8 @@ app.use('/api/verification', verificationRoutes);
 app.use('/api/upload', uploadRoutes);
 app.use('/api/rating', ratingRoutes);
 app.use('/api/rag', ragRoutes);
+app.use('/api/contact', contactRoutes);
+app.use('/api/employee-profile', employeeProfileRoutes);
 
 
 // Services

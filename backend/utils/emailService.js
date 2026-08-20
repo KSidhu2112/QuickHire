@@ -240,7 +240,106 @@ const sendWelcomeEmail = async (email, name) => {
   }
 };
 
+// Send Job Alert Email
+const sendJobAlertEmail = async (email, name, job) => {
+  try {
+    const locationStr = job.location
+      ? `${job.location.city || ''} ${job.location.state || ''}`.trim()
+      : 'N/A';
+    const salaryStr = job.salaryMin
+      ? `₹${job.salaryMin} - ₹${job.salaryMax || job.salaryMin}`
+      : 'N/A';
+    const frontendUrl = process.env.CLIENT_URL || 'http://localhost:5173';
+
+    const htmlContent = `
+      <!DOCTYPE html>
+      <html>
+      <head>
+        <style>
+          body { font-family: 'Arial', sans-serif; background-color: #f0f9ff; margin: 0; padding: 0; }
+          .container { max-width: 600px; margin: 30px auto; background: white; border-radius: 12px; overflow: hidden; box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1); }
+          .header { background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); padding: 30px; text-align: center; color: white; }
+          .header h1 { margin: 0; font-size: 28px; font-weight: 800; }
+          .content { padding: 40px 30px; }
+          .job-details { background: linear-gradient(135deg, #f0f9ff 0%, #e0f2fe 100%); border: 2px dashed #2563eb; border-radius: 10px; padding: 25px; margin: 25px 0; }
+          .job-title { font-size: 22px; font-weight: 800; color: #1e3a8a; margin: 0 0 15px 0; text-align: center; }
+          .detail-row { display: flex; margin-bottom: 10px; font-size: 15px; }
+          .detail-label { font-weight: bold; color: #1e40af; width: 100px; display: inline-block; }
+          .detail-value { color: #334155; display: inline-block; }
+          .message { color: #64748b; line-height: 1.8; font-size: 15px; }
+          .footer { background: #f8fafc; padding: 20px 30px; text-align: center; color: #64748b; font-size: 13px; }
+          .button-container { text-align: center; margin: 30px 0; }
+          .button { display: inline-block; background: linear-gradient(135deg, #2563eb 0%, #1e40af 100%); color: white; padding: 15px 40px; border-radius: 8px; text-decoration: none; font-weight: 600; font-size: 16px; }
+        </style>
+      </head>
+      <body>
+        <div class="container">
+          <div class="header">
+            <h1>🚀 QuickHire</h1>
+            <p style="margin: 10px 0 0 0; opacity: 0.9;">New Job Opportunity</p>
+          </div>
+          
+          <div class="content">
+            <h2 style="color: #1e3a8a; margin-top: 0;">Hello ${name}! 👋</h2>
+            
+            <p class="message">
+              Great news! A new job has just been posted on QuickHire. Check out the details below:
+            </p>
+            
+            <div class="job-details">
+              <div class="job-title">${job.title}</div>
+              <div style="max-width: 400px; margin: 0 auto;">
+                <div class="detail-row">
+                  <span class="detail-label">Category:</span>
+                  <span class="detail-value">${job.category || 'Not specified'}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Location:</span>
+                  <span class="detail-value">${locationStr}</span>
+                </div>
+                <div class="detail-row">
+                  <span class="detail-label">Salary:</span>
+                  <span class="detail-value">${salaryStr}</span>
+                </div>
+              </div>
+            </div>
+            
+            <div class="button-container">
+              <a href="${frontendUrl}/jobs/${job._id}" class="button">View & Apply Now</a>
+            </div>
+            
+            <p class="message" style="margin-top: 30px;">
+              Don't miss out on this opportunity. Apply early to increase your chances of getting hired!
+            </p>
+          </div>
+          
+          <div class="footer">
+            <p style="margin: 0 0 10px 0;">© ${new Date().getFullYear()} QuickHire. All rights reserved.</p>
+            <p style="margin: 0;">You are receiving this because you are registered as an employee on QuickHire.</p>
+          </div>
+        </div>
+      </body>
+      </html>
+    `;
+
+    const mailOptions = {
+      from: `"${process.env.SENDER_NAME}" <${process.env.SENDER_EMAIL}>`,
+      to: email,
+      subject: `📢 QuickHire - New Job Alert: ${job.title}`,
+      html: htmlContent,
+    };
+
+    const info = await transporter.sendMail(mailOptions);
+    console.log(`✅ Job Alert email sent to ${email} successfully:`, info.messageId);
+    return { success: true, messageId: info.messageId };
+  } catch (error) {
+    console.error(`❌ Error sending Job Alert email to ${email}:`, error.message);
+    throw new Error(`Failed to send job alert email: ${error.message}`);
+  }
+};
+
 module.exports = {
   sendOTPEmail,
   sendWelcomeEmail,
+  sendJobAlertEmail,
 };

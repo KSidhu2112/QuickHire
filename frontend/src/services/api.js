@@ -1,6 +1,6 @@
 import axios from 'axios';
 
-const API_URL = 'https://quickhire-5ho5.onrender.com/api';
+const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 // Create axios instance
 const axiosInstance = axios.create({
@@ -422,7 +422,70 @@ export const ratingAPI = {
         });
     }
 };
+// Contact API functions
+export const contactAPI = {
+    // Submit contact message
+    submitMessage: async (messageData) => {
+        const response = await axiosInstance.post('/contact', messageData);
+        return response.data;
+    },
+
+    // Get platform statistics (public)
+    getPlatformStats: async () => {
+        const response = await axiosInstance.get('/contact/stats');
+        return response.data;
+    },
+};
 
 
+
+// Employee Profile API functions
+export const employeeProfileAPI = {
+    // Create or update profile
+    createOrUpdateProfile: async (profileData) => {
+        const response = await axiosInstance.post('/employee-profile', profileData);
+        return response.data;
+    },
+
+    // Get my profile
+    getMyProfile: async () => {
+        const response = await axiosInstance.get('/employee-profile/me');
+        return response.data;
+    },
+
+    // Get profile by user ID (public)
+    getProfile: async (userId) => {
+        const response = await axiosInstance.get(`/employee-profile/${userId}`);
+        return response.data;
+    },
+
+    // Upload profile photo
+    uploadPhoto: async (file) => {
+        const formData = new FormData();
+        formData.append('photo', file);
+        const response = await axiosInstance.post('/employee-profile/upload-photo', formData, {
+            headers: { 'Content-Type': 'multipart/form-data' },
+        });
+        return response.data;
+    },
+
+    // Submit detailed rating (employer)
+    submitDetailedRating: async (ratingData) => {
+        const response = await axiosInstance.post('/employee-profile/rate', ratingData);
+        return response.data;
+    },
+
+    // Get ratings for an employee
+    getEmployeeRatings: async (employeeId) => {
+        const response = await axiosInstance.get(`/employee-profile/ratings/${employeeId}`);
+        return response.data;
+    },
+
+    // Recalculate trust score
+    recalculateTrustScore: async (userId) => {
+        const response = await axiosInstance.post(`/employee-profile/recalculate-trust/${userId}`);
+        return response.data;
+    },
+};
 
 export default axiosInstance;

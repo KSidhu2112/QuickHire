@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
 
-const API_BASE = 'https://quickhire-5ho5.onrender.com/api';
+const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
 import './ManageJobs.css';
 
 const ManageJobs = () => {
@@ -254,6 +254,12 @@ const ManageJobs = () => {
                                         onClick={() => handleToggleUrgent(job._id, job.isUrgent)}
                                     >
                                         {job.isUrgent ? '⭐ Remove Urgent' : '🔥 Mark Urgent'}
+                                    </button>
+                                    <button
+                                        className="action-btn edit"
+                                        onClick={() => navigate(`/employer/edit-job/${job._id}`)}
+                                    >
+                                        ✏️ Edit
                                     </button>
                                     {job.status === 'ACTIVE' && (
                                         <button className="action-btn close" onClick={() => handleCloseJob(job._id)}>

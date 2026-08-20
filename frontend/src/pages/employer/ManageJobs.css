@@ -399,6 +399,16 @@
     box-shadow: 0 4px 15px rgba(245, 101, 101, 0.4);
 }
 
+.action-btn.edit {
+    background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    color: #fff;
+}
+
+.action-btn.edit:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 15px rgba(240, 147, 251, 0.4);
+}
+
 /* Error Message */
 .error-message {
     background: rgba(254, 202, 202, 0.95);

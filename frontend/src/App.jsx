@@ -5,16 +5,19 @@ import Footer from './components/Footer';
 import Home from './pages/Home';
 import EmployeeDashboard from './pages/employee/EmployeeDashboard';
 import EmployeeProfile from './pages/employee/EmployeeProfile';
+import CompleteProfile from './pages/employee/CompleteProfile';
 import ShortlistedJobs from './pages/employee/ShortlistedJobs';
 import MyApplications from './pages/employee/MyApplications';
 import EmployerDashboard from './pages/employer/EmployerDashboard';
 import AddJob from './pages/employer/AddJob';
+import EditJob from './pages/employer/EditJob';
 import ManageJobs from './pages/employer/ManageJobs';
 import Applications from './pages/employer/Applications';
 import EmployerProfile from './pages/employer/EmployerProfile';
 import HiredEmployees from './pages/employer/HiredEmployees';
 import Payments from './pages/employer/Payments';
 import EmployerChatbot from './pages/employer/EmployerChatbot';
+import AiSearch from './pages/employer/AiSearch';
 
 import Notifications from './pages/Notifications';
 import Login from './pages/Login';
@@ -22,6 +25,8 @@ import Signup from './pages/Signup';
 import ForgotPassword from './pages/ForgotPassword';
 import ResetPassword from './pages/ResetPassword';
 import JobDetails from './pages/JobDetails';
+import AboutUs from './pages/AboutUs';
+import ContactUs from './pages/ContactUs';
 import NearbyJobs from './pages/employee/NearbyJobs';
 import Checkout from './pages/employee/Checkout';
 import ProtectedRoute from './components/ProtectedRoute';
@@ -42,6 +47,8 @@ function App() {
           <Route path="/forgot-password" element={<ForgotPassword />} />
           <Route path="/reset-password/:token" element={<ResetPassword />} />
           <Route path="/job/:id" element={<JobDetails />} />
+          <Route path="/about" element={<AboutUs />} />
+          <Route path="/contact" element={<ContactUs />} />
 
           {/* Employee Routes (Protected) */}
           <Route
@@ -49,6 +56,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['jobseeker']}>
                 <EmployeeDashboard />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employee/complete-profile"
+            element={
+              <ProtectedRoute allowedRoles={['jobseeker']}>
+                <CompleteProfile />
               </ProtectedRoute>
             }
           />
@@ -121,6 +136,14 @@ function App() {
             }
           />
           <Route
+            path="/employer/edit-job/:id"
+            element={
+              <ProtectedRoute allowedRoles={['employer']}>
+                <EditJob />
+              </ProtectedRoute>
+            }
+          />
+          <Route
             path="/employer/manage-jobs"
             element={
               <ProtectedRoute allowedRoles={['employer']}>
@@ -165,6 +188,14 @@ function App() {
             element={
               <ProtectedRoute allowedRoles={['employer']}>
                 <EmployerChatbot />
+              </ProtectedRoute>
+            }
+          />
+          <Route
+            path="/employer/ai-search"
+            element={
+              <ProtectedRoute allowedRoles={['employer']}>
+                <AiSearch />
               </ProtectedRoute>
             }
           />

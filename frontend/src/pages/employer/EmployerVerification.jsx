@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { verificationAPI, disputeAPI } from '../../services/api';
-const BACKEND_URL = ('https://quickhire-5ho5.onrender.com/api').replace('/api', '');
+const BACKEND_URL = ((import.meta.env.VITE_API_URL || 'http://localhost:5000/api')).replace('/api', '');
 import { toast } from 'react-toastify';
 import './Verification.css';
 

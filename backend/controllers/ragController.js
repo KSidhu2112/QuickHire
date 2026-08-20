@@ -103,3 +103,36 @@ exports.deleteConversation = async (req, res) => {
         res.status(500).json({ success: false, message: "Failed to delete conversation." });
     }
 };
+
+exports.searchRagCandidates = async (req, res) => {
+    try {
+        const { query } = req.body;
+        if (!query) return res.status(400).json({ error: "Query is required." });
+
+        const result = await require('../services/ragService').queryCandidateRAG(query);
+        if (!result.retrievedCandidates || result.retrievedCandidates.length === 0) {
+            return res.json({ answer: result.answer, candidates: [] });
+        }
+
+        const User = require('../models/User');
+        const popCand = await User.find({ _id: { $in: result.retrievedCandidates } });
+
+        const candidates = popCand.map(c => ({
+            name: c.name,
+            preferredRole: c.profile?.preferredJobRole || 'Candidate',
+            skills: c.profile?.skills || [],
+            experience: c.profile?.experience || 'N/A',
+            education: c.profile?.education || 'N/A',
+            location: c.location || 'Not Specified',
+            resumeText: c.profile?.resume || ''
+        }));
+
+        res.json({
+            answer: result.answer,
+            candidates
+        });
+    } catch (error) {
+        console.error(error);
+        res.status(500).json({ error: "An error occurred during candidate search." });
+    }
+};

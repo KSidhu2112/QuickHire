@@ -20,35 +20,33 @@ function getTransporter() {
   return _transporter;
 }
 
-// ─── Send via Brevo HTTP API (preferred) ────────────────────────────
-async function sendViaBrevoAPI({ to, toName, subject, htmlContent }) {
-  const apiKey = process.env.BREVO_API_KEY;
-  const senderEmail = process.env.SENDER_EMAIL;
+// ─── Send via Resend API (preferred) ────────────────────────────
+async function sendViaResendAPI({ to, toName, subject, htmlContent }) {
+  const apiKey = process.env.RESEND_API_KEY;
+  const senderEmail = process.env.SENDER_EMAIL || 'onboarding@resend.dev'; // Resend sandbox email for testing
   const senderName = process.env.SENDER_NAME || 'QuickHire Team';
 
-  if (!apiKey) throw new Error('BREVO_API_KEY not set');
-  if (!senderEmail) throw new Error('SENDER_EMAIL not set');
+  if (!apiKey) throw new Error('RESEND_API_KEY not set');
 
   const payload = {
-    sender: { name: senderName, email: senderEmail },
-    to: [{ email: to, name: toName || to }],
+    from: `${senderName} <${senderEmail}>`,
+    to: [to],
     subject,
-    htmlContent,
+    html: htmlContent,
   };
 
-  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+  const response = await fetch('https://api.resend.com/emails', {
     method: 'POST',
     headers: {
-      'accept': 'application/json',
-      'api-key': apiKey,
-      'content-type': 'application/json',
+      'Authorization': `Bearer ${apiKey}`,
+      'Content-Type': 'application/json',
     },
     body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
     const errorBody = await response.text();
-    throw new Error(`Brevo API ${response.status}: ${errorBody}`);
+    throw new Error(`Resend API ${response.status}: ${errorBody}`);
   }
 
   return await response.json();
@@ -70,19 +68,18 @@ async function sendViaSMTP({ to, toName, subject, htmlContent }) {
   return { messageId: info.messageId };
 }
 
-// ─── Smart send: try Brevo API first, fall back to SMTP ────────────
+// ─── Smart send: try Resend API first, fall back to SMTP ────────────
 async function sendEmail({ to, toName, subject, htmlContent }) {
-  const apiKey = process.env.BREVO_API_KEY;
+  const apiKey = process.env.RESEND_API_KEY;
 
-  // If BREVO_API_KEY looks like an actual API key (starts with xkeysib-), use HTTP API
-  if (apiKey && apiKey.startsWith('xkeysib-')) {
-    console.log(`📧 [Brevo API] → ${to}`);
-    const result = await sendViaBrevoAPI({ to, toName, subject, htmlContent });
-    console.log(`📧 ✅ [Brevo API] Success → ${to} (messageId: ${result.messageId})`);
+  if (apiKey) {
+    console.log(`📧 [Resend API] → ${to}`);
+    const result = await sendViaResendAPI({ to, toName, subject, htmlContent });
+    console.log(`📧 ✅ [Resend API] Success → ${to} (ID: ${result.id})`);
     return result;
   }
 
-  // Otherwise use SMTP (works with xsmtpsib- keys)
+  // Otherwise use SMTP
   console.log(`📧 [SMTP] → ${to}`);
   const result = await sendViaSMTP({ to, toName, subject, htmlContent });
   console.log(`📧 ✅ [SMTP] Success → ${to} (messageId: ${result.messageId})`);
@@ -241,31 +238,31 @@ function buildJobAlertHtml(emp, job, frontendUrl) {
 // ─── Main: Send job alert emails to all employees ───────────────────
 /**
  * Sends job alert emails to all employees using Promise.all.
- * Automatically chooses Brevo HTTP API or SMTP based on the API key format.
- * Does NOT block job creation — called fire-and-forget from the controller.
+ * Automatically chooses Resend HTTP API or SMTP based on the API key.
+ * Does NOT block job creation — called fire-and-forget from the controller or matching service.
  */
 exports.sendJobAlertEmails = async (employees, job) => {
   try {
+    const JobNotification = require('../models/JobNotification');
     console.log(`\n📧 ========== JOB ALERT EMAIL SERVICE ==========`);
     console.log(`📧 Job: "${job.title}" (ID: ${job._id})`);
     console.log(`📧 Total employees to process: ${employees.length}`);
 
-    const apiKey = process.env.BREVO_API_KEY;
-    const method = apiKey && apiKey.startsWith('xkeysib-') ? 'Brevo HTTP API' : 'SMTP';
+    const apiKey = process.env.RESEND_API_KEY;
+    const method = apiKey ? 'Resend HTTP API' : 'SMTP';
     console.log(`📧 Send method: ${method}`);
 
     const frontendUrl = process.env.FRONTEND_URL || process.env.CLIENT_URL || 'http://localhost:5173';
 
-    // Check which employees have already been notified for this job
-    const existingNotifications = await EmailNotificationHistory.find({
+    // Check which employees have already been notified for this job (prevent duplicates fully)
+    const existingNotificationsSet = new Set();
+    const existingNotificationsLogs = await EmailNotificationHistory.find({
       jobId: job._id,
       recipientEmail: { $in: employees.map(emp => emp.email) },
     });
+    existingNotificationsLogs.forEach(n => existingNotificationsSet.add(n.recipientEmail));
 
-    const alreadyNotifiedEmails = new Set(existingNotifications.map(n => n.recipientEmail));
-    console.log(`📧 Already notified: ${alreadyNotifiedEmails.size}`);
-
-    const employeesToNotify = employees.filter(emp => !alreadyNotifiedEmails.has(emp.email));
+    const employeesToNotify = employees.filter(emp => !existingNotificationsSet.has(emp.email));
 
     if (employeesToNotify.length === 0) {
       console.log('📧 All employees already notified for this job. Skipping.');
@@ -293,9 +290,23 @@ exports.sendJobAlertEmails = async (employees, job) => {
           jobId: job._id,
         });
 
+        // Track in JobNotification model for Analytics
+        await JobNotification.findOneAndUpdate(
+          { jobId: job._id, employeeId: emp._id },
+          { status: 'sent', sentAt: new Date() },
+          { new: true, runValidators: true }
+        );
+
         return { email: emp.email, status: 'success' };
       } catch (err) {
         console.error(`📧 ❌ FAILED → ${emp.email}: ${err.message}`);
+
+        await JobNotification.findOneAndUpdate(
+          { jobId: job._id, employeeId: emp._id },
+          { status: 'failed', errorMessage: err.message },
+          { new: true, runValidators: true }
+        );
+
         return { email: emp.email, status: 'failed', error: err.message };
       }
     });

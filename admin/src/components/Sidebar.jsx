@@ -11,7 +11,8 @@ import {
     FaChartBar,
     FaSignOutAlt,
     FaBolt,
-    FaUserShield
+    FaUserShield,
+    FaHeadset
 } from 'react-icons/fa';
 import './Sidebar.css';
 
@@ -35,13 +36,13 @@ const Sidebar = () => {
                     <NavLink to="/dashboard" end className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <FaTachometerAlt /> <span className="nav-text">Overview</span>
                     </NavLink>
-                    
+
                     <NavLink to="/dashboard/activity-monitor" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <FaBolt /> <span className="nav-text">Live Monitor</span>
                     </NavLink>
 
                     <div className="nav-group-label">Management</div>
-                    
+
                     <NavLink to="/dashboard/users" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <FaUserShield /> <span className="nav-text">User Control</span>
                     </NavLink>
@@ -73,9 +74,15 @@ const Sidebar = () => {
                     <NavLink to="/dashboard/analytics" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
                         <FaChartBar /> <span className="nav-text">Analytics</span>
                     </NavLink>
+
+                    <div className="nav-group-label">Support</div>
+
+                    <NavLink to="/dashboard/support-requests" className={({ isActive }) => isActive ? 'nav-item active' : 'nav-item'}>
+                        <FaHeadset /> <span className="nav-text">Support Requests</span>
+                    </NavLink>
                 </nav>
             </div>
-            
+
             <div className="sidebar-footer">
                 <button onClick={handleLogout} className="logout-btn">
                     <FaSignOutAlt /> <span className="nav-text">Sign Out</span>

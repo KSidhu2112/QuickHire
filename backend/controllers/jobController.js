@@ -205,7 +205,7 @@ exports.createJob = async (req, res) => {
         // 2. Sanitize coordinates
         if (jobData.coordinates) {
             const { type, coordinates } = jobData.coordinates;
-            if (type !== 'Point' || !Array.isArray(coordinates) || coordinates.length !== 2 || 
+            if (type !== 'Point' || !Array.isArray(coordinates) || coordinates.length !== 2 ||
                 isNaN(parseFloat(coordinates[0])) || isNaN(parseFloat(coordinates[1]))) {
                 delete jobData.coordinates;
             }
@@ -226,7 +226,7 @@ exports.createJob = async (req, res) => {
         // Update Employer Stats
         await User.findByIdAndUpdate(req.user._id, { $inc: { 'stats.totalJobsPosted': 1 } });
 
-        // Broadcast to jobseekers
+        // Broadcast to jobseekers and send email logic directly inside notifyJobseekers
         try {
             await notifyJobseekers(job._id, job.title, job.company, job.category);
         } catch (notifError) {
@@ -297,7 +297,7 @@ exports.updateJob = async (req, res) => {
             if (req.body[field] !== undefined) {
                 if (field === 'coordinates' && req.body.coordinates) {
                     const { type, coordinates } = req.body.coordinates;
-                    if (type === 'Point' && Array.isArray(coordinates) && coordinates.length === 2 && 
+                    if (type === 'Point' && Array.isArray(coordinates) && coordinates.length === 2 &&
                         !isNaN(parseFloat(coordinates[0])) && !isNaN(parseFloat(coordinates[1]))) {
                         job.coordinates = req.body.coordinates;
                     }

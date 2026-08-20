@@ -1,0 +1,238 @@
+.ai-search-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.ai-search-header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.ai-search-header h1 {
+    font-size: 2.5rem;
+    color: #2c3e50;
+    margin-bottom: 0.5rem;
+}
+
+.ai-search-header p {
+    color: #7f8c8d;
+    font-size: 1.1rem;
+}
+
+.ai-search-content {
+    display: flex;
+    gap: 2rem;
+}
+
+.ai-search-sidebar {
+    width: 250px;
+    background: #f8f9fa;
+    padding: 1.5rem;
+    border-radius: 8px;
+    border: 1px solid #e9ecef;
+    height: fit-content;
+}
+
+.ai-search-sidebar h3 {
+    margin-bottom: 1rem;
+    color: #343a40;
+    font-size: 1.1rem;
+}
+
+.no-history {
+    color: #6c757d;
+    font-size: 0.9rem;
+}
+
+.history-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.history-list li {
+    padding: 0.5rem 0;
+    color: #495057;
+    cursor: pointer;
+    border-bottom: 1px solid #dee2e6;
+    font-size: 0.9rem;
+    transition: color 0.2s;
+}
+
+.history-list li:hover {
+    color: #007bff;
+}
+
+.history-list li:last-child {
+    border-bottom: none;
+}
+
+.ai-search-main {
+    flex: 1;
+}
+
+.ai-search-form {
+    display: flex;
+    gap: 1rem;
+    margin-bottom: 2rem;
+}
+
+.ai-search-form input {
+    flex: 1;
+    padding: 1rem 1.5rem;
+    border: 2px solid #e9ecef;
+    border-radius: 30px;
+    font-size: 1rem;
+    outline: none;
+    transition: border-color 0.3s;
+}
+
+.ai-search-form input:focus {
+    border-color: #007bff;
+}
+
+.ai-search-form button {
+    padding: 0 2rem;
+    background: #007bff;
+    color: white;
+    border: none;
+    border-radius: 30px;
+    font-size: 1rem;
+    cursor: pointer;
+    font-weight: 600;
+    transition: background 0.3s;
+}
+
+.ai-search-form button:hover:not(:disabled) {
+    background: #0056b3;
+}
+
+.ai-search-form button:disabled {
+    background: #6c757d;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.loading-state {
+    text-align: center;
+    padding: 3rem 0;
+    color: #6c757d;
+}
+
+.spinner {
+    width: 40px;
+    height: 40px;
+    border: 4px solid #f3f3f3;
+    border-top: 4px solid #007bff;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto 1rem;
+}
+
+@keyframes spin {
+    0% {
+        transform: rotate(0deg);
+    }
+
+    100% {
+        transform: rotate(360deg);
+    }
+}
+
+.ai-explanation {
+    background: #e3f2fd;
+    padding: 1.5rem;
+    border-radius: 8px;
+    margin-bottom: 2rem;
+    border-left: 4px solid #1976d2;
+}
+
+.ai-explanation h3 {
+    color: #1565c0;
+    margin-bottom: 0.5rem;
+    font-size: 1.2rem;
+}
+
+.ai-explanation p {
+    color: #333;
+    line-height: 1.6;
+}
+
+.candidates-list h3 {
+    margin-bottom: 1.5rem;
+    color: #2c3e50;
+}
+
+.cards-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+.candidate-card {
+    background: white;
+    border: 1px solid #e9ecef;
+    border-radius: 8px;
+    padding: 1.5rem;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.candidate-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.candidate-card h4 {
+    margin: 0 0 0.5rem;
+    color: #2c3e50;
+    font-size: 1.2rem;
+}
+
+.candidate-card .role {
+    color: #007bff;
+    font-weight: 600;
+    margin-bottom: 1rem;
+}
+
+.card-details {
+    margin-bottom: 1.5rem;
+}
+
+.card-details p {
+    margin: 0.5rem 0;
+    font-size: 0.9rem;
+    color: #495057;
+}
+
+.card-details strong {
+    color: #2c3e50;
+}
+
+.view-profile-btn {
+    width: 100%;
+    padding: 0.75rem;
+    background: #f8f9fa;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+    color: #495057;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.view-profile-btn:hover {
+    background: #e9ecef;
+    color: #212529;
+}
+
+@media (max-width: 768px) {
+    .ai-search-content {
+        flex-direction: column;
+    }
+
+    .ai-search-sidebar {
+        width: 100%;
+    }
+}

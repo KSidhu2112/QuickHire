@@ -326,26 +326,15 @@ const notifyJobseekers = async (jobId, jobTitle, companyName, category) => {
     try {
         console.log(`📢 notifyJobseekers called — jobId: ${jobId}, title: ${jobTitle}`);
         const User = require('../models/User'); // Lazy load to avoid circular dependency
-        const Job = require('../models/Job');
-        const { sendJobAlertEmails } = require('./emailService');
-
-        const job = await Job.findById(jobId);
-        if (!job) {
-            console.log('📢 Job not found, skipping notifications');
-            return;
-        }
 
         // Query ALL active jobseekers — no skill/category/location filtering
         const query = { role: 'jobseeker', status: 'active' };
 
         const jobseekers = await User.find(query).select('_id email name');
-        console.log(`📢 Found ${jobseekers.length} active jobseekers`);
-        if (jobseekers.length > 0) {
-            console.log(`📢 Jobseeker emails:`, jobseekers.map(j => j.email));
-        }
+        console.log(`📢 Found ${jobseekers.length} active jobseekers for in-app alert`);
 
         if (!jobseekers.length) {
-            console.log('📢 No active jobseekers found, skipping');
+            console.log('📢 No active jobseekers found, skipping alerts');
             return;
         }
 
@@ -367,11 +356,30 @@ const notifyJobseekers = async (jobId, jobTitle, companyName, category) => {
         });
 
         await createBulkNotifications(notifications);
+        console.log(`📢 Broadcasted in-app job alert to ${jobseekers.length} candidates.`);
 
-        // Send email notifications asynchronously without blocking
-        console.log(`📢 Calling sendJobAlertEmails for ${jobseekers.length} employees...`);
-        sendJobAlertEmails(jobseekers, job).catch(err => console.error('❌ Error initiating job alert emails:', err));
+        // Send email notifications asynchronously without blocking to ALL employees
+        const { sendJobAlertEmail } = require('../utils/emailService');
+        const Job = require('../models/Job');
+        const job = await Job.findById(jobId);
 
+        if (job) {
+            console.log(`📢 Calling sendJobAlertEmail for all ${jobseekers.length} employees...`);
+
+            // Fire-and-forget background processing
+            setImmediate(async () => {
+                const emailPromises = jobseekers.map(async (emp) => {
+                    try {
+                        await sendJobAlertEmail(emp.email, emp.name, job);
+                    } catch (err) {
+                        console.error(`❌ Failed to send generic job alert email to ${emp.email}:`, err.message);
+                    }
+                });
+
+                await Promise.all(emailPromises);
+                console.log(`✅ Finished sending ${jobseekers.length} job alert emails in background.`);
+            });
+        }
     } catch (error) {
         console.error('❌ Notify Jobseekers Error:', error);
     }

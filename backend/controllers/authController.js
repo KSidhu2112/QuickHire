@@ -273,6 +273,7 @@ exports.login = async (req, res) => {
                 email: user.email,
                 role: user.role,
                 isEmailVerified: user.isEmailVerified,
+                isProfileComplete: user.isProfileComplete,
             },
         });
     } catch (error) {

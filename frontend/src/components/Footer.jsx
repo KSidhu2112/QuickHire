@@ -83,17 +83,10 @@ const Footer = () => {
                             <li><Link to="/">Home</Link></li>
                             <li>
                                 <a
-                                    href="#about"
+                                    href="/about"
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        if (location.pathname !== '/') {
-                                            navigate('/');
-                                            setTimeout(() => {
-                                                window.scrollTo({ top: 0, behavior: 'smooth' });
-                                            }, 100);
-                                        } else {
-                                            window.scrollTo({ top: 0, behavior: 'smooth' });
-                                        }
+                                        navigate('/about');
                                     }}
                                 >
                                     About Us
@@ -148,10 +141,10 @@ const Footer = () => {
                             </li>
                             <li>
                                 <a
-                                    href="#contact"
+                                    href="/contact"
                                     onClick={(e) => {
                                         e.preventDefault();
-                                        document.querySelector('.footer-contact')?.scrollIntoView({ behavior: 'smooth' });
+                                        navigate('/contact');
                                     }}
                                 >
                                     Contact Us

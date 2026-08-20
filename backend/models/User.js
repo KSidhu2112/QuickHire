@@ -37,6 +37,10 @@ const userSchema = new mongoose.Schema(
             type: Boolean,
             default: false,
         },
+        isProfileComplete: {
+            type: Boolean,
+            default: false,
+        },
         phone: {
             type: String,
             trim: true,
@@ -73,7 +77,7 @@ const userSchema = new mongoose.Schema(
         },
         trustScore: {
             type: Number,
-            default: 100, // Start with a neutral/good score
+            default: 50, // Start with neutral score for new workers
             min: 0,
             max: 100,
         },

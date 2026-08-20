@@ -4,7 +4,7 @@ import './EmployerChatbot.css';
 import { toast } from 'react-toastify';
 import { FaPaperPlane, FaRobot, FaUser, FaSync, FaPlus, FaTrash } from 'react-icons/fa';
 
-const API_BASE = 'https://quickhire-5ho5.onrender.com/api';
+const API_BASE = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
 
 const EmployerChatbot = () => {
     const greetingMessage = {

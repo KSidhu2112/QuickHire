@@ -328,3 +328,171 @@
     line-height: 1.5;
     font-style: italic;
 }
+
+/* Enhanced Profile Stats */
+.profile-stats-row {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+    gap: 20px;
+    margin-bottom: 30px;
+}
+
+.profile-stat-card {
+    background: white;
+    border-radius: 16px;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    border: 1px solid #f0f0f0;
+}
+
+.trust-score-card {
+    flex-direction: row;
+    gap: 15px;
+    text-align: left;
+}
+
+.trust-score-circle {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    border: 4px solid #667eea;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    font-size: 1.2rem;
+}
+
+.trust-label {
+    font-weight: 600;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.completeness-bar-container {
+    width: 100%;
+    margin-bottom: 10px;
+    position: relative;
+    padding-top: 15px;
+}
+
+.completeness-bar {
+    width: 100%;
+    height: 10px;
+    background: #f0f4f8;
+    border-radius: 10px;
+    overflow: hidden;
+}
+
+.completeness-fill {
+    height: 100%;
+    border-radius: 10px;
+    transition: width 1s ease-in-out;
+}
+
+.completeness-text {
+    position: absolute;
+    top: -5px;
+    right: 0;
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: #4a5568;
+}
+
+.complete-profile-link {
+    background: none;
+    border: none;
+    color: #667eea;
+    font-weight: 600;
+    font-size: 0.85rem;
+    cursor: pointer;
+    margin-top: 10px;
+    padding: 0;
+}
+
+.complete-profile-link:hover {
+    text-decoration: underline;
+}
+
+.stat-big-number {
+    font-size: 2rem;
+    font-weight: 800;
+    color: #2d3748;
+    line-height: 1;
+    margin-bottom: 10px;
+}
+
+.profile-stat-card h4 {
+    margin: 0;
+    color: #718096;
+    font-size: 0.9rem;
+    font-weight: 600;
+}
+
+/* Enhanced Profile Details */
+.enhanced-profile-section {
+    margin-top: 40px;
+    padding-top: 30px;
+    border-top: 1px solid #edf2f7;
+}
+
+.enhanced-profile-section h3 {
+    margin-bottom: 25px;
+    color: #2d3748;
+    font-size: 1.4rem;
+}
+
+/* Granular Ratings */
+.granular-ratings {
+    margin-top: 40px;
+    background: #f8fafc;
+    border-radius: 16px;
+    padding: 25px;
+    border: 1px solid #e2e8f0;
+}
+
+.ratings-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+    gap: 20px;
+}
+
+.rating-item {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.rating-label {
+    width: 110px;
+    font-size: 0.9rem;
+    color: #4a5568;
+    font-weight: 500;
+}
+
+.rating-bar-bg {
+    flex: 1;
+    height: 8px;
+    background: #e2e8f0;
+    border-radius: 4px;
+    overflow: hidden;
+}
+
+.rating-bar-fill {
+    height: 100%;
+    background: #f59e0b;
+    border-radius: 4px;
+}
+
+.rating-num {
+    font-weight: 700;
+    color: #2d3748;
+    width: 30px;
+    text-align: right;
+}

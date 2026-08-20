@@ -21,6 +21,7 @@ import PaymentMonitoring from './pages/dashboard/PaymentMonitoring';
 import ReportManagement from './pages/dashboard/ReportManagement';
 import AnalyticsDashboard from './pages/dashboard/AnalyticsDashboard';
 import CommunicationLogs from './pages/dashboard/CommunicationLogs';
+import SupportRequests from './pages/dashboard/SupportRequests';
 import AccountDetails from './pages/AccountDetails';
 import Settings from './pages/Settings';
 import Sidebar from './components/Sidebar';
@@ -39,7 +40,7 @@ function App() {
             <Route path="/signup" element={<Signup />} />
             <Route path="/forgot-password" element={<ForgotPassword />} />
             <Route path="/reset-password" element={<ResetPassword />} />
-            
+
             {/* Dashboard Routes with AdminLayout */}
             <Route path="/dashboard" element={<AdminLayout />}>
               <Route index element={<Dashboard />} />
@@ -54,6 +55,7 @@ function App() {
               <Route path="reports" element={<ReportManagement />} />
               <Route path="analytics" element={<AnalyticsDashboard />} />
               <Route path="messages" element={<CommunicationLogs />} />
+              <Route path="support-requests" element={<SupportRequests />} />
               <Route path="jobs" element={<ManageJobs />} />
             </Route>
 
