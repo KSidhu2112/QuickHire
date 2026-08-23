@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
+const API_BASE = (import.meta.env.VITE_API_URL || 'https://quickhire-1-k5vh.onrender.com/api');
 import './CompleteProfile.css';
 
 const LANGUAGE_OPTIONS = [
@@ -93,7 +93,7 @@ const CompleteProfile = () => {
                         : [{ jobTitle: '', company: '', duration: '', description: '' }],
                 });
                 if (p.profilePhoto) {
-                    const backendUrl = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000');
+                    const backendUrl = (import.meta.env.VITE_BACKEND_URL || 'https://quickhire-1-k5vh.onrender.com');
                     setProfilePhotoPreview(p.profilePhoto.startsWith('http') ? p.profilePhoto : `${backendUrl}${p.profilePhoto}`);
                 }
             }

@@ -7,7 +7,7 @@
     "variable": [
         {
             "key": "base_url",
-            "value": "http://localhost:5000",
+            "value": "https://quickhire-1-k5vh.onrender.com",
             "type": "default"
         },
         {

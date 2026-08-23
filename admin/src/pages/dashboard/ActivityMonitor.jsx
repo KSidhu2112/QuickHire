@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-const API_BASE = 'https://quickhire-5ho5.onrender.com/api';
+const API_BASE = 'https://quickhire-1-k5vh.onrender.com/api';
 import {
     FaBolt, FaUserCircle, FaBriefcase, FaPaperPlane,
     FaExchangeAlt, FaHistory, FaEye, FaArrowRight

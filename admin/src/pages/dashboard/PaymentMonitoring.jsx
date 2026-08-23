@@ -24,7 +24,7 @@ import {
 } from 'react-icons/fa';
 import './PaymentMonitoring.css';
 
-const API_BASE = `${'https://quickhire-5ho5.onrender.com/api'}/payments/admin`;
+const API_BASE = `${'https://quickhire-1-k5vh.onrender.com/api'}/payments/admin`;
 
 const PaymentMonitoring = () => {
   // Data

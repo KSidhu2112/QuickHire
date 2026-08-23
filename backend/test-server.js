@@ -14,7 +14,7 @@ const app = express();
 
 // CORS Configuration
 const corsOptions = {
-    origin: ['http://localhost:5173', 'http://localhost:3000', 'http://localhost:5000'],
+    origin: ['http://localhost:5173', 'http://localhost:3000', 'https://quickhire-1-k5vh.onrender.com'],
     credentials: true,
     optionsSuccessStatus: 200,
 };

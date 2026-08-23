@@ -219,7 +219,7 @@ Run these tests to ensure everything works:
 ### ✅ Basic Server Test
 ```bash
 node test-server.js
-# Visit: http://localhost:5000/test
+# Visit: https://quickhire-1-k5vh.onrender.com/test
 ```
 
 ### ✅ Full Backend Verification
@@ -238,7 +238,7 @@ node test-connection.js
 npm start
 
 # In another terminal:
-curl http://localhost:5000/api/health
+curl https://quickhire-1-k5vh.onrender.com/api/health
 # Or visit in browser
 ```
 

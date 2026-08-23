@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
-const API_BASE = 'https://quickhire-5ho5.onrender.com/api';
+const API_BASE = 'https://quickhire-1-k5vh.onrender.com/api';
 import { useNavigate } from 'react-router-dom';
 import { FaUserShield, FaTrash, FaCheckCircle, FaBan, FaSearch, FaEye } from 'react-icons/fa';
 import './UserManagement.css';

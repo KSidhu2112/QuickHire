@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
-const API_BASE = 'https://quickhire-5ho5.onrender.com/api';
+const API_BASE = 'https://quickhire-1-k5vh.onrender.com/api';
 import './Auth.css';
 
 const ForgotPassword = () => {

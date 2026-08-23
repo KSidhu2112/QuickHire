@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const API_BASE = 'https://quickhire-5ho5.onrender.com/api';
+const API_BASE = 'https://quickhire-1-k5vh.onrender.com/api';
 import './AccountDetails.css';
 
 const AccountDetails = () => {

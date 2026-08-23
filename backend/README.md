@@ -31,7 +31,7 @@ npm start
 npm run dev
 ```
 
-The server will start on `http://localhost:5000`
+The server will start on `https://quickhire-1-k5vh.onrender.com`
 
 ## 📡 API Endpoints
 
@@ -197,14 +197,14 @@ backend/
 
 **Send OTP:**
 ```bash
-curl -X POST http://localhost:5000/api/auth/send-otp \
+curl -X POST https://quickhire-1-k5vh.onrender.com/api/auth/send-otp \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","name":"Test User"}'
 ```
 
 **Register:**
 ```bash
-curl -X POST http://localhost:5000/api/auth/register \
+curl -X POST https://quickhire-1-k5vh.onrender.com/api/auth/register \
   -H "Content-Type: application/json" \
   -d '{
     "name":"Test User",
@@ -217,14 +217,14 @@ curl -X POST http://localhost:5000/api/auth/register \
 
 **Login:**
 ```bash
-curl -X POST http://localhost:5000/api/auth/login \
+curl -X POST https://quickhire-1-k5vh.onrender.com/api/auth/login \
   -H "Content-Type: application/json" \
   -d '{"email":"test@example.com","password":"test1234"}'
 ```
 
 ### Using Postman
 1. Import the API endpoints
-2. Set base URL to `http://localhost:5000`
+2. Set base URL to `https://quickhire-1-k5vh.onrender.com`
 3. For protected routes, add header: `Authorization: Bearer <token>`
 
 ## 📧 Email Templates
@@ -273,9 +273,9 @@ npm start
 ```
 
 And connect your frontend to:
-- **Base URL:** `http://localhost:5000`
-- **API Base:** `http://localhost:5000/api`
-- **Auth Endpoints:** `http://localhost:5000/api/auth`
+- **Base URL:** `https://quickhire-1-k5vh.onrender.com`
+- **API Base:** `https://quickhire-1-k5vh.onrender.com/api`
+- **Auth Endpoints:** `https://quickhire-1-k5vh.onrender.com/api/auth`
 
 ## 📝 Notes
 

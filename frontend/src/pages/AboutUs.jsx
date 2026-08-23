@@ -4,7 +4,7 @@ import { FaUsers, FaBuilding, FaBriefcase, FaFileAlt, FaBullseye, FaEye, FaRobot
 import { SiExpress, SiMongodb } from 'react-icons/si';
 import './AboutUs.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'http://localhost:5000/api';
+const API_URL = import.meta.env.VITE_API_URL || 'https://quickhire-1-k5vh.onrender.com/api';
 
 // Counter animation component
 const AnimatedCounter = ({ end, duration = 2000, suffix = '' }) => {

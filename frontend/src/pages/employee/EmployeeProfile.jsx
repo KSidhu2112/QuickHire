@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import axios from 'axios';
-const API_BASE = (import.meta.env.VITE_API_URL || 'http://localhost:5000/api');
+const API_BASE = (import.meta.env.VITE_API_URL || 'https://quickhire-1-k5vh.onrender.com/api');
 import { reviewAPI, employeeProfileAPI } from '../../services/api';
 import './EmployeeProfile.css';
 
@@ -168,7 +168,7 @@ const EmployeeProfile = () => {
 
     const trustScore = employeeProfile?.trustScore || user.trustScore || 50;
     const profileCompleteness = employeeProfile?.profileCompleteness || 0;
-    const backendUrl = (import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000');
+    const backendUrl = (import.meta.env.VITE_BACKEND_URL || 'https://quickhire-1-k5vh.onrender.com');
 
     return (
         <div className="employee-profile-page">
