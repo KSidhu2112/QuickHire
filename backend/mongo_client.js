@@ -1,6 +1,11 @@
 const mongoose = require('mongoose');
+const path = require('path');
+require('dotenv').config({ path: path.join(__dirname, '.env') });
 
-const uri = "mongodb+srv://ksidhusidhu2112_db_user:itk33DZX8oa8ggyX@cluster0.kvkshtz.mongodb.net/QuickHire?retryWrites=true&w=majority&appName=Cluster0";
+const uri = process.env.MONGODB_URI;
+if (!uri) {
+    throw new Error('MONGODB_URI environment variable is required');
+}
 
 async function run() {
     await mongoose.connect(uri);

@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
-const API_BASE = 'https://quickhire-1-k5vh.onrender.com/api';
+import { adminFetch, API_BASE } from '../services/api.js';
 import './Settings.css';
 
 const Settings = () => {
@@ -31,7 +31,7 @@ const Settings = () => {
     const fetchAccountDetails = async () => {
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch(`${API_BASE}/admin/profile`, {
+            const response = await adminFetch(`${API_BASE}/admin/profile`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
@@ -105,7 +105,7 @@ const Settings = () => {
                 updateData.newPassword = formData.newPassword;
             }
 
-            const response = await fetch(`${API_BASE}/admin/profile`, {
+            const response = await adminFetch(`${API_BASE}/admin/profile`, {
                 method: 'PUT',
                 headers: {
                     'Content-Type': 'application/json',

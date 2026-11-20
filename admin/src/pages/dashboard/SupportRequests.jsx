@@ -4,11 +4,11 @@ import {
     FaCheckCircle, FaClock, FaSpinner, FaTimes, FaEnvelope,
     FaPhone, FaUser, FaCalendarAlt, FaExclamationCircle
 } from 'react-icons/fa';
-import axios from 'axios';
+import axios from '../../services/api.js';
 import toast from 'react-hot-toast';
 import './SupportRequests.css';
 
-const API_URL = import.meta.env.VITE_API_URL || 'https://quickhire-1-k5vh.onrender.com/api';
+const API_URL = (import.meta.env.VITE_API_URL || 'https://quickhire-1-k5vh.onrender.com/api').replace(/\/+$/, '');
 
 const SupportRequests = () => {
     const [messages, setMessages] = useState([]);

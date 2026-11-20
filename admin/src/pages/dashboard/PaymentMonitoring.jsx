@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useCallback } from 'react';
-import axios from 'axios';
+import axios from '../../services/api.js';
 import {
   FaMoneyBillWave,
   FaUserTie,
@@ -24,7 +24,7 @@ import {
 } from 'react-icons/fa';
 import './PaymentMonitoring.css';
 
-const API_BASE = `${'https://quickhire-1-k5vh.onrender.com/api'}/payments/admin`;
+const API_BASE = `${(import.meta.env.VITE_API_URL || 'https://quickhire-1-k5vh.onrender.com/api').replace(/\/+$/, '')}/payments/admin`;
 
 const PaymentMonitoring = () => {
   // Data

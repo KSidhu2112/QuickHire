@@ -9,6 +9,12 @@ const fs = require('fs');
 // Load environment variables
 dotenv.config();
 
+const missingRequiredEnvironment = ['JWT_SECRET', 'MONGODB_URI']
+    .filter((name) => !process.env[name]);
+if (missingRequiredEnvironment.length) {
+    throw new Error(`Required environment variable(s) missing: ${missingRequiredEnvironment.join(', ')}`);
+}
+
 // Initialize Express app
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -32,6 +38,17 @@ const employeeProfileRoutes = require('./routes/employeeProfileRoutes');
 
 
 // Middleware
+const configuredOrigins = [process.env.CLIENT_URL, process.env.ADMIN_URL]
+    .filter(Boolean)
+    .map((origin) => {
+        try {
+            return new URL(origin).origin;
+        } catch {
+            return null;
+        }
+    })
+    .filter(Boolean);
+
 const corsOptions = {
     origin: [
         'http://localhost:5173',
@@ -41,7 +58,8 @@ const corsOptions = {
         'http://localhost:5175',
         'http://localhost:5176',
         'https://quickhirecareer.netlify.app',
-        'https://quickhirecareerplatform.netlify.app'
+        'https://quickhirecareerplatform.netlify.app',
+        ...configuredOrigins,
     ],
     credentials: true,
     optionsSuccessStatus: 200,
@@ -92,12 +110,24 @@ app.get('/api/health', (req, res) => {
     });
 });
 
+// Root health check for Render and other uptime monitors.
+app.get('/', (req, res) => {
+    res.status(200).json({
+        success: true,
+        message: 'QuickHire API is running',
+    });
+});
+
+app.head('/', (req, res) => {
+    res.status(200).end();
+});
+
 // Debug Route (Public)
 app.get('/api/payments/ping', (req, res) => {
     res.json({ success: true, message: 'Payment controller reached!' });
 });
 
-// 404 Handler
+// 404 Handler (keep this after every route)
 app.use((req, res) => {
     console.log(`🚫 404 Error: ${req.method} ${req.originalUrl}`);
     res.status(404).json({
@@ -147,24 +177,6 @@ const startServer = async () => {
         setTimeout(startServer, 5000);
     }
 };
-
-app.get("/api/health", (req, res) => {
-    res.status(200).json({
-        success: true
-    });
-});
-
-app.head("/api/health", (req, res) => {
-    res.sendStatus(200);
-});
-
-app.get("/", (req, res) => {
-    res.status(200).send("QuickHire API Running");
-});
-
-app.head("/", (req, res) => {
-    res.sendStatus(200);
-});
 
 startServer();
 

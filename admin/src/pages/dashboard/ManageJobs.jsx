@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import toast from 'react-hot-toast';
-import axios from 'axios';
-const API_BASE = 'https://quickhire-1-k5vh.onrender.com/api';
+import axios, { adminFetch, API_BASE } from '../../services/api.js';
 import { FaSearch, FaEye, FaTrash, FaFilter } from 'react-icons/fa';
 import './ManageJobs.css';
 
@@ -73,7 +72,7 @@ const ManageJobs = () => {
 
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch(`${API_BASE}/admin/jobs/${jobId}`, {
+            const response = await adminFetch(`${API_BASE}/admin/jobs/${jobId}`, {
                 method: 'DELETE',
                 headers: {
                     'Authorization': `Bearer ${token}`

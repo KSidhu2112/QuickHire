@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import axios from 'axios';
-const API_BASE = 'https://quickhire-1-k5vh.onrender.com/api';
+import axios from '../../services/api.js';
+const API_BASE = (import.meta.env.VITE_API_URL || 'https://quickhire-1-k5vh.onrender.com/api').replace(/\/+$/, '');
 import './Auth.css'; // Shared CSS
 
 const Login = () => {
@@ -22,19 +22,20 @@ const Login = () => {
         e.preventDefault();
         setLoading(true);
         setError('');
+        localStorage.removeItem('adminToken');
 
         try {
             const res = await axios.post(`${API_BASE}/auth/login`, { email, password });
 
-            console.log('Login success:', res.data);
+            if (res.data.user?.role !== 'admin' || !res.data.token) {
+                throw new Error('This account does not have administrator access.');
+            }
 
-            // Store real token
             localStorage.setItem('adminToken', res.data.token);
             window.location.href = '/dashboard';
 
         } catch (err) {
-            console.error('Login error:', err.response?.data);
-            setError(err.response?.data?.message || 'Login failed. Please try again.');
+            setError(err.response?.data?.message || err.message || 'Login failed. Please try again.');
         } finally {
             setLoading(false);
         }

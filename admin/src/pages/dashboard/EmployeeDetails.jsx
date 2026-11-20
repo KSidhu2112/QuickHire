@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-const API_BASE = 'https://quickhire-1-k5vh.onrender.com/api';
+import axios from '../../services/api.js';
+const API_BASE = (import.meta.env.VITE_API_URL || 'https://quickhire-1-k5vh.onrender.com/api').replace(/\/+$/, '');
 import { useParams, useNavigate } from 'react-router-dom';
 import { FaArrowLeft, FaEnvelope, FaCalendarAlt, FaBriefcase, FaMoneyBillWave, FaInfoCircle, FaCheckCircle } from 'react-icons/fa';
 import './DetailPages.css';

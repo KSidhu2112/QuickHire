@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom';
-const API_BASE = 'https://quickhire-1-k5vh.onrender.com/api';
+import { adminFetch, API_BASE } from '../services/api.js';
 import './AccountDetails.css';
 
 const AccountDetails = () => {
@@ -29,7 +29,7 @@ const AccountDetails = () => {
     const fetchAccountDetails = async () => {
         try {
             const token = localStorage.getItem('adminToken');
-            const response = await fetch(`${API_BASE}/admin/profile`, {
+            const response = await adminFetch(`${API_BASE}/admin/profile`, {
                 headers: {
                     'Authorization': `Bearer ${token}`
                 }
